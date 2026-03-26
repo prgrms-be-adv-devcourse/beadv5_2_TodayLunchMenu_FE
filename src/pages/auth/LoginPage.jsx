@@ -1,11 +1,13 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
+import { useAuth } from "../../features/auth/useAuth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login, loading } = useAuth();
 
   const [form, setForm] = useState({
     email: "",
@@ -18,7 +20,7 @@ export default function LoginPage() {
 
   const handleChange = (key) => (e) => {
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+    setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
   };
 
   const validate = () => {
@@ -44,20 +46,21 @@ export default function LoginPage() {
 
     try {
       setIsSubmitting(true);
-
-      // TODO: 실제 로그인 API 연결
-      console.log("login", form);
-
-      navigate("/");
+      await login(form);
+      navigate("/products");
     } catch (error) {
       console.error(error);
       setErrors({
-        common: "로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.",
+        common:
+          error?.message ||
+          "로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const submitDisabled = isSubmitting || loading;
 
   return (
     <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
@@ -83,13 +86,11 @@ export default function LoginPage() {
       <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 pb-12 pt-24">
         <div className="mb-12 text-center">
           <div className="mb-4 inline-flex rounded-xl bg-purple-100 p-4">
-            <span className="text-4xl text-violet-700">✦</span>
+            <span className="text-4xl text-violet-700">Z</span>
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight">
-            ZeroMarket
-          </h2>
+          <h2 className="text-3xl font-extrabold tracking-tight">ZeroMarket</h2>
           <p className="mt-2 font-medium text-gray-500">
-            굿즈와 취향을 모으는 마켓
+            오늘 점심 메뉴를 가장 빠르게 만나는 방법
           </p>
         </div>
 
@@ -120,7 +121,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="비밀번호를 입력해 주세요"
                     value={form.password}
                     onChange={handleChange("password")}
                     error={!!errors.password}
@@ -157,9 +158,9 @@ export default function LoginPage() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={submitDisabled}
             >
-              {isSubmitting ? "로그인 중..." : "로그인"}
+              {submitDisabled ? "로그인 중..." : "로그인"}
             </Button>
           </form>
 
@@ -182,13 +183,13 @@ export default function LoginPage() {
               type="button"
               className="flex items-center justify-center rounded-xl border border-purple-100 bg-white p-4 transition hover:bg-purple-50"
             >
-              
+              N
             </button>
             <button
               type="button"
               className="flex items-center justify-center rounded-xl border border-purple-100 bg-white p-4 transition hover:bg-purple-50"
             >
-              카
+              K
             </button>
           </div>
 
