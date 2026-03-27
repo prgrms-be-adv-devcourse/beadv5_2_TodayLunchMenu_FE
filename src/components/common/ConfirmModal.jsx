@@ -1,45 +1,35 @@
-import { cn } from "../../utils/cn";
+import Button from "./Button";
+import Modal from "./Modal";
 
-export default function Button({
+export default function ConfirmModal({
+  open,
+  onClose,
+  title,
+  description,
+  confirmText = "확인",
+  cancelText = "취소",
+  confirmVariant = "primary",
+  onConfirm,
   children,
-  type = "button",
-  variant = "primary",
-  size = "md",
-  className,
-  disabled = false,
-  ...props
 }) {
-  const variants = {
-    primary:
-      "bg-gradient-to-br from-violet-700 to-violet-600 text-white shadow-lg shadow-violet-500/20 hover:brightness-110",
-    secondary:
-      "bg-purple-100 text-violet-800 hover:bg-purple-200",
-    ghost:
-      "bg-transparent text-violet-700 hover:bg-purple-100",
-    danger:
-      "bg-red-600 text-white hover:bg-red-700",
-  };
-
-  const sizes = {
-    sm: "h-10 px-4 text-sm rounded-full",
-    md: "h-12 px-5 text-sm rounded-full",
-    lg: "h-14 px-6 text-base rounded-full font-bold",
-  };
-
   return (
-    <button
-      type={type}
-      disabled={disabled}
-      className={cn(
-        "inline-flex items-center justify-center transition active:scale-[0.98]",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      {...props}
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      description={description}
+      footer={
+        <>
+          <Button type="button" variant="secondary" onClick={onClose}>
+            {cancelText}
+          </Button>
+          <Button type="button" variant={confirmVariant} onClick={onConfirm}>
+            {confirmText}
+          </Button>
+        </>
+      }
     >
       {children}
-    </button>
+    </Modal>
   );
 }

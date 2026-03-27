@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import PageContainer from "../../components/common/PageContainer";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Input from "../../components/common/Input";
+import PageContainer from "../../components/common/PageContainer";
+import { useAuth } from "../../features/auth/useAuth";
 
 const MOCK_PRODUCTS = [
   {
@@ -79,6 +80,8 @@ function getStatusMeta(status) {
 
 export default function SellerProductListPage() {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
+  const isSeller = user?.role === "SELLER";
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -95,6 +98,22 @@ export default function SellerProductListPage() {
       return matchesFilter && matchesKeyword;
     });
   }, [products, keyword, filter]);
+
+  if (authLoading) {
+    return (
+      <PageContainer>
+        <section className="py-16 text-center">
+          <p className="text-sm font-medium text-gray-500">
+            판매자 권한을 확인하고 있습니다.
+          </p>
+        </section>
+      </PageContainer>
+    );
+  }
+
+  if (!isSeller) {
+    return <Navigate to="/seller/register" replace />;
+  }
 
   const totalValue = products.reduce(
     (sum, product) => sum + product.price * product.stock,

@@ -1,26 +1,48 @@
 import { Link } from "react-router-dom";
-import PageContainer from "../../components/common/PageContainer";
 import Button from "../../components/common/Button";
+import PageContainer from "../../components/common/PageContainer";
+import { useAuth } from "../../features/auth/useAuth";
+import { useSeller } from "../../features/seller/useSeller";
 
-const MOCK_ME = {
-  id: 1,
-  name: "희원",
-  email: "user@example.com",
-  role: "USER",
-  isSeller: true,
-  joinedAt: "2023.09",
-  depositBalance: 42000,
-  activeOrders: 3,
-  coupons: 2,
-  addressCount: 1,
-};
+const DEFAULT_DEPOSIT_BALANCE = 0;
+const DEFAULT_ACTIVE_ORDERS = 0;
+const DEFAULT_COUPONS = 0;
+const DEFAULT_ADDRESS_COUNT = 0;
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
+function formatJoinedAt(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
 export default function MyPage() {
-  const me = MOCK_ME;
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const isSeller = user?.role === "SELLER";
+  const { seller, loading: sellerLoading, error: sellerError } = useSeller(
+    isAuthenticated && !authLoading && isSeller
+  );
+
+  const me = {
+    name: user?.nickname ?? "게스트",
+    email: user?.email ?? "",
+    joinedAt: formatJoinedAt(user?.createdAt),
+    depositBalance: DEFAULT_DEPOSIT_BALANCE,
+    activeOrders: DEFAULT_ACTIVE_ORDERS,
+    coupons: DEFAULT_COUPONS,
+    addressCount: DEFAULT_ADDRESS_COUNT,
+  };
 
   const quickLinks = [
     {
@@ -55,10 +77,10 @@ export default function MyPage() {
         <div className="relative">
           <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-violet-600 bg-white shadow-2xl shadow-violet-500/10">
             <span className="text-4xl font-extrabold text-violet-700">
-              {me.name.slice(0, 1)}
+              {me.name.slice(0, 1) || "G"}
             </span>
           </div>
-          {me.isSeller ? (
+          {isSeller ? (
             <div className="absolute bottom-0 right-0 rounded-full border-4 border-[#fdf3ff] bg-gradient-to-br from-violet-700 to-violet-600 p-2 text-white shadow-lg">
               ✦
             </div>
@@ -81,14 +103,29 @@ export default function MyPage() {
             <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-violet-700">
               Account Type
             </span>
-            <h2 className="text-xl font-bold text-gray-900">
-              {me.isSeller ? "판매자 회원" : "일반 회원"}
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900">{isSeller ? "판매자 회원" : "일반 회원"}</h2>
           </div>
           <span className="text-sm font-bold text-violet-700">
             {formatPrice(me.depositBalance)}원
           </span>
         </div>
+
+        {sellerLoading ? (
+          <p className="mt-4 text-sm text-gray-500">판매자 정보를 확인하고 있습니다.</p>
+        ) : null}
+
+        {!sellerLoading && sellerError ? (
+          <p className="mt-4 text-sm text-red-600">
+            판매자 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
+          </p>
+        ) : null}
+
+        {isSeller && seller ? (
+          <div className="mt-4 rounded-2xl bg-white/70 p-4 text-sm text-gray-700 ring-1 ring-purple-100">
+            <p>등록 은행: {seller.bankName || "-"}</p>
+            <p>정산 계좌: {seller.account || "-"}</p>
+          </div>
+        ) : null}
 
         <div className="mt-5 flex flex-wrap gap-3">
           <Link to="/orders">
@@ -97,7 +134,7 @@ export default function MyPage() {
           <Link to="/deposits">
             <Button variant="secondary">예치금 보기</Button>
           </Link>
-          {me.isSeller ? (
+          {isSeller ? (
             <Link to="/seller/products">
               <Button>판매자센터</Button>
             </Link>
@@ -117,12 +154,8 @@ export default function MyPage() {
             className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100 transition hover:shadow-md"
           >
             <div className="mb-2 text-2xl">{item.icon}</div>
-            <span className="block text-sm font-bold text-gray-900">
-              {item.title}
-            </span>
-            <span className="text-[11px] font-medium text-gray-500">
-              {item.description}
-            </span>
+            <span className="block text-sm font-bold text-gray-900">{item.title}</span>
+            <span className="text-[11px] font-medium text-gray-500">{item.description}</span>
           </Link>
         ))}
       </section>
@@ -151,9 +184,7 @@ export default function MyPage() {
           className="flex w-full items-center gap-4 rounded-2xl p-4 text-red-600 transition hover:bg-white/60"
         >
           <span>↩</span>
-          <span className="flex-1 text-left text-sm font-semibold">
-            로그아웃
-          </span>
+          <span className="flex-1 text-left text-sm font-semibold">로그아웃</span>
         </button>
       </section>
     </PageContainer>

@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
+﻿import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../../features/auth/useAuth";
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -9,9 +10,19 @@ const navLinkClass = ({ isActive }) =>
   ].join(" ");
 
 export default function Header() {
-  const isLoggedIn = false;
-  const isSeller = false;
+  const { user, isAuthenticated, loading, logout } = useAuth();
   const cartCount = 0;
+  const isLoggedIn = isAuthenticated && Boolean(user);
+  const isAdmin = user?.role === "ADMIN";
+  const displayName = user?.nickname || "회원";
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // useAuth.logout clears auth state even if the API call fails.
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
@@ -37,9 +48,9 @@ export default function Header() {
             <NavLink to="/deposits" className={navLinkClass}>
               예치금
             </NavLink>
-            {isSeller && (
+            {isAdmin && (
               <NavLink to="/seller/products" className={navLinkClass}>
-                판매자센터
+                판매자 메뉴
               </NavLink>
             )}
           </nav>
@@ -60,6 +71,9 @@ export default function Header() {
 
           {isLoggedIn ? (
             <>
+              <span className="hidden rounded-md px-3 py-2 text-sm font-medium text-gray-700 sm:inline-block">
+                {displayName}님
+              </span>
               <Link
                 to="/me"
                 className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
@@ -68,9 +82,11 @@ export default function Header() {
               </Link>
               <button
                 type="button"
-                className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+                onClick={handleLogout}
+                disabled={loading}
+                className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                로그아웃
+                {loading ? "처리 중..." : "로그아웃"}
               </button>
             </>
           ) : (
