@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
 import { useAuth } from "../../features/auth/useAuth";
+import { useNotification } from "../../features/notification/useNotification";
 import { getNotificationsApi, markNotificationReadApi } from "../../features/notification/notificationApi";
 
 const SAMPLE_NOTIFICATIONS = [
@@ -102,6 +103,7 @@ function formatRelativeTime(value) {
 
 export default function NotificationListPage() {
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { decreaseUnreadCount, refreshUnreadCount, setUnreadCount } = useNotification();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -119,6 +121,7 @@ export default function NotificationListPage() {
         if (!mounted) return;
         setNotifications(SAMPLE_NOTIFICATIONS);
         setUsingSampleData(true);
+        setUnreadCount(SAMPLE_NOTIFICATIONS.filter((item) => !item.read).length);
         setLoading(false);
         return;
       }
@@ -132,10 +135,12 @@ export default function NotificationListPage() {
         if (!mounted) return;
         setNotifications(items.length > 0 ? items : SAMPLE_NOTIFICATIONS);
         setUsingSampleData(items.length === 0);
+        setUnreadCount((items.length > 0 ? items : SAMPLE_NOTIFICATIONS).filter((item) => !item.read).length);
       } catch {
         if (!mounted) return;
         setNotifications(SAMPLE_NOTIFICATIONS);
         setUsingSampleData(true);
+        setUnreadCount(SAMPLE_NOTIFICATIONS.filter((item) => !item.read).length);
         setError("알림을 불러오지 못해 예시 데이터를 표시하고 있어요.");
       } finally {
         if (mounted) {
@@ -165,11 +170,17 @@ export default function NotificationListPage() {
   const unreadCount = notifications.filter((item) => !item.read).length;
 
   async function handleMarkRead(notificationId) {
+    const target = notifications.find((item) => item.notificationId === notificationId);
+    if (!target || target.read) {
+      return;
+    }
+
     setNotifications((current) =>
       current.map((item) =>
         item.notificationId === notificationId ? { ...item, read: true } : item
       )
     );
+    decreaseUnreadCount(1);
 
     if (String(notificationId).startsWith("sample-")) {
       return;
@@ -178,12 +189,19 @@ export default function NotificationListPage() {
     try {
       await markNotificationReadApi(notificationId);
     } catch {
+      refreshUnreadCount().catch(() => {});
       setError("읽음 처리 중 문제가 생겼어요. 잠시 후 다시 시도해 주세요.");
     }
   }
 
   function handleMarkAllRead() {
+    const unreadItems = notifications.filter((item) => !item.read).length;
     setNotifications((current) => current.map((item) => ({ ...item, read: true })));
+    setUnreadCount(0);
+
+    if (unreadItems <= 0) {
+      return;
+    }
   }
 
   return (

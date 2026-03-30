@@ -22,4 +22,10 @@ async function markNotificationReadApi(notificationId) {
   return unwrapResponse(response);
 }
 
-export { getNotificationsApi, markNotificationReadApi };
+async function getUnreadNotificationCountApi() {
+  const response = await apiClient("/api/notifications/unread-count");
+
+  return unwrapResponse(response);
+}
+
+export { getNotificationsApi, getUnreadNotificationCountApi, markNotificationReadApi };
