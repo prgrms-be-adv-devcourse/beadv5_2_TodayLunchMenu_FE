@@ -87,6 +87,11 @@ const apiClient = async (
     }
   } catch {}
 
+  // TODO: VITE_SERVER_URL이 비어 있으면 초기화 단계에서 바로 감지하도록 검증 추가
+  // TODO: refresh 토큰 재발급을 붙일 계획이 없다면 retry 인자 제거 검토
+  // TODO: 204 No Content 같은 빈 응답을 의도적으로 처리하도록 분기 명확화
+  // TODO: refresh 토큰을 쿠키로 쓰지 않으면 credentials: "include" 유지 여부 재검토
+
   // if (response.status === 401 && data?.code === "TOKEN_EXPIRED") {
   //   if (retry) {
   //     handleLogout();
@@ -122,10 +127,14 @@ const apiClient = async (
   // }
 
   if (!response.ok) {
+    const errorCode = data?.error?.code || data?.errorCode || data?.code || "REQUEST_FAILED";
+    const errorMessage =
+      data?.error?.message || data?.message || "요청에 실패했습니다.";
+
     throw new ApiError({
       status: response.status,
-      code: data?.errorCode || data?.code || "REQUEST_FAILED",
-      message: data?.message || "요청에 실패했습니다.",
+      code: errorCode,
+      message: errorMessage,
       data,
     });
   }
