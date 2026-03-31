@@ -12,11 +12,12 @@ import OrderListPage from './pages/order/OrderListPage'
 import OrderDetailPage from './pages/order/OrderDetailPage'
 import MyPage from './pages/member/MyPage'
 import MemberProfilePage from './pages/member/MemberProfilePage'
+import MemberEditPage from './pages/member/MemberEditPage'
 import MemberReportCreatePage from './pages/member/MemberReportCreatePage'
 import MemberReportHistoryPage from './pages/member/MemberReportHistoryPage'
-import AdminMemberReportListPage from './pages/member/AdminMemberReportListPage'
-import AdminMemberReportDetailPage from './pages/member/AdminMemberReportDetailPage'
-import AdminMemberRestrictionListPage from './pages/member/AdminMemberRestrictionListPage'
+import AdminMemberReportListPage from './pages/admin/AdminMemberReportListPage'
+import AdminMemberReportDetailPage from './pages/admin/AdminMemberReportDetailPage'
+import AdminMemberRestrictionListPage from './pages/admin/AdminMemberRestrictionListPage'
 import NotificationListPage from './pages/notification/NotificationListPage'
 import SellerRegisterPage from './pages/seller/SellerRegisterPage'
 import SellerProductCreatePage from './pages/seller/SellerProductCreatePage'
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: 'orders', element: <OrderListPage /> },
       { path: 'orders/:orderId', element: <OrderDetailPage /> },
       { path: 'me', element: <MyPage /> },
+      { path: 'me/edit', element: <MemberEditPage /> },
       { path: 'members/:memberId', element: <MemberProfilePage /> },
       { path: 'member-reports/new', element: <MemberReportCreatePage /> },
       { path: 'member-reports/me', element: <MemberReportHistoryPage /> },

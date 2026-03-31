@@ -1,9 +1,17 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import CheckboxField from "../../components/common/CheckboxField";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
+import { ApiError } from "../../api/client";
+import { signupApi } from "../../features/auth/authApi";
+import {
+  presignProfileImageUploadApi,
+  uploadProfileImageToS3,
+} from "../../features/member/memberApi";
+
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -15,16 +23,22 @@ export default function SignupPage() {
     confirmPassword: "",
     agree: false,
   });
-
+  const [profileImage, setProfileImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (key) => (e) => {
-    const value =
-      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
     setForm((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => ({ ...prev, [key]: "" }));
+    setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
+  };
+
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files?.[0] ?? null;
+
+    setProfileImage(file);
+    setErrors((prev) => ({ ...prev, profileImage: "", common: "" }));
   };
 
   const validate = () => {
@@ -52,6 +66,10 @@ export default function SignupPage() {
       nextErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
     }
 
+    if (profileImage && !ACCEPTED_IMAGE_TYPES.includes(profileImage.type)) {
+      nextErrors.profileImage = "jpg, png, webp 형식의 이미지 파일만 업로드할 수 있습니다.";
+    }
+
     if (!form.agree) {
       nextErrors.agree = "약관 동의가 필요합니다.";
     }
@@ -60,22 +78,62 @@ export default function SignupPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
+  // 프로필 이미지가 선택된 경우 S3에 업로드하고 objectKey를 반환하는 함수
+  const uploadProfileImageIfNeeded = async () => {
+    // 프로필 이미지가 선택되지 않은 경우 업로드 과정 생략
+    if (!profileImage) {
+      return null;
+    }
+
+    // S3 업로드를 위한 presigned URL 발급 요청
+    const presignedData = await presignProfileImageUploadApi({
+      fileName: profileImage.name,
+      contentType: profileImage.type,
+    });
+
+    // S3에 이미지 업로드
+    await uploadProfileImageToS3({
+      uploadUrl: presignedData.uploadUrl,
+      file: profileImage,
+      contentType: profileImage.type,
+    });
+
+    return presignedData.objectKey;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
       setIsSubmitting(true);
+      setErrors((prev) => ({ ...prev, common: "" }));
 
-      // TODO: 실제 회원가입 API 연결
-      console.log("signup", form);
+      const profileImageKey = await uploadProfileImageIfNeeded();
+
+      await signupApi({
+        email: form.email.trim(),
+        password: form.password,
+        nickname: form.name.trim(),
+        phone: null,
+        address: null,
+        profileImageKey,
+        role: "USER",
+      });
 
       navigate("/login");
     } catch (error) {
-      console.error(error);
-      setErrors({
-        common: "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
-      });
+      if (error instanceof ApiError) {
+        setErrors((prev) => ({
+          ...prev,
+          common: error.message || "회원가입에 실패했습니다.",
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          common: "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        }));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -118,45 +176,33 @@ export default function SignupPage() {
                 Legacy.
               </h2>
               <p className="max-w-xs font-medium text-gray-600">
-                취향과 굿즈를 모으는 사람들을 위한 마켓에 참여해 보세요.
+                취향과 기록을 모으는 사람들을 위한 마켓에 참여해 보세요.
               </p>
             </div>
           </section>
 
           <section className="mx-auto w-full max-w-md space-y-10">
             <div className="space-y-2">
-              <h2 className="text-4xl font-extrabold tracking-tight">
-                회원가입
-              </h2>
+              <h2 className="text-4xl font-extrabold tracking-tight">회원가입</h2>
               <p className="font-medium text-gray-500">
-                정보를 입력하고 ZeroMarket을 시작하세요.
+                정보를 입력하고 TodayLunchMenu를 시작해 보세요.
               </p>
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
-                <FormField
-                  label="Full Name"
-                  htmlFor="name"
-                  required
-                  error={errors.name}
-                >
+                <FormField label="Full Name" htmlFor="name" required error={errors.name}>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="홍길동"
+                    placeholder="닉네임"
                     value={form.name}
                     onChange={handleChange("name")}
                     error={!!errors.name}
                   />
                 </FormField>
 
-                <FormField
-                  label="Email Address"
-                  htmlFor="email"
-                  required
-                  error={errors.email}
-                >
+                <FormField label="Email Address" htmlFor="email" required error={errors.email}>
                   <Input
                     id="email"
                     type="email"
@@ -167,33 +213,36 @@ export default function SignupPage() {
                   />
                 </FormField>
 
+                <FormField label="Profile Image" htmlFor="profileImage" error={errors.profileImage}>
+                  <input
+                    id="profileImage"
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={handleProfileImageChange}
+                    className="block w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-200"
+                  />
+                  {profileImage ? (
+                    <p className="mt-2 text-xs font-medium text-gray-500">선택한 파일: {profileImage.name}</p>
+                  ) : null}
+                </FormField>
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField
-                    label="Password"
-                    htmlFor="password"
-                    required
-                    error={errors.password}
-                  >
+                  <FormField label="Password" htmlFor="password" required error={errors.password}>
                     <Input
                       id="password"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="********"
                       value={form.password}
                       onChange={handleChange("password")}
                       error={!!errors.password}
                     />
                   </FormField>
 
-                  <FormField
-                    label="Confirm"
-                    htmlFor="confirmPassword"
-                    required
-                    error={errors.confirmPassword}
-                  >
+                  <FormField label="Confirm" htmlFor="confirmPassword" required error={errors.confirmPassword}>
                     <Input
                       id="confirmPassword"
                       type="password"
-                      placeholder="••••••••"
+                      placeholder="********"
                       value={form.confirmPassword}
                       onChange={handleChange("confirmPassword")}
                       error={!!errors.confirmPassword}
@@ -209,11 +258,8 @@ export default function SignupPage() {
                 error={errors.agree}
                 label={
                   <>
-                    이용약관 및{" "}
-                    <a
-                      href="#"
-                      className="font-semibold text-violet-700 hover:underline"
-                    >
+                    이용약관 및{' '}
+                    <a href="#" className="font-semibold text-violet-700 hover:underline">
                       개인정보 처리방침
                     </a>
                     에 동의합니다.
@@ -228,12 +274,7 @@ export default function SignupPage() {
               ) : null}
 
               <div className="pt-2">
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? "가입 중..." : "회원가입"}
                 </Button>
               </div>
@@ -242,10 +283,7 @@ export default function SignupPage() {
             <div className="pt-4 text-center">
               <p className="font-medium text-gray-500">
                 이미 계정이 있나요?
-                <Link
-                  to="/login"
-                  className="ml-1 font-bold text-violet-700 hover:underline"
-                >
+                <Link to="/login" className="ml-1 font-bold text-violet-700 hover:underline">
                   로그인
                 </Link>
               </p>
@@ -256,3 +294,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

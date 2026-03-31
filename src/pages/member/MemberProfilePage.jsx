@@ -108,9 +108,17 @@ export default function MemberProfilePage() {
             <section className="rounded-[32px] border border-violet-100 bg-gradient-to-br from-violet-50 via-fuchsia-50 to-white p-8 shadow-sm">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-5">
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-violet-600 text-2xl font-extrabold text-white shadow-lg shadow-violet-500/20">
-                    {getInitials(member.nickname)}
-                  </div>
+                  {member.profileImageUrl ? (
+                    <img
+                      src={member.profileImageUrl}
+                      alt={`${member.nickname} profile`}
+                      className="h-24 w-24 rounded-full object-cover shadow-lg shadow-violet-500/20 ring-4 ring-white"
+                    />
+                  ) : (
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-violet-600 text-2xl font-extrabold text-white shadow-lg shadow-violet-500/20">
+                      {getInitials(member.nickname)}
+                    </div>
+                  )}
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-500">Public Profile</p>
                     <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{member.nickname}</h1>
@@ -152,3 +160,4 @@ export default function MemberProfilePage() {
     </PageContainer>
   );
 }
+

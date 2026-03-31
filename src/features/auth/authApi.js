@@ -2,7 +2,6 @@
 
 const unwrapResponse = (response) => response?.data?.data ?? null;
 
-// 로그인
 async function loginApi({ email, password }) {
   const response = await apiClient("/api/v1/auth/login", {
     method: "POST",
@@ -12,14 +11,37 @@ async function loginApi({ email, password }) {
   return unwrapResponse(response);
 }
 
-// 내 정보 조회
-async function getMyInfoApi() {
-  const response = await apiClient("/api/v1/members/me");
+async function signupApi({
+  email,
+  password,
+  nickname,
+  phone = null,
+  address = null,
+  profileImageKey = null,
+  role = "USER",
+}) {
+  const response = await apiClient("/api/v1/auth", {
+    method: "POST",
+    body: {
+      email,
+      password,
+      nickname,
+      phone,
+      address,
+      profileImageKey,
+      role,
+    },
+  });
 
   return unwrapResponse(response);
 }
 
-// 로그아웃
+async function getMyInfoApi() {
+  const response = await apiClient("/api/members/me");
+
+  return unwrapResponse(response);
+}
+
 async function logoutApi(memberId) {
   if (!memberId) {
     return null;
@@ -32,4 +54,4 @@ async function logoutApi(memberId) {
   return unwrapResponse(response);
 }
 
-export { getMyInfoApi, loginApi, logoutApi };
+export { getMyInfoApi, loginApi, logoutApi, signupApi };

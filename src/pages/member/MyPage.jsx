@@ -42,6 +42,7 @@ export default function MyPage() {
     activeOrders: DEFAULT_ACTIVE_ORDERS,
     coupons: DEFAULT_COUPONS,
     addressCount: DEFAULT_ADDRESS_COUNT,
+    profileImageUrl: user?.profileImageUrl ?? '',
   };
 
   const quickLinks = [
@@ -81,11 +82,19 @@ export default function MyPage() {
     <PageContainer>
       <section className="mt-4 flex flex-col items-center text-center">
         <div className="relative">
-          <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-violet-600 bg-white shadow-2xl shadow-violet-500/10">
-            <span className="text-4xl font-extrabold text-violet-700">
-              {me.name.slice(0, 1) || 'G'}
-            </span>
-          </div>
+          {me.profileImageUrl ? (
+            <img
+              src={me.profileImageUrl}
+              alt="내 프로필 이미지"
+              className="h-28 w-28 rounded-full border-4 border-violet-600 object-cover shadow-2xl shadow-violet-500/10"
+            />
+          ) : (
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-violet-600 bg-white shadow-2xl shadow-violet-500/10">
+              <span className="text-4xl font-extrabold text-violet-700">
+                {me.name.slice(0, 1) || 'G'}
+              </span>
+            </div>
+          )}
           {isSeller ? (
             <div className="absolute bottom-0 right-0 rounded-full border-4 border-[#fdf3ff] bg-gradient-to-br from-violet-700 to-violet-600 px-3 py-2 text-xs font-bold text-white shadow-lg">
               SELLER
@@ -126,6 +135,9 @@ export default function MyPage() {
         ) : null}
 
         <div className="mt-5 flex flex-wrap gap-3">
+          <Link to="/me/edit">
+            <Button>내 정보 수정</Button>
+          </Link>
           <Link to="/orders">
             <Button variant="secondary">주문 내역</Button>
           </Link>

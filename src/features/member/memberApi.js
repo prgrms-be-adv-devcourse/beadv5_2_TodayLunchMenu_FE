@@ -1,4 +1,4 @@
-﻿import { apiClient } from '../../api/client';
+﻿import { ApiError, apiClient } from '../../api/client';
 
 const unwrapResponse = (response) => response?.data?.data ?? null;
 
@@ -7,6 +7,58 @@ export async function getMemberByIdApi(memberId) {
     return null;
   }
 
-  const response = await apiClient(`/api/v1/members/${memberId}`);
+  const response = await apiClient(`/api/members/${memberId}`);
   return unwrapResponse(response);
+}
+
+export async function updateCurrentMemberApi({
+  email,
+  password,
+  nickname,
+  phone = null,
+  address = null,
+  profileImageKey = null,
+}) {
+  const response = await apiClient('/api/members/me', {
+    method: 'PATCH',
+    body: {
+      email,
+      password,
+      nickname,
+      phone,
+      address,
+      profileImageKey,
+    },
+  });
+
+  return unwrapResponse(response);
+}
+
+export async function presignProfileImageUploadApi({ fileName, contentType }) {
+  const response = await apiClient('/api/members/profile-images/presign', {
+    method: 'POST',
+    body: { fileName, contentType },
+  });
+
+  return unwrapResponse(response);
+}
+
+export async function uploadProfileImageToS3({ uploadUrl, file, contentType }) {
+  const response = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': contentType || file?.type || 'application/octet-stream',
+    },
+    body: file,
+  });
+
+  if (!response.ok) {
+    throw new ApiError({
+      status: response.status,
+      code: 'S3_UPLOAD_FAILED',
+      message: '프로필 이미지 업로드에 실패했습니다.',
+    });
+  }
+
+  return true;
 }
