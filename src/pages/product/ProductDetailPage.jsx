@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import PageContainer from "../../components/common/PageContainer";
+import { useCart } from "../../features/cart/useCart";
 import { useProduct } from "../../features/product/useProducts";
 
 function formatPrice(price) {
@@ -39,8 +40,31 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { productId } = useParams();
   const { product, loading, error } = useProduct(productId);
+  const { addToCart } = useCart({ autoLoad: false });
   const [quantity, setQuantity] = useState(1);
   const [openModal, setOpenModal] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  async function handleAddToCart() {
+    if (!product) {
+      return;
+    }
+
+    try {
+      setIsAddingToCart(true);
+      await addToCart({ productId: product.id, quantity });
+      window.alert("장바구니에 담았습니다.");
+    } catch (nextError) {
+      if (nextError?.status === 401) {
+        navigate("/login");
+        return;
+      }
+
+      window.alert(nextError?.message || "장바구니에 담지 못했습니다.");
+    } finally {
+      setIsAddingToCart(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -114,8 +138,13 @@ export default function ProductDetailPage() {
         </section>
 
         <section className="flex gap-3">
-          <Button variant="secondary" className="flex-1" disabled={soldOut} onClick={() => console.log("장바구니", product.id)}>
-            장바구니
+          <Button
+            variant="secondary"
+            className="flex-1"
+            disabled={soldOut || isAddingToCart}
+            onClick={handleAddToCart}
+          >
+            {isAddingToCart ? "담는 중..." : "장바구니"}
           </Button>
           <Button className="flex-1" disabled={soldOut} onClick={() => setOpenModal(true)}>
             구매하기

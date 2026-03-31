@@ -1,5 +1,7 @@
-﻿import { Link, NavLink } from "react-router-dom";
+﻿import { useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../features/auth/useAuth";
+import { clearCartState, useCart } from "../../features/cart/useCart";
 
 const navLinkClass = ({ isActive }) =>
   [
@@ -11,16 +13,24 @@ const navLinkClass = ({ isActive }) =>
 
 export default function Header() {
   const { user, isAuthenticated, loading, logout } = useAuth();
-  const cartCount = 0;
+  const { cartCount } = useCart();
   const isLoggedIn = isAuthenticated && Boolean(user);
   const isAdmin = user?.role === "ADMIN";
   const displayName = user?.nickname || "회원";
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      clearCartState();
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = async () => {
     try {
       await logout();
     } catch {
       // useAuth.logout clears auth state even if the API call fails.
+    } finally {
+      clearCartState();
     }
   };
 
@@ -110,3 +120,4 @@ export default function Header() {
     </header>
   );
 }
+

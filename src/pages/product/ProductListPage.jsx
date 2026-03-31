@@ -1,9 +1,11 @@
 ﻿import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import ProductCard from "../../components/product/ProductCard";
+import { useCart } from "../../features/cart/useCart";
 import { useProducts } from "../../features/product/useProducts";
 
 const STATUS_OPTIONS = ["전체", "판매중", "품절"];
@@ -15,16 +17,22 @@ const SORT_OPTIONS = [
 ];
 
 export default function ProductListPage() {
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [sort, setSort] = useState("latest");
+  const { addToCart } = useCart({ autoLoad: false });
   const { products, loading, error } = useProducts({ page: 0, size: 50, sort: "createdAt,desc" });
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
-    if (statusFilter !== "전체") {
-      result = result.filter((product) => product.category === statusFilter);
+    if (statusFilter === "판매중") {
+      result = result.filter((product) => product.status !== "SOLD_OUT" && product.stockCount > 0);
+    }
+
+    if (statusFilter === "품절") {
+      result = result.filter((product) => product.status === "SOLD_OUT" || product.stockCount <= 0);
     }
 
     if (keyword.trim()) {
@@ -57,6 +65,20 @@ export default function ProductListPage() {
     setKeyword("");
     setStatusFilter("전체");
     setSort("latest");
+  };
+
+  const handleAddToCart = async (product) => {
+    try {
+      await addToCart({ productId: product.id, quantity: 1 });
+      window.alert("장바구니에 담았습니다.");
+    } catch (nextError) {
+      if (nextError?.status === 401) {
+        navigate("/login");
+        return;
+      }
+
+      window.alert(nextError?.message || "장바구니에 담지 못했습니다.");
+    }
   };
 
   return (
@@ -147,9 +169,7 @@ export default function ProductListPage() {
             <ProductCard
               key={product.id}
               product={product}
-              onAddToCart={() => {
-                console.log("장바구니 추가", product.id);
-              }}
+              onAddToCart={handleAddToCart}
             />
           ))}
         </section>

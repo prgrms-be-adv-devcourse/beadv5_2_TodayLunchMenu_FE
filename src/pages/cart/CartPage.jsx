@@ -1,45 +1,10 @@
-import { useMemo, useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
-
-const INITIAL_CART_ITEMS = [
-  {
-    id: 1,
-    productId: 101,
-    name: "보라 머그컵",
-    optionLabel: "리빙 · 라벤더",
-    quantity: 1,
-    price: 12000,
-    image:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=800&q=80",
-    status: "ON_SALE",
-  },
-  {
-    id: 2,
-    productId: 102,
-    name: "제로마켓 키링",
-    optionLabel: "굿즈 · 실버",
-    quantity: 2,
-    price: 8000,
-    image:
-      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80",
-    status: "ON_SALE",
-  },
-  {
-    id: 3,
-    productId: 103,
-    name: "무드 조명",
-    optionLabel: "리빙 · Warm",
-    quantity: 1,
-    price: 39000,
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
-    status: "SOLD_OUT",
-  },
-];
+import { isSoldOut, useCart } from "../../features/cart/useCart";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
@@ -47,94 +12,115 @@ function formatPrice(value) {
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
+  const { cartItems, summary, loading, error, updateQuantity, removeCartItems } = useCart();
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [pendingCartId, setPendingCartId] = useState(null);
 
-  const handleIncrease = (itemId) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  const handleIncrease = async (item) => {
+    try {
+      setPendingCartId(item.cartId);
+      await updateQuantity(item.cartId, item.quantity + 1);
+    } finally {
+      setPendingCartId(null);
+    }
   };
 
-  const handleDecrease = (itemId) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId
-          ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-          : item
-      )
-    );
+  const handleDecrease = async (item) => {
+    if (item.quantity <= 1) {
+      return;
+    }
+
+    try {
+      setPendingCartId(item.cartId);
+      await updateQuantity(item.cartId, item.quantity - 1);
+    } finally {
+      setPendingCartId(null);
+    }
   };
 
-  const handleDelete = (itemId) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== itemId));
-    setDeleteTarget(null);
+  const handleDelete = async (item) => {
+    try {
+      setPendingCartId(item.cartId);
+      await removeCartItems([item.cartId]);
+      setDeleteTarget(null);
+    } finally {
+      setPendingCartId(null);
+    }
   };
-
-  const summary = useMemo(() => {
-    const availableItems = cartItems.filter((item) => item.status === "ON_SALE");
-    const subtotal = availableItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const shippingFee = subtotal >= 30000 || subtotal === 0 ? 0 : 3000;
-    const total = subtotal + shippingFee;
-
-    return {
-      subtotal,
-      shippingFee,
-      total,
-      availableCount: availableItems.length,
-      soldOutCount: cartItems.filter((item) => item.status === "SOLD_OUT").length,
-    };
-  }, [cartItems]);
 
   const proceedToCheckout = () => {
-    if (summary.availableCount === 0) return;
-    navigate("/orders/checkout");
+    if (summary.availableCount === 0) {
+      return;
+    }
+
+    navigate("/orders/checkout", {
+      state: {
+        items: cartItems.filter((item) => !isSoldOut(item)),
+      },
+    });
   };
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <PageHeader title="장바구니" />
+        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+          <p className="text-lg font-bold text-gray-900">장바구니를 불러오는 중입니다.</p>
+        </section>
+      </PageContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <PageHeader title="장바구니" />
+        <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
+          <p className="mb-2 text-lg font-bold text-red-700">장바구니를 불러오지 못했습니다.</p>
+          <p className="text-sm text-red-500">{error.message || "잠시 후 다시 시도해 주세요."}</p>
+        </section>
+      </PageContainer>
+    );
+  }
 
   return (
     <>
       <PageContainer>
         <PageHeader
           title="장바구니"
-          action={
-            <span className="text-sm font-medium text-gray-500">
-              총 {cartItems.length}개
-            </span>
-          }
+          action={<span className="text-sm font-medium text-gray-500">총 {cartItems.length}개</span>}
         />
 
         {cartItems.length === 0 ? (
           <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-            <p className="mb-2 text-lg font-bold text-gray-900">
-              장바구니가 비어 있어요
-            </p>
-            <p className="mb-6 text-sm text-gray-500">
-              상품을 담고 다시 돌아와 주세요.
-            </p>
+            <p className="mb-2 text-lg font-bold text-gray-900">장바구니가 비어 있어요</p>
+            <p className="mb-6 text-sm text-gray-500">상품을 담고 다시 찾아와 주세요.</p>
             <Button onClick={() => navigate("/products")}>상품 보러가기</Button>
           </section>
         ) : (
           <>
             <section className="space-y-4">
               {cartItems.map((item) => {
-                const soldOut = item.status === "SOLD_OUT";
+                const soldOut = isSoldOut(item);
+                const isPending = pendingCartId === item.cartId;
 
                 return (
                   <article
-                    key={item.id}
+                    key={item.cartId}
                     className="flex gap-4 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-purple-100"
                   >
                     <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl bg-purple-50">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                          {(item.name || "P").slice(0, 1).toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex min-h-24 flex-1 flex-col justify-between">
@@ -145,7 +131,7 @@ export default function CartPage() {
                               {item.name}
                             </h3>
                             <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-500">
-                              {item.optionLabel}
+                              {item.category}
                             </p>
                           </div>
 
@@ -153,15 +139,14 @@ export default function CartPage() {
                             type="button"
                             onClick={() => setDeleteTarget(item)}
                             className="rounded-full p-1 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+                            disabled={isPending}
                           >
-                            ✕
+                            ×
                           </button>
                         </div>
 
                         {soldOut ? (
-                          <p className="mt-2 text-sm font-semibold text-red-500">
-                            품절된 상품입니다.
-                          </p>
+                          <p className="mt-2 text-sm font-semibold text-red-500">품절 상품입니다.</p>
                         ) : null}
                       </div>
 
@@ -169,22 +154,20 @@ export default function CartPage() {
                         <div className="flex items-center rounded-full bg-purple-100 px-2 py-1">
                           <button
                             type="button"
-                            onClick={() => handleDecrease(item.id)}
-                            disabled={soldOut}
+                            onClick={() => handleDecrease(item)}
+                            disabled={soldOut || isPending || item.quantity <= 1}
                             className="flex h-7 w-7 items-center justify-center rounded-full text-violet-700 transition hover:bg-white disabled:opacity-40"
                           >
-                            −
+                            -
                           </button>
-                          <span className="min-w-10 text-center text-sm font-bold">
-                            {item.quantity}
-                          </span>
+                          <span className="min-w-10 text-center text-sm font-bold">{item.quantity}</span>
                           <button
                             type="button"
-                            onClick={() => handleIncrease(item.id)}
-                            disabled={soldOut}
+                            onClick={() => handleIncrease(item)}
+                            disabled={soldOut || isPending}
                             className="flex h-7 w-7 items-center justify-center rounded-full text-violet-700 transition hover:bg-white disabled:opacity-40"
                           >
-                            ＋
+                            +
                           </button>
                         </div>
 
@@ -200,14 +183,11 @@ export default function CartPage() {
 
             <section className="mt-8 rounded-[28px] bg-gradient-to-br from-violet-700 to-violet-600 p-6 text-white shadow-xl shadow-violet-500/20">
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-sm">✦</span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-100">
                   Cart Tip
                 </span>
               </div>
-              <h3 className="text-xl font-extrabold tracking-tight">
-                예치금으로 바로 결제할 수 있어요
-              </h3>
+              <h3 className="text-xl font-extrabold tracking-tight">예치금으로 바로 결제할 수 있어요</h3>
               <p className="mt-2 text-sm leading-6 text-violet-100">
                 예치금이 부족하면 먼저 충전한 뒤 주문을 진행해 보세요.
               </p>
@@ -226,25 +206,19 @@ export default function CartPage() {
             <section className="mt-8 space-y-3 rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">상품 금액</span>
-                <span className="font-bold text-gray-900">
-                  {formatPrice(summary.subtotal)}원
-                </span>
+                <span className="font-bold text-gray-900">{formatPrice(summary.subtotal)}원</span>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">배송비</span>
                 <span className="font-bold text-gray-900">
-                  {summary.shippingFee === 0
-                    ? "무료"
-                    : `${formatPrice(summary.shippingFee)}원`}
+                  {summary.shippingFee === 0 ? "무료" : `${formatPrice(summary.shippingFee)}원`}
                 </span>
               </div>
 
               <div className="border-t border-purple-100 pt-4">
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-extrabold text-gray-900">
-                    총 결제 금액
-                  </span>
+                  <span className="text-lg font-extrabold text-gray-900">총 결제 금액</span>
                   <span className="text-2xl font-extrabold tracking-tight text-violet-700">
                     {formatPrice(summary.total)}원
                   </span>
@@ -281,14 +255,13 @@ export default function CartPage() {
         onClose={() => setDeleteTarget(null)}
         title="상품을 삭제할까요?"
         description={
-          deleteTarget
-            ? `${deleteTarget.name}을(를) 장바구니에서 삭제합니다.`
-            : ""
+          deleteTarget ? `${deleteTarget.name}을(를) 장바구니에서 삭제합니다.` : ""
         }
         confirmText="삭제"
         confirmVariant="danger"
-        onConfirm={() => handleDelete(deleteTarget.id)}
+        onConfirm={() => handleDelete(deleteTarget)}
       />
     </>
   );
 }
+

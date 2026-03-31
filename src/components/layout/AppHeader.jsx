@@ -1,6 +1,8 @@
+﻿import { useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 import { useAuth } from "../../features/auth/useAuth";
+import { clearCartState, useCart } from "../../features/cart/useCart";
 import { useNotification } from "../../features/notification/useNotification";
 
 const navLinkClass = ({ isActive }) =>
@@ -26,16 +28,24 @@ function NotificationBadge({ count }) {
 export default function AppHeader() {
   const { user, isAuthenticated, loading, logout } = useAuth();
   const { unreadCount } = useNotification();
-  const cartCount = 0;
+  const { cartCount } = useCart();
   const isLoggedIn = isAuthenticated && Boolean(user);
   const isAdmin = user?.role === "ADMIN";
   const displayName = user?.nickname || "회원";
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      clearCartState();
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = async () => {
     try {
       await logout();
     } catch {
       // useAuth.logout clears auth state even if the API call fails.
+    } finally {
+      clearCartState();
     }
   };
 
@@ -138,3 +148,4 @@ export default function AppHeader() {
     </header>
   );
 }
+
