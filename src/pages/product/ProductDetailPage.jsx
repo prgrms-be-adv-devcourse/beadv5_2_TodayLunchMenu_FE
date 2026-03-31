@@ -1,35 +1,62 @@
-﻿import { Link, useParams } from 'react-router-dom';
-import { useState } from 'react';
-
-import PageContainer from '../../components/common/PageContainer';
-import Button from '../../components/common/Button';
-import ConfirmModal from '../../components/common/ConfirmModal';
-
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    name: '세라믹 머그컵',
-    category: '굿즈',
-    price: 8000,
-    description: '따뜻한 음료와 잘 어울리는 심플한 세라믹 머그컵입니다.',
-    image: 'https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80',
-    status: 'ON_SALE',
-    seller: {
-      memberId: '11111111-1111-1111-1111-111111111111',
-      nickname: 'Celestial Seller',
-    },
-  },
-];
+﻿import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Button from "../../components/common/Button";
+import ConfirmModal from "../../components/common/ConfirmModal";
+import PageContainer from "../../components/common/PageContainer";
+import { useProduct } from "../../features/product/useProducts";
 
 function formatPrice(price) {
-  return new Intl.NumberFormat('ko-KR').format(price);
+  return new Intl.NumberFormat("ko-KR").format(price);
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "-";
+  }
+
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(value));
+}
+
+function ProductHero({ product }) {
+  const initial = (product.name || "P").slice(0, 1).toUpperCase();
+
+  if (!product.image) {
+    return (
+      <div className="flex aspect-[4/3] items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 text-8xl font-black text-violet-700">
+        {initial}
+      </div>
+    );
+  }
+
+  return <img src={product.image} alt={product.name} className="h-full w-full object-cover" />;
 }
 
 export default function ProductDetailPage() {
+  const navigate = useNavigate();
   const { productId } = useParams();
-  const product = MOCK_PRODUCTS.find((item) => item.id === Number(productId));
+  const { product, loading, error } = useProduct(productId);
   const [quantity, setQuantity] = useState(1);
   const [openModal, setOpenModal] = useState(false);
+
+  if (loading) {
+    return (
+      <PageContainer>
+        <p>상품을 불러오는 중입니다.</p>
+      </PageContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <PageContainer>
+        <p>{error.message || "상품 정보를 불러오지 못했습니다."}</p>
+      </PageContainer>
+    );
+  }
 
   if (!product) {
     return (
@@ -40,14 +67,13 @@ export default function ProductDetailPage() {
   }
 
   const totalPrice = product.price * quantity;
-  const soldOut = product.status === 'SOLD_OUT';
-  const reportLink = `/member-reports/new?memberId=${encodeURIComponent(product.seller.memberId)}&nickname=${encodeURIComponent(product.seller.nickname)}`;
+  const soldOut = product.status === "SOLD_OUT" || product.stockCount <= 0;
 
   return (
     <>
       <PageContainer>
         <section className="mb-6 overflow-hidden rounded-[32px] bg-purple-50">
-          <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+          <ProductHero product={product} />
         </section>
 
         <section className="mb-6 space-y-3">
@@ -58,25 +84,28 @@ export default function ProductDetailPage() {
         </section>
 
         <section className="mb-6 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-purple-100">
-          <div className="flex items-center justify-between gap-4">
+          <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">Seller</p>
-              <h2 className="mt-2 text-lg font-extrabold text-gray-900">{product.seller.nickname}</h2>
-              <p className="mt-1 text-sm text-gray-500">판매자 프로필과 신고 기능으로 연결됩니다.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">상태</p>
+              <p className="mt-2 text-lg font-extrabold text-gray-900">{soldOut ? "품절" : "판매중"}</p>
             </div>
-            <div className="flex gap-2">
-              <Link to={`/members/${product.seller.memberId}`}>
-                <Button variant="secondary">프로필 보기</Button>
-              </Link>
-              <Link to={reportLink}>
-                <Button variant="ghost">신고하기</Button>
-              </Link>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">재고</p>
+              <p className="mt-2 text-lg font-extrabold text-gray-900">{product.stockCount}개</p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">등록일</p>
+              <p className="mt-2 text-lg font-extrabold text-gray-900">{formatDate(product.createdAt)}</p>
             </div>
           </div>
         </section>
 
         <section className="mb-6">
-          <QuantitySelector value={quantity} onChange={setQuantity} />
+          <QuantitySelector
+            value={quantity}
+            max={Math.max(product.stockCount, 1)}
+            onChange={setQuantity}
+          />
         </section>
 
         <section className="mb-6 flex items-center justify-between rounded-2xl bg-white/70 px-5 py-4 shadow-sm ring-1 ring-purple-100">
@@ -85,11 +114,17 @@ export default function ProductDetailPage() {
         </section>
 
         <section className="flex gap-3">
-          <Button variant="secondary" className="flex-1" disabled={soldOut} onClick={() => console.log('장바구니')}>
+          <Button variant="secondary" className="flex-1" disabled={soldOut} onClick={() => console.log("장바구니", product.id)}>
             장바구니
           </Button>
           <Button className="flex-1" disabled={soldOut} onClick={() => setOpenModal(true)}>
             구매하기
+          </Button>
+        </section>
+
+        <section className="mt-4">
+          <Button variant="ghost" onClick={() => navigate(-1)}>
+            목록으로 돌아가기
           </Button>
         </section>
       </PageContainer>
@@ -101,7 +136,7 @@ export default function ProductDetailPage() {
         description={`${product.name} ${quantity}개를 구매합니다.`}
         confirmText="구매하기"
         onConfirm={() => {
-          console.log('구매 진행');
+          console.log("구매 진행", product.id, quantity);
           setOpenModal(false);
         }}
       />
@@ -109,10 +144,17 @@ export default function ProductDetailPage() {
   );
 }
 
-function QuantitySelector({ value, onChange }) {
-  const increase = () => onChange(value + 1);
+function QuantitySelector({ value, onChange, max }) {
+  const increase = () => {
+    if (value < max) {
+      onChange(value + 1);
+    }
+  };
+
   const decrease = () => {
-    if (value > 1) onChange(value - 1);
+    if (value > 1) {
+      onChange(value - 1);
+    }
   };
 
   return (
@@ -121,7 +163,7 @@ function QuantitySelector({ value, onChange }) {
       <div className="flex items-center gap-2">
         <Button variant="secondary" size="sm" onClick={decrease}>-</Button>
         <span className="w-8 text-center font-bold">{value}</span>
-        <Button variant="secondary" size="sm" onClick={increase}>+</Button>
+        <Button variant="secondary" size="sm" onClick={increase} disabled={value >= max}>+</Button>
       </div>
     </div>
   );

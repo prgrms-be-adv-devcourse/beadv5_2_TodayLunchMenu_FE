@@ -1,74 +1,12 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
+import Button from "../../components/common/Button";
+import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
-import Input from "../../components/common/Input";
-import Button from "../../components/common/Button";
 import ProductCard from "../../components/product/ProductCard";
+import { useProducts } from "../../features/product/useProducts";
 
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    name: "보라 머그컵",
-    category: "리빙",
-    price: 12000,
-    image:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=800&q=80",
-    badge: "NEW",
-    status: "ON_SALE",
-  },
-  {
-    id: 2,
-    name: "제로마켓 키링",
-    category: "굿즈",
-    price: 8000,
-    image:
-      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80",
-    badge: "BEST",
-    status: "ON_SALE",
-  },
-  {
-    id: 3,
-    name: "아트 포스터",
-    category: "아트",
-    price: 22000,
-    image:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
-    badge: "LIMITED",
-    status: "ON_SALE",
-  },
-  {
-    id: 4,
-    name: "스티커 팩",
-    category: "굿즈",
-    price: 5000,
-    image:
-      "https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=800&q=80",
-    badge: "",
-    status: "ON_SALE",
-  },
-  {
-    id: 5,
-    name: "무드 조명",
-    category: "리빙",
-    price: 39000,
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
-    badge: "HOT",
-    status: "SOLD_OUT",
-  },
-  {
-    id: 6,
-    name: "컬렉션 엽서 세트",
-    category: "문구",
-    price: 9000,
-    image:
-      "https://images.unsplash.com/photo-1516542076529-1ea3854896f2?auto=format&fit=crop&w=800&q=80",
-    badge: "",
-    status: "ON_SALE",
-  },
-];
-
-const CATEGORY_OPTIONS = ["전체", "굿즈", "리빙", "아트", "문구"];
+const STATUS_OPTIONS = ["전체", "판매중", "품절"];
 const SORT_OPTIONS = [
   { value: "latest", label: "최신순" },
   { value: "priceAsc", label: "가격 낮은순" },
@@ -76,31 +14,22 @@ const SORT_OPTIONS = [
   { value: "name", label: "이름순" },
 ];
 
-export default function ProductsListPage() {
-    // 상품 목록 페이지에서 필요한 상태들
-    // products
-    // filter / sort
-    // loading
-    // error
-    // pagination
+export default function ProductListPage() {
   const [keyword, setKeyword] = useState("");
-  const [category, setCategory] = useState("전체");
+  const [statusFilter, setStatusFilter] = useState("전체");
   const [sort, setSort] = useState("latest");
+  const { products, loading, error } = useProducts({ page: 0, size: 50, sort: "createdAt,desc" });
 
   const filteredProducts = useMemo(() => {
-    let result = [...MOCK_PRODUCTS];
+    let result = [...products];
 
-    if (category !== "전체") {
-      result = result.filter((product) => product.category === category);
+    if (statusFilter !== "전체") {
+      result = result.filter((product) => product.category === statusFilter);
     }
 
     if (keyword.trim()) {
       const lowerKeyword = keyword.toLowerCase();
-      result = result.filter(
-        (product) =>
-          product.name.toLowerCase().includes(lowerKeyword) ||
-          product.category.toLowerCase().includes(lowerKeyword)
-      );
+      result = result.filter((product) => product.name.toLowerCase().includes(lowerKeyword));
     }
 
     switch (sort) {
@@ -115,16 +44,18 @@ export default function ProductsListPage() {
         break;
       case "latest":
       default:
-        result.sort((a, b) => b.id - a.id);
+        result.sort(
+          (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
         break;
     }
 
     return result;
-  }, [keyword, category, sort]);
+  }, [keyword, products, sort, statusFilter]);
 
   const handleReset = () => {
     setKeyword("");
-    setCategory("전체");
+    setStatusFilter("전체");
     setSort("latest");
   };
 
@@ -132,11 +63,7 @@ export default function ProductsListPage() {
     <PageContainer>
       <PageHeader
         title="상품 목록"
-        action={
-          <span className="text-sm font-medium text-gray-500">
-            총 {filteredProducts.length}개
-          </span>
-        }
+        action={<span className="text-sm font-medium text-gray-500">총 {filteredProducts.length}개</span>}
       />
 
       <section className="mb-6 rounded-[28px] bg-white/70 p-4 shadow-sm ring-1 ring-purple-100 backdrop-blur">
@@ -144,15 +71,15 @@ export default function ProductsListPage() {
           <Input
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="상품명 또는 카테고리 검색"
+            placeholder="상품명을 검색해 보세요"
           />
 
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
             className="h-14 rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300"
           >
-            {CATEGORY_OPTIONS.map((option) => (
+            {STATUS_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -178,14 +105,14 @@ export default function ProductsListPage() {
       </section>
 
       <section className="mb-6 flex flex-wrap gap-2">
-        {CATEGORY_OPTIONS.map((option) => {
-          const active = category === option;
+        {STATUS_OPTIONS.map((option) => {
+          const active = statusFilter === option;
 
           return (
             <button
               key={option}
               type="button"
-              onClick={() => setCategory(option)}
+              onClick={() => setStatusFilter(option)}
               className={[
                 "rounded-full px-4 py-2 text-sm font-semibold transition",
                 active
@@ -199,14 +126,19 @@ export default function ProductsListPage() {
         })}
       </section>
 
-      {filteredProducts.length === 0 ? (
+      {loading ? (
         <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-          <p className="mb-2 text-lg font-bold text-gray-900">
-            조건에 맞는 상품이 없어요
-          </p>
-          <p className="mb-6 text-sm text-gray-500">
-            검색어나 카테고리 조건을 다시 바꿔보세요.
-          </p>
+          <p className="text-lg font-bold text-gray-900">상품을 불러오는 중입니다.</p>
+        </section>
+      ) : error ? (
+        <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
+          <p className="mb-2 text-lg font-bold text-red-700">상품 목록을 불러오지 못했습니다.</p>
+          <p className="text-sm text-red-500">{error.message || "잠시 후 다시 시도해 주세요."}</p>
+        </section>
+      ) : filteredProducts.length === 0 ? (
+        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+          <p className="mb-2 text-lg font-bold text-gray-900">조건에 맞는 상품이 없습니다.</p>
+          <p className="mb-6 text-sm text-gray-500">검색어 또는 필터 조건을 다시 조정해 보세요.</p>
           <Button onClick={handleReset}>필터 초기화</Button>
         </section>
       ) : (
