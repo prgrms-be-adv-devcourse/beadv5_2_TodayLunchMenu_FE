@@ -1,7 +1,7 @@
 ﻿import { apiClient } from '../../api/client';
 
 export async function createMemberReport(payload) {
-  const response = await apiClient('/api/v1/member-reports', {
+  const response = await apiClient('/api/member-reports', {
     method: 'POST',
     body: payload,
   });
@@ -10,25 +10,25 @@ export async function createMemberReport(payload) {
 }
 
 export async function getMyMemberReports() {
-  const response = await apiClient('/api/v1/member-reports/me');
+  const response = await apiClient('/api/member-reports/me');
 
   return response.data?.data ?? response.data ?? [];
 }
 
 export async function getAdminMemberReports() {
-  const response = await apiClient('/api/v1/admin/member-reports');
+  const response = await apiClient('/api/admin/member-reports');
 
   return response.data?.data ?? response.data ?? [];
 }
 
 export async function getAdminMemberReportDetail(reportId) {
-  const response = await apiClient(`/api/v1/admin/member-reports/${reportId}`);
+  const response = await apiClient(`/api/admin/member-reports/${reportId}`);
 
   return response.data?.data ?? response.data;
 }
 
 export async function approveAdminMemberReport(reportId, payload) {
-  const response = await apiClient(`/api/v1/admin/member-reports/${reportId}/approve`, {
+  const response = await apiClient(`/api/admin/member-reports/${reportId}/approve`, {
     method: 'PATCH',
     body: payload,
   });
@@ -37,7 +37,7 @@ export async function approveAdminMemberReport(reportId, payload) {
 }
 
 export async function rejectAdminMemberReport(reportId, payload) {
-  const response = await apiClient(`/api/v1/admin/member-reports/${reportId}/reject`, {
+  const response = await apiClient(`/api/admin/member-reports/${reportId}/reject`, {
     method: 'PATCH',
     body: payload,
   });
@@ -46,13 +46,13 @@ export async function rejectAdminMemberReport(reportId, payload) {
 }
 
 export async function getAdminMemberRestrictions(memberId) {
-  const response = await apiClient(`/api/v1/admin/member-restrictions/members/${memberId}`);
+  const response = await apiClient(`/api/admin/member-restrictions/members/${memberId}`);
 
   return response.data?.data ?? response.data ?? [];
 }
 
 export async function createAdminMemberRestriction(payload) {
-  const response = await apiClient('/api/v1/admin/member-restrictions', {
+  const response = await apiClient('/api/admin/member-restrictions', {
     method: 'POST',
     body: payload,
   });
@@ -61,7 +61,7 @@ export async function createAdminMemberRestriction(payload) {
 }
 
 export async function deactivateAdminMemberRestriction(restrictionId) {
-  const response = await apiClient(`/api/v1/admin/member-restrictions/${restrictionId}/deactivate`, {
+  const response = await apiClient(`/api/admin/member-restrictions/${restrictionId}/deactivate`, {
     method: 'PATCH',
   });
 

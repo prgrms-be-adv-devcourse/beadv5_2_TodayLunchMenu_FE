@@ -3,7 +3,7 @@
 const unwrapResponse = (response) => response?.data?.data ?? null;
 
 async function loginApi({ email, password }) {
-  const response = await apiClient("/api/v1/auth/login", {
+  const response = await apiClient("/api/auth/login", {
     method: "POST",
     body: { email, password },
   });
@@ -20,7 +20,7 @@ async function signupApi({
   profileImageKey = null,
   role = "USER",
 }) {
-  const response = await apiClient("/api/v1/auth", {
+  const response = await apiClient("/api/auth", {
     method: "POST",
     body: {
       email,
@@ -47,7 +47,7 @@ async function logoutApi(memberId) {
     return null;
   }
 
-  const response = await apiClient(`/api/v1/auth/logout/${memberId}`, {
+  const response = await apiClient(`/api/auth/logout/${memberId}`, {
     method: "POST",
   });
 

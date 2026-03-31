@@ -1,9 +1,9 @@
-import { ApiError, apiClient } from "../../api/client";
+﻿import { ApiError, apiClient } from "../../api/client";
 
 const unwrapResponse = (response) => response?.data?.data ?? null;
 
 async function registerSellerApi({ bankName, account }) {
-  const response = await apiClient("/api/v1/sellers/register", {
+  const response = await apiClient("/api/sellers/register", {
     method: "POST",
     body: {
       bankName,
@@ -16,7 +16,7 @@ async function registerSellerApi({ bankName, account }) {
 
 async function getMySellerInfoApi() {
   try {
-    const response = await apiClient("/api/v1/sellers/me");
+    const response = await apiClient("/api/sellers/me");
     return unwrapResponse(response);
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {
