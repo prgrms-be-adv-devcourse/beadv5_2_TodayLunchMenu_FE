@@ -1,11 +1,13 @@
 ﻿import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import FormField from "../../components/common/FormField";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import { createOrderApi } from "../../features/order/orderApi";
 
 const MOCK_CHECKOUT_ITEMS = [
   {
@@ -40,10 +42,6 @@ function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
-function createOrderId() {
-  return `ORD-${Date.now()}`;
-}
-
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,6 +58,7 @@ export default function CheckoutPage() {
     memo: "",
   });
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState("");
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -84,6 +83,7 @@ export default function CheckoutPage() {
   const handleChange = (key) => (event) => {
     setForm((prev) => ({ ...prev, [key]: event.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
+    setSubmitError("");
   };
 
   const validate = () => {
@@ -128,16 +128,34 @@ export default function CheckoutPage() {
   const handleSubmitOrder = async () => {
     try {
       setIsSubmitting(true);
+      setSubmitError("");
 
-      const orderId = createOrderId();
-      const orderPayload = {
-        orderId,
-        address: form.address,
-        addressDetail: form.addressDetail,
-        zipCode: form.zipCode,
-        receiver: form.receiver,
-        receiverPhone: form.receiverPhone,
-        memo: form.memo,
+      const createdOrder = await createOrderApi({
+        address: form.address.trim(),
+        addressDetail: form.addressDetail.trim(),
+        zipCode: form.zipCode.trim(),
+        receiver: form.receiver.trim(),
+        receiverPhone: form.receiverPhone.trim(),
+        items: checkoutItems,
+      });
+
+      const paymentState = {
+        orderId: createdOrder.orderId,
+        status: createdOrder.status,
+        createdAt: createdOrder.createdAt,
+        address: form.address.trim(),
+        addressDetail: form.addressDetail.trim(),
+        zipCode: form.zipCode.trim(),
+        receiver: form.receiver.trim(),
+        receiverPhone: form.receiverPhone.trim(),
+        memo: form.memo.trim(),
+        shipping: {
+          receiver: form.receiver.trim(),
+          receiverPhone: form.receiverPhone.trim(),
+          address: form.address.trim(),
+          addressDetail: form.addressDetail.trim(),
+          zipCode: form.zipCode.trim(),
+        },
         items: checkoutItems.map((item) => ({
           cartId: item.cartId,
           productId: item.productId,
@@ -149,19 +167,22 @@ export default function CheckoutPage() {
         })),
         itemPrice: summary.subtotal,
         shippingFee: summary.shippingFee,
-        totalPrice: summary.total,
+        totalPrice: createdOrder.totalPrice || summary.total,
         depositBalance: MOCK_DEPOSIT_BALANCE,
         paymentMethod: "예치금 결제",
         depositLabel: "Deposit / Vivid Pay",
-        createdAt: new Date().toISOString(),
       };
 
       setOpenConfirmModal(false);
-      navigate(`/payments/${orderId}`, {
-        state: orderPayload,
+      navigate(`/payments/${createdOrder.orderId}`, {
+        state: paymentState,
       });
     } catch (error) {
-      console.error(error);
+      setSubmitError(
+        error instanceof ApiError
+          ? error.message
+          : "주문 생성 중 오류가 발생했습니다."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -171,6 +192,12 @@ export default function CheckoutPage() {
     <>
       <PageContainer>
         <PageHeader title="주문서" />
+
+        {submitError ? (
+          <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            {submitError}
+          </section>
+        ) : null}
 
         <section className="mb-6 rounded-[28px] bg-gradient-to-br from-violet-700 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-500/20">
           <div className="flex items-center gap-2">
@@ -419,10 +446,10 @@ export default function CheckoutPage() {
                 <Button
                   size="lg"
                   className="w-full"
-                  disabled={!summary.hasEnoughDeposit}
+                  disabled={!summary.hasEnoughDeposit || isSubmitting}
                   onClick={handleOpenConfirm}
                 >
-                  주문 생성하기
+                  {isSubmitting ? "주문 생성 중..." : "주문 생성하기"}
                 </Button>
               </div>
             </section>

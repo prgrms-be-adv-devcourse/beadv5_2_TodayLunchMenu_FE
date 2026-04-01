@@ -12,7 +12,14 @@ function formatPrice(value) {
 
 export default function CartPage() {
   const navigate = useNavigate();
-  const { cartItems, summary, loading, error, updateQuantity, removeCartItems } = useCart();
+  const {
+    cartItems,
+    summary,
+    loading,
+    error,
+    updateQuantity,
+    removeCartItems,
+  } = useCart();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [pendingCartId, setPendingCartId] = useState(null);
 
@@ -65,7 +72,9 @@ export default function CartPage() {
       <PageContainer>
         <PageHeader title="장바구니" />
         <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-          <p className="text-lg font-bold text-gray-900">장바구니를 불러오는 중입니다.</p>
+          <p className="text-lg font-bold text-gray-900">
+            장바구니를 불러오는 중입니다.
+          </p>
         </section>
       </PageContainer>
     );
@@ -76,8 +85,12 @@ export default function CartPage() {
       <PageContainer>
         <PageHeader title="장바구니" />
         <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
-          <p className="mb-2 text-lg font-bold text-red-700">장바구니를 불러오지 못했습니다.</p>
-          <p className="text-sm text-red-500">{error.message || "잠시 후 다시 시도해 주세요."}</p>
+          <p className="mb-2 text-lg font-bold text-red-700">
+            장바구니를 불러오지 못했습니다.
+          </p>
+          <p className="text-sm text-red-500">
+            {error.message || "잠시 후 다시 시도해 주세요."}
+          </p>
         </section>
       </PageContainer>
     );
@@ -88,13 +101,21 @@ export default function CartPage() {
       <PageContainer>
         <PageHeader
           title="장바구니"
-          action={<span className="text-sm font-medium text-gray-500">총 {cartItems.length}개</span>}
+          action={
+            <span className="text-sm font-medium text-gray-500">
+              총 {cartItems.length}개
+            </span>
+          }
         />
 
         {cartItems.length === 0 ? (
           <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-            <p className="mb-2 text-lg font-bold text-gray-900">장바구니가 비어 있어요</p>
-            <p className="mb-6 text-sm text-gray-500">상품을 담고 다시 찾아와 주세요.</p>
+            <p className="mb-2 text-lg font-bold text-gray-900">
+              장바구니가 비어 있어요
+            </p>
+            <p className="mb-6 text-sm text-gray-500">
+              상품을 담고 다시 찾아와 주세요.
+            </p>
             <Button onClick={() => navigate("/products")}>상품 보러가기</Button>
           </section>
         ) : (
@@ -146,7 +167,9 @@ export default function CartPage() {
                         </div>
 
                         {soldOut ? (
-                          <p className="mt-2 text-sm font-semibold text-red-500">품절 상품입니다.</p>
+                          <p className="mt-2 text-sm font-semibold text-red-500">
+                            품절 상품입니다.
+                          </p>
                         ) : null}
                       </div>
 
@@ -155,12 +178,16 @@ export default function CartPage() {
                           <button
                             type="button"
                             onClick={() => handleDecrease(item)}
-                            disabled={soldOut || isPending || item.quantity <= 1}
+                            disabled={
+                              soldOut || isPending || item.quantity <= 1
+                            }
                             className="flex h-7 w-7 items-center justify-center rounded-full text-violet-700 transition hover:bg-white disabled:opacity-40"
                           >
                             -
                           </button>
-                          <span className="min-w-10 text-center text-sm font-bold">{item.quantity}</span>
+                          <span className="min-w-10 text-center text-sm font-bold">
+                            {item.quantity}
+                          </span>
                           <button
                             type="button"
                             onClick={() => handleIncrease(item)}
@@ -187,7 +214,9 @@ export default function CartPage() {
                   Cart Tip
                 </span>
               </div>
-              <h3 className="text-xl font-extrabold tracking-tight">예치금으로 바로 결제할 수 있어요</h3>
+              <h3 className="text-xl font-extrabold tracking-tight">
+                예치금으로 바로 결제할 수 있어요
+              </h3>
               <p className="mt-2 text-sm leading-6 text-violet-100">
                 예치금이 부족하면 먼저 충전한 뒤 주문을 진행해 보세요.
               </p>
@@ -206,19 +235,25 @@ export default function CartPage() {
             <section className="mt-8 space-y-3 rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">상품 금액</span>
-                <span className="font-bold text-gray-900">{formatPrice(summary.subtotal)}원</span>
+                <span className="font-bold text-gray-900">
+                  {formatPrice(summary.subtotal)}원
+                </span>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">배송비</span>
                 <span className="font-bold text-gray-900">
-                  {summary.shippingFee === 0 ? "무료" : `${formatPrice(summary.shippingFee)}원`}
+                  {summary.shippingFee === 0
+                    ? "무료"
+                    : `${formatPrice(summary.shippingFee)}원`}
                 </span>
               </div>
 
               <div className="border-t border-purple-100 pt-4">
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-extrabold text-gray-900">총 결제 금액</span>
+                  <span className="text-lg font-extrabold text-gray-900">
+                    총 결제 금액
+                  </span>
                   <span className="text-2xl font-extrabold tracking-tight text-violet-700">
                     {formatPrice(summary.total)}원
                   </span>
@@ -255,7 +290,9 @@ export default function CartPage() {
         onClose={() => setDeleteTarget(null)}
         title="상품을 삭제할까요?"
         description={
-          deleteTarget ? `${deleteTarget.name}을(를) 장바구니에서 삭제합니다.` : ""
+          deleteTarget
+            ? `${deleteTarget.name}을(를) 장바구니에서 삭제합니다.`
+            : ""
         }
         confirmText="삭제"
         confirmVariant="danger"
@@ -264,4 +301,3 @@ export default function CartPage() {
     </>
   );
 }
-

@@ -55,7 +55,7 @@ async function enrichCartItems(items) {
           product: createFallbackProduct(item.productId),
         };
       }
-    })
+    }),
   );
 
   return detailedItems.map((item) => ({
@@ -92,7 +92,7 @@ function calculateSummary(items) {
   const availableItems = items.filter((item) => !isSoldOut(item));
   const subtotal = availableItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const shippingFee = subtotal >= 30000 || subtotal === 0 ? 0 : 3000;
   const total = subtotal + shippingFee;
@@ -211,4 +211,3 @@ function useCart(options = {}) {
 }
 
 export { clearCartState, isSoldOut, refreshCart, useCart };
-
