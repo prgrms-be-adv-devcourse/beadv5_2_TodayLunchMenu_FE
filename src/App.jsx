@@ -7,6 +7,9 @@ import LoginPage from './pages/auth/LoginPage'
 import SignupPage from './pages/auth/SignupPage'
 import CartPage from './pages/cart/CartPage'
 import DepositPage from './pages/deposit/DepositPage'
+import DepositConfirmPage from './pages/deposit/DepositConfirmPage'
+import DepositSuccessPage from './pages/deposit/DepositSuccessPage'
+import DepositFailPage from './pages/deposit/DepositFailPage'
 import CheckoutPage from './pages/order/CheckoutPage'
 import OrderListPage from './pages/order/OrderListPage'
 import OrderDetailPage from './pages/order/OrderDetailPage'
@@ -37,6 +40,9 @@ const router = createBrowserRouter([
       { path: 'signup', element: <SignupPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'deposits', element: <DepositPage /> },
+      { path: 'payments/toss/success', element: <DepositConfirmPage /> },
+      { path: 'deposits/success', element: <DepositSuccessPage /> },
+      { path: 'payments/toss/fail', element: <DepositFailPage /> },
       { path: 'orders/checkout', element: <CheckoutPage /> },
       { path: 'payments', element: <PaymentPage /> },
       { path: 'payments/:orderId/success', element: <PaymentSuccessPage /> },
