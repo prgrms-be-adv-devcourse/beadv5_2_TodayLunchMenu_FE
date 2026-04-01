@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
@@ -9,24 +9,28 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 
 const MOCK_CHECKOUT_ITEMS = [
   {
-    id: 1,
-    productId: 101,
+    cartId: "sample-cart-1",
+    productId: "sample-product-1",
     name: "보라 머그컵",
-    optionLabel: "리빙 · 라벤더",
+    category: "홈 리빙",
     quantity: 1,
     price: 12000,
     image:
       "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=800&q=80",
+    status: "ON_SALE",
+    stockCount: 5,
   },
   {
-    id: 2,
-    productId: 102,
-    name: "제로마켓 키링",
-    optionLabel: "굿즈 · 실버",
+    cartId: "sample-cart-2",
+    productId: "sample-product-2",
+    name: "세라믹 접시 세트",
+    category: "주방 소품",
     quantity: 2,
     price: 8000,
     image:
       "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80",
+    status: "ON_SALE",
+    stockCount: 10,
   },
 ];
 
@@ -36,23 +40,31 @@ function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
+function createOrderId() {
+  return `ORD-${Date.now()}`;
+}
+
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const checkoutItems = Array.isArray(location.state?.items) && location.state.items.length > 0
+    ? location.state.items
+    : MOCK_CHECKOUT_ITEMS;
 
   const [form, setForm] = useState({
-    receiverName: "",
-    phone: "",
+    receiver: "",
+    receiverPhone: "",
     address: "",
-    detailAddress: "",
+    addressDetail: "",
+    zipCode: "",
     memo: "",
   });
-
   const [errors, setErrors] = useState({});
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const summary = useMemo(() => {
-    const subtotal = MOCK_CHECKOUT_ITEMS.reduce(
+    const subtotal = checkoutItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
@@ -67,30 +79,34 @@ export default function CheckoutPage() {
       hasEnoughDeposit,
       shortageAmount: hasEnoughDeposit ? 0 : total - MOCK_DEPOSIT_BALANCE,
     };
-  }, []);
+  }, [checkoutItems]);
 
-  const handleChange = (key) => (e) => {
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const handleChange = (key) => (event) => {
+    setForm((prev) => ({ ...prev, [key]: event.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
   const validate = () => {
     const nextErrors = {};
 
-    if (!form.receiverName.trim()) {
-      nextErrors.receiverName = "수령인을 입력해 주세요.";
+    if (!form.receiver.trim()) {
+      nextErrors.receiver = "수령인을 입력해 주세요.";
     }
 
-    if (!form.phone.trim()) {
-      nextErrors.phone = "연락처를 입력해 주세요.";
+    if (!form.receiverPhone.trim()) {
+      nextErrors.receiverPhone = "연락처를 입력해 주세요.";
     }
 
     if (!form.address.trim()) {
-      nextErrors.address = "배송지를 입력해 주세요.";
+      nextErrors.address = "주소를 입력해 주세요.";
     }
 
-    if (!form.detailAddress.trim()) {
-      nextErrors.detailAddress = "상세 주소를 입력해 주세요.";
+    if (!form.addressDetail.trim()) {
+      nextErrors.addressDetail = "상세 주소를 입력해 주세요.";
+    }
+
+    if (!form.zipCode.trim()) {
+      nextErrors.zipCode = "우편번호를 입력해 주세요.";
     }
 
     setErrors(nextErrors);
@@ -98,8 +114,14 @@ export default function CheckoutPage() {
   };
 
   const handleOpenConfirm = () => {
-    if (!validate()) return;
-    if (!summary.hasEnoughDeposit) return;
+    if (!validate()) {
+      return;
+    }
+
+    if (!summary.hasEnoughDeposit) {
+      return;
+    }
+
     setOpenConfirmModal(true);
   };
 
@@ -107,18 +129,37 @@ export default function CheckoutPage() {
     try {
       setIsSubmitting(true);
 
-      const payload = {
-        cartItemIds: MOCK_CHECKOUT_ITEMS.map((item) => item.id),
-        shippingAddress: `${form.address} ${form.detailAddress}`,
-        receiverName: form.receiverName,
-        receiverPhone: form.phone,
+      const orderId = createOrderId();
+      const orderPayload = {
+        orderId,
+        address: form.address,
+        addressDetail: form.addressDetail,
+        zipCode: form.zipCode,
+        receiver: form.receiver,
+        receiverPhone: form.receiverPhone,
         memo: form.memo,
+        items: checkoutItems.map((item) => ({
+          cartId: item.cartId,
+          productId: item.productId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image,
+          category: item.category,
+        })),
+        itemPrice: summary.subtotal,
+        shippingFee: summary.shippingFee,
+        totalPrice: summary.total,
+        depositBalance: MOCK_DEPOSIT_BALANCE,
+        paymentMethod: "예치금 결제",
+        depositLabel: "Deposit / Vivid Pay",
+        createdAt: new Date().toISOString(),
       };
 
-      console.log("주문 생성 요청", payload);
-
       setOpenConfirmModal(false);
-      navigate("/orders");
+      navigate(`/payments/${orderId}`, {
+        state: orderPayload,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -129,7 +170,7 @@ export default function CheckoutPage() {
   return (
     <>
       <PageContainer>
-        <PageHeader title="체크아웃" />
+        <PageHeader title="주문서" />
 
         <section className="mb-6 rounded-[28px] bg-gradient-to-br from-violet-700 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-500/20">
           <div className="flex items-center gap-2">
@@ -145,11 +186,11 @@ export default function CheckoutPage() {
             </div>
             <div className="rounded-2xl bg-white px-3 py-3 text-violet-700">
               <p className="text-xs font-bold">STEP 2</p>
-              <p className="mt-1 text-sm font-extrabold">체크아웃</p>
+              <p className="mt-1 text-sm font-extrabold">주문서</p>
             </div>
             <div className="rounded-2xl bg-white/10 px-3 py-3">
               <p className="text-xs font-bold text-violet-100">STEP 3</p>
-              <p className="mt-1 text-sm font-extrabold">주문완료</p>
+              <p className="mt-1 text-sm font-extrabold">결제</p>
             </div>
           </div>
         </section>
@@ -164,31 +205,31 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 <FormField
                   label="수령인"
-                  htmlFor="receiverName"
+                  htmlFor="receiver"
                   required
-                  error={errors.receiverName}
+                  error={errors.receiver}
                 >
                   <Input
-                    id="receiverName"
+                    id="receiver"
                     placeholder="홍길동"
-                    value={form.receiverName}
-                    onChange={handleChange("receiverName")}
-                    error={!!errors.receiverName}
+                    value={form.receiver}
+                    onChange={handleChange("receiver")}
+                    error={!!errors.receiver}
                   />
                 </FormField>
 
                 <FormField
                   label="연락처"
-                  htmlFor="phone"
+                  htmlFor="receiverPhone"
                   required
-                  error={errors.phone}
+                  error={errors.receiverPhone}
                 >
                   <Input
-                    id="phone"
+                    id="receiverPhone"
                     placeholder="010-1234-5678"
-                    value={form.phone}
-                    onChange={handleChange("phone")}
-                    error={!!errors.phone}
+                    value={form.receiverPhone}
+                    onChange={handleChange("receiverPhone")}
+                    error={!!errors.receiverPhone}
                   />
                 </FormField>
 
@@ -200,7 +241,7 @@ export default function CheckoutPage() {
                 >
                   <Input
                     id="address"
-                    placeholder="서울특별시 ..."
+                    placeholder="서울특별시 강남구 ..."
                     value={form.address}
                     onChange={handleChange("address")}
                     error={!!errors.address}
@@ -209,16 +250,31 @@ export default function CheckoutPage() {
 
                 <FormField
                   label="상세 주소"
-                  htmlFor="detailAddress"
+                  htmlFor="addressDetail"
                   required
-                  error={errors.detailAddress}
+                  error={errors.addressDetail}
                 >
                   <Input
-                    id="detailAddress"
+                    id="addressDetail"
                     placeholder="상세 주소 입력"
-                    value={form.detailAddress}
-                    onChange={handleChange("detailAddress")}
-                    error={!!errors.detailAddress}
+                    value={form.addressDetail}
+                    onChange={handleChange("addressDetail")}
+                    error={!!errors.addressDetail}
+                  />
+                </FormField>
+
+                <FormField
+                  label="우편번호"
+                  htmlFor="zipCode"
+                  required
+                  error={errors.zipCode}
+                >
+                  <Input
+                    id="zipCode"
+                    placeholder="06014"
+                    value={form.zipCode}
+                    onChange={handleChange("zipCode")}
+                    error={!!errors.zipCode}
                   />
                 </FormField>
 
@@ -239,17 +295,23 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="space-y-4">
-                {MOCK_CHECKOUT_ITEMS.map((item) => (
+                {checkoutItems.map((item) => (
                   <article
-                    key={item.id}
+                    key={item.cartId || item.productId}
                     className="flex gap-4 rounded-2xl bg-purple-50/60 p-4"
                   >
                     <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-purple-50">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                          {(item.name || "P").slice(0, 1).toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-1 items-center justify-between gap-4">
@@ -258,7 +320,7 @@ export default function CheckoutPage() {
                           {item.name}
                         </h3>
                         <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-500">
-                          {item.optionLabel}
+                          {item.category}
                         </p>
                         <p className="mt-2 text-sm text-gray-500">
                           수량 {item.quantity}개
@@ -304,8 +366,7 @@ export default function CheckoutPage() {
                   ) : (
                     <div className="space-y-3">
                       <p className="text-sm font-medium text-red-500">
-                        예치금이 부족합니다.{" "}
-                        {formatPrice(summary.shortageAmount)}원이 더 필요해요.
+                        예치금이 부족합니다. {formatPrice(summary.shortageAmount)}원이 더 필요해요.
                       </p>
                       <Button
                         variant="secondary"
@@ -373,9 +434,7 @@ export default function CheckoutPage() {
         open={openConfirmModal}
         onClose={() => setOpenConfirmModal(false)}
         title="주문을 생성할까요?"
-        description={`총 ${formatPrice(
-          summary.total
-        )}원이 예치금에서 차감됩니다.`}
+        description={`총 ${formatPrice(summary.total)}원이 결제 페이지로 전달됩니다.`}
         confirmText="주문 생성"
         loading={isSubmitting}
         onConfirm={handleSubmitOrder}
