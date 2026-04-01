@@ -1,7 +1,9 @@
-﻿import { useMemo } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+﻿import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
+import { createOrderApi } from "../../features/order/orderApi";
 
 const MOCK_PAYMENT_ORDER = {
   orderId: "COL-2024-001",
@@ -34,17 +36,21 @@ function formatPrice(value) {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
 }
 
-function buildPaymentModel(orderId, state) {
+function buildPaymentModel(state) {
   const source = state?.order ?? state ?? MOCK_PAYMENT_ORDER;
-  const items = Array.isArray(source.items) && source.items.length > 0 ? source.items : MOCK_PAYMENT_ORDER.items;
+  const items =
+    Array.isArray(source.items) && source.items.length > 0
+      ? source.items
+      : MOCK_PAYMENT_ORDER.items;
   const itemPrice =
-    source.itemPrice ?? items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+    source.itemPrice ??
+    items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
   const shippingFee = source.shippingFee ?? (itemPrice >= 30000 || itemPrice === 0 ? 0 : 3000);
   const totalPrice = source.totalPrice ?? itemPrice + shippingFee;
   const depositBalance = source.depositBalance ?? MOCK_PAYMENT_ORDER.depositBalance;
 
   return {
-    orderId: source.orderId || orderId || MOCK_PAYMENT_ORDER.orderId,
+    orderId: source.orderId || null,
     items,
     shipping: {
       ...MOCK_PAYMENT_ORDER.shipping,
@@ -64,15 +70,55 @@ function buildPaymentModel(orderId, state) {
 export default function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { orderId } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const payment = useMemo(
-    () => buildPaymentModel(orderId, location.state),
-    [location.state, orderId]
-  );
+  const payment = useMemo(() => buildPaymentModel(location.state), [location.state]);
 
   const primaryItem = payment.items[0];
   const shortageAmount = Math.max(payment.totalPrice - payment.depositBalance, 0);
+
+  const handleCreateOrder = async () => {
+    try {
+      setIsSubmitting(true);
+      setSubmitError("");
+
+      const createdOrder = await createOrderApi({
+        address: payment.shipping.address,
+        addressDetail: payment.shipping.addressDetail,
+        zipCode: payment.shipping.zipCode,
+        receiver: payment.shipping.receiver,
+        receiverPhone: payment.shipping.receiverPhone,
+        items: payment.items,
+      });
+
+      navigate(`/payments/${createdOrder.orderId}/success`, {
+        state: {
+          ...payment,
+          orderId: createdOrder.orderId,
+          totalPrice: createdOrder.totalPrice || payment.totalPrice,
+          status: createdOrder.status,
+          paidAt: createdOrder.createdAt,
+        },
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof ApiError
+          ? error.message
+          : "주문 요청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+
+      navigate(`/payments/${payment.orderId || "pending"}/fail`, {
+        state: {
+          ...payment,
+          errorCode: error instanceof ApiError ? error.code : "ORDER_REQUEST_FAILED",
+          errorTitle: "주문/결제 요청 실패",
+          errorMessage,
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -95,6 +141,12 @@ export default function PaymentPage() {
           </button>
         </section>
 
+        {submitError ? (
+          <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            {submitError}
+          </section>
+        ) : null}
+
         <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-[28px] bg-white p-6 shadow-[0_40px_80px_-30px_rgba(56,39,76,0.18)] ring-1 ring-purple-100 md:col-span-2">
             <div>
@@ -102,7 +154,7 @@ export default function PaymentPage() {
                 Order Reference
               </p>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-gray-900">
-                #{payment.orderId}
+                #{payment.orderId || "주문 생성 전"}
               </h1>
             </div>
 
@@ -116,7 +168,9 @@ export default function PaymentPage() {
               </div>
               <div>
                 <p className="text-lg font-extrabold text-gray-900">{primaryItem.name}</p>
-                <p className="mt-1 text-sm text-gray-500">{primaryItem.subtitle || `${primaryItem.quantity}개 주문`}</p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {primaryItem.subtitle || `${primaryItem.quantity}개 주문`}
+                </p>
                 <p className="mt-2 text-sm font-semibold text-violet-700">
                   총 {payment.items.length}개 상품
                 </p>
@@ -235,30 +289,34 @@ export default function PaymentPage() {
       </PageContainer>
 
       <footer className="fixed bottom-0 left-0 z-40 w-full bg-white/85 backdrop-blur-xl">
-        <div className="mx-auto max-w-3xl px-4 pb-8 pt-4 sm:px-6 lg:px-8 space-y-3">
+        <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
           <Button
             size="lg"
             className="h-16 w-full rounded-full text-lg font-extrabold shadow-lg shadow-violet-500/20"
-            disabled={!payment.hasEnoughBalance}
-            onClick={() => navigate(`/payments/${payment.orderId}/success`, { state: payment })}
+            disabled={!payment.hasEnoughBalance || isSubmitting}
+            onClick={handleCreateOrder}
           >
-            {payment.hasEnoughBalance
-              ? `${formatPrice(payment.totalPrice)} 결제하기`
-              : "예치금이 부족합니다"}
+            {isSubmitting
+              ? "주문/결제 요청 중..."
+              : payment.hasEnoughBalance
+                ? `${formatPrice(payment.totalPrice)} 결제하기`
+                : "예치금이 부족합니다"}
           </Button>
           {!payment.hasEnoughBalance ? (
             <Button
               variant="secondary"
               size="lg"
               className="h-14 w-full rounded-full text-base font-extrabold"
-              onClick={() => navigate(`/payments/${payment.orderId}/fail`, {
-                state: {
-                  ...payment,
-                  errorCode: 'INSUFFICIENT_BALANCE',
-                  errorTitle: '잔액 부족',
-                  errorMessage: `현재 예치금이 ${formatPrice(shortageAmount)} 부족합니다. 충전 후 다시 시도해 주세요.`,
-                },
-              })}
+              onClick={() =>
+                navigate(`/payments/${payment.orderId || "pending"}/fail`, {
+                  state: {
+                    ...payment,
+                    errorCode: "INSUFFICIENT_BALANCE",
+                    errorTitle: "잔액 부족",
+                    errorMessage: `현재 예치금이 ${formatPrice(shortageAmount)} 부족합니다. 충전 후 다시 시도해 주세요.`,
+                  },
+                })
+              }
             >
               실패 화면 보기
             </Button>

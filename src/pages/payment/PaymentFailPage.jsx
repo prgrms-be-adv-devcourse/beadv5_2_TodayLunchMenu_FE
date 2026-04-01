@@ -95,7 +95,7 @@ export default function PaymentFailPage() {
             <Button
               size="lg"
               className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(93,63,211,0.5)]"
-              onClick={() => navigate(`/payments/${payment.orderId}`, { state: payment })}
+              onClick={() => navigate(`/payments`, { state: payment })}
             >
               다시 시도하기
             </Button>

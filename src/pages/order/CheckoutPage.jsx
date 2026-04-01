@@ -1,13 +1,11 @@
 ﻿import { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import FormField from "../../components/common/FormField";
 import ConfirmModal from "../../components/common/ConfirmModal";
-import { createOrderApi } from "../../features/order/orderApi";
 
 const MOCK_CHECKOUT_ITEMS = [
   {
@@ -45,9 +43,10 @@ function formatPrice(value) {
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const checkoutItems = Array.isArray(location.state?.items) && location.state.items.length > 0
-    ? location.state.items
-    : MOCK_CHECKOUT_ITEMS;
+  const checkoutItems =
+    Array.isArray(location.state?.items) && location.state.items.length > 0
+      ? location.state.items
+      : MOCK_CHECKOUT_ITEMS;
 
   const [form, setForm] = useState({
     receiver: "",
@@ -130,19 +129,10 @@ export default function CheckoutPage() {
       setIsSubmitting(true);
       setSubmitError("");
 
-      const createdOrder = await createOrderApi({
-        address: form.address.trim(),
-        addressDetail: form.addressDetail.trim(),
-        zipCode: form.zipCode.trim(),
-        receiver: form.receiver.trim(),
-        receiverPhone: form.receiverPhone.trim(),
-        items: checkoutItems,
-      });
-
       const paymentState = {
-        orderId: createdOrder.orderId,
-        status: createdOrder.status,
-        createdAt: createdOrder.createdAt,
+        orderId: location.state?.orderId || `pending-${Date.now()}`,
+        status: "CREATED",
+        createdAt: new Date().toISOString(),
         address: form.address.trim(),
         addressDetail: form.addressDetail.trim(),
         zipCode: form.zipCode.trim(),
@@ -167,22 +157,19 @@ export default function CheckoutPage() {
         })),
         itemPrice: summary.subtotal,
         shippingFee: summary.shippingFee,
-        totalPrice: createdOrder.totalPrice || summary.total,
+        totalPrice: summary.total,
         depositBalance: MOCK_DEPOSIT_BALANCE,
         paymentMethod: "예치금 결제",
         depositLabel: "Deposit / Vivid Pay",
+        pendingOrder: true,
       };
 
       setOpenConfirmModal(false);
-      navigate(`/payments/${createdOrder.orderId}`, {
+      navigate("/payments", {
         state: paymentState,
       });
     } catch (error) {
-      setSubmitError(
-        error instanceof ApiError
-          ? error.message
-          : "주문 생성 중 오류가 발생했습니다."
-      );
+      setSubmitError("결제 페이지로 이동하는 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -449,7 +436,7 @@ export default function CheckoutPage() {
                   disabled={!summary.hasEnoughDeposit || isSubmitting}
                   onClick={handleOpenConfirm}
                 >
-                  {isSubmitting ? "주문 생성 중..." : "주문 생성하기"}
+                  {isSubmitting ? "이동 중..." : "결제 페이지로 이동"}
                 </Button>
               </div>
             </section>
@@ -460,9 +447,9 @@ export default function CheckoutPage() {
       <ConfirmModal
         open={openConfirmModal}
         onClose={() => setOpenConfirmModal(false)}
-        title="주문을 생성할까요?"
-        description={`총 ${formatPrice(summary.total)}원이 결제 페이지로 전달됩니다.`}
-        confirmText="주문 생성"
+        title="결제 페이지로 이동할까요?"
+        description={`총 ${formatPrice(summary.total)}원 결제 정보를 다음 단계로 전달합니다.`}
+        confirmText="다음으로"
         loading={isSubmitting}
         onConfirm={handleSubmitOrder}
       />
