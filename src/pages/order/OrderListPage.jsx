@@ -1,94 +1,60 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+﻿import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Input from "../../components/common/Input";
-
-const MOCK_ORDERS = [
-  {
-    id: 10031,
-    orderNumber: "ZM-10031",
-    status: "CONFIRMED",
-    createdAt: "2026-03-24 12:10",
-    totalAmount: 28000,
-    itemCount: 2,
-    items: [
-      {
-        id: 1,
-        name: "보라 머그컵",
-        quantity: 1,
-        image:
-          "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=800&q=80",
-      },
-      {
-        id: 2,
-        name: "제로마켓 키링",
-        quantity: 2,
-        image:
-          "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80",
-      },
-    ],
-  },
-  {
-    id: 10027,
-    orderNumber: "ZM-10027",
-    status: "COMPLETED",
-    createdAt: "2026-03-22 18:20",
-    totalAmount: 39000,
-    itemCount: 1,
-    items: [
-      {
-        id: 3,
-        name: "무드 조명",
-        quantity: 1,
-        image:
-          "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
-      },
-    ],
-  },
-  {
-    id: 10019,
-    orderNumber: "ZM-10019",
-    status: "CANCELLED",
-    createdAt: "2026-03-19 14:05",
-    totalAmount: 12000,
-    itemCount: 1,
-    items: [
-      {
-        id: 4,
-        name: "아트 포스터",
-        quantity: 1,
-        image:
-          "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
-      },
-    ],
-  },
-];
+import { getOrdersApi } from "../../features/order/orderApi";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
-  { value: "CONFIRMED", label: "주문완료" },
-  { value: "COMPLETED", label: "구매확정" },
-  { value: "CANCELLED", label: "취소됨" },
+  { value: "CREATED", label: "결제 대기" },
+  { value: "CONFIRMED", label: "주문 완료" },
+  { value: "COMPLETED", label: "구매 확정" },
+  { value: "CANCELED", label: "취소" },
 ];
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
+function formatDate(value) {
+  if (!value) {
+    return "주문 일시 없음";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 function getStatusMeta(status) {
   switch (status) {
+    case "CREATED":
+      return {
+        label: "결제 대기",
+        className: "bg-amber-100 text-amber-700",
+      };
     case "CONFIRMED":
       return {
-        label: "주문완료",
+        label: "주문 완료",
         className: "bg-violet-100 text-violet-700",
       };
     case "COMPLETED":
       return {
-        label: "구매확정",
+        label: "구매 확정",
         className: "bg-emerald-100 text-emerald-700",
       };
-    case "CANCELLED":
+    case "CANCELED":
       return {
         label: "취소됨",
         className: "bg-red-100 text-red-600",
@@ -101,23 +67,79 @@ function getStatusMeta(status) {
   }
 }
 
+function getThumbnailSrc(thumbnailKey) {
+  if (typeof thumbnailKey !== "string") {
+    return "";
+  }
+
+  return /^https?:\/\//.test(thumbnailKey) ? thumbnailKey : "";
+}
+
 export default function OrderListPage() {
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadOrders() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const page = await getOrdersApi();
+        if (!mounted) {
+          return;
+        }
+
+        setOrders(page.content);
+      } catch (loadError) {
+        if (!mounted) {
+          return;
+        }
+
+        if (loadError instanceof ApiError && loadError.status === 401) {
+          navigate("/login");
+          return;
+        }
+
+        setError(
+          loadError instanceof ApiError
+            ? loadError.message
+            : "주문 목록을 불러오는 중 오류가 발생했습니다."
+        );
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadOrders();
+
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
 
   const filteredOrders = useMemo(() => {
-    return MOCK_ORDERS.filter((order) => {
+    return orders.filter((order) => {
       const matchesStatus = status === "ALL" ? true : order.status === status;
-      const matchesKeyword = keyword.trim()
-        ? order.orderNumber.toLowerCase().includes(keyword.toLowerCase()) ||
-          order.items.some((item) =>
-            item.name.toLowerCase().includes(keyword.toLowerCase())
-          )
+      const normalizedKeyword = keyword.trim().toLowerCase();
+      const matchesKeyword = normalizedKeyword
+        ? String(order.orderId || "").toLowerCase().includes(normalizedKeyword) ||
+          String(order.representativeProductName || "")
+            .toLowerCase()
+            .includes(normalizedKeyword)
         : true;
 
       return matchesStatus && matchesKeyword;
     });
-  }, [keyword, status]);
+  }, [keyword, orders, status]);
 
   return (
     <PageContainer>
@@ -135,12 +157,12 @@ export default function OrderListPage() {
           <Input
             placeholder="주문번호 또는 상품명 검색"
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(event) => setKeyword(event.target.value)}
           />
 
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(event) => setStatus(event.target.value)}
             className="h-14 rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300"
           >
             {STATUS_OPTIONS.map((option) => (
@@ -152,35 +174,46 @@ export default function OrderListPage() {
         </div>
       </section>
 
-      {filteredOrders.length === 0 ? (
+      {loading ? (
         <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-          <p className="mb-2 text-lg font-bold text-gray-900">
-            주문 내역이 없어요
-          </p>
-          <p className="text-sm text-gray-500">
-            주문을 생성하면 이곳에서 확인할 수 있어요.
-          </p>
+          <p className="text-sm font-medium text-gray-500">주문 목록을 불러오는 중입니다...</p>
+        </section>
+      ) : error ? (
+        <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
+          <p className="mb-2 text-lg font-bold text-red-600">주문 목록을 불러오지 못했습니다</p>
+          <p className="text-sm text-red-500">{error}</p>
+        </section>
+      ) : filteredOrders.length === 0 ? (
+        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+          <p className="mb-2 text-lg font-bold text-gray-900">주문 내역이 없어요</p>
+          <p className="text-sm text-gray-500">첫 주문을 생성하면 이곳에서 확인할 수 있어요.</p>
         </section>
       ) : (
         <section className="space-y-4">
           {filteredOrders.map((order) => {
             const statusMeta = getStatusMeta(order.status);
-            const firstItem = order.items[0];
+            const thumbnailSrc = getThumbnailSrc(order.representativeThumbnailKey);
 
             return (
               <Link
-                key={order.id}
-                to={`/orders/${order.id}`}
+                key={order.orderId}
+                to={`/orders/${order.orderId}`}
                 className="block rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100 transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-4">
                     <div className="h-20 w-20 overflow-hidden rounded-2xl bg-purple-50">
-                      <img
-                        src={firstItem.image}
-                        alt={firstItem.name}
-                        className="h-full w-full object-cover"
-                      />
+                      {thumbnailSrc ? (
+                        <img
+                          src={thumbnailSrc}
+                          alt={order.representativeProductName}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                          {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -194,19 +227,17 @@ export default function OrderListPage() {
                           {statusMeta.label}
                         </span>
                         <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                          {order.createdAt}
+                          {formatDate(order.createdAt)}
                         </span>
                       </div>
 
                       <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
-                        {firstItem.name}
-                        {order.itemCount > 1
-                          ? ` 외 ${order.itemCount - 1}건`
-                          : ""}
+                        {order.representativeProductName}
+                        {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
                       </h3>
 
                       <p className="mt-1 text-sm font-medium text-gray-500">
-                        주문번호 {order.orderNumber}
+                        주문번호 {order.orderId}
                       </p>
                     </div>
                   </div>

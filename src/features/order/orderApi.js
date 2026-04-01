@@ -9,6 +9,18 @@ function toUiOrder(order) {
   };
 }
 
+function toUiOrderSummary(order) {
+  return {
+    orderId: order?.orderId,
+    totalAmount: order?.totalPrice ?? 0,
+    status: order?.status ?? "CREATED",
+    createdAt: order?.createdAt ?? null,
+    representativeProductName: order?.representativeProductName ?? "상품명 없음",
+    representativeThumbnailKey: order?.representativeThumbnailKey ?? "",
+    itemCount: order?.itemCount ?? 0,
+  };
+}
+
 async function createOrderApi({
   address,
   addressDetail,
@@ -35,4 +47,24 @@ async function createOrderApi({
   return toUiOrder(response.data);
 }
 
-export { createOrderApi };
+async function getOrdersApi(params = {}) {
+  const response = await apiClient("/api/orders", {
+    method: "GET",
+    params,
+  });
+
+  const page = response.data?.content ? response.data : response.data?.data;
+  const content = Array.isArray(page?.content) ? page.content : [];
+
+  return {
+    content: content.map(toUiOrderSummary),
+    totalElements: page?.totalElements ?? content.length,
+    totalPages: page?.totalPages ?? 1,
+    number: page?.number ?? 0,
+    size: page?.size ?? content.length,
+    first: page?.first ?? true,
+    last: page?.last ?? true,
+  };
+}
+
+export { createOrderApi, getOrdersApi };
