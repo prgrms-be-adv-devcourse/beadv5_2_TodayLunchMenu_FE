@@ -50,7 +50,7 @@ const toUiCategory = (category) => ({
 });
 
 async function getProductsApi(params = {}) {
-  const response = await apiClient("/api/product", {
+  const response = await apiClient("/api/products", {
     params,
   });
 
@@ -70,7 +70,7 @@ async function getProductsApi(params = {}) {
 }
 
 async function getProductDetailApi(productId) {
-  const response = await apiClient(`/api/product/${productId}`);
+  const response = await apiClient(`/api/products/${productId}`);
   return toUiProduct(response.data);
 }
 
@@ -141,7 +141,7 @@ async function createProductApi({
     formData.append("thumbnailIndex", String(thumbnailIndex));
   }
 
-  const response = await apiClient("/api/product", {
+  const response = await apiClient("/api/products", {
     method: "POST",
     body: formData,
   });
