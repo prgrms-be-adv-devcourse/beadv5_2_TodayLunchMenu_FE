@@ -4,7 +4,11 @@ import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
 import SellerProductForm from "../../components/seller/SellerProductForm";
-import { createProductApi, getCategoriesApi } from "../../features/product/productApi";
+import {
+  createProductApi,
+  getCategoriesApi,
+  getChildCategoriesApi,
+} from "../../features/product/productApi";
 
 const MAX_IMAGE_FILES = 10;
 const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
@@ -15,6 +19,45 @@ const IMAGE_CONSTRAINTS = {
   acceptedTypesLabel: "JPG, PNG, WEBP, GIF",
   accept: "image/jpeg,image/png,image/webp,image/gif",
 };
+
+const MOCK_CATEGORIES = [
+  { id: "mock-cat-fashion", name: "패션", depth: 0, sortOrder: 1, parentId: null },
+  { id: "mock-cat-living", name: "리빙", depth: 0, sortOrder: 2, parentId: null },
+  { id: "mock-cat-stationery", name: "문구", depth: 0, sortOrder: 3, parentId: null },
+  { id: "mock-cat-fashion-clothes", name: "의류", depth: 1, sortOrder: 1, parentId: "mock-cat-fashion" },
+  { id: "mock-cat-fashion-accessory", name: "액세서리", depth: 1, sortOrder: 2, parentId: "mock-cat-fashion" },
+  { id: "mock-cat-living-kitchen", name: "주방", depth: 1, sortOrder: 1, parentId: "mock-cat-living" },
+  { id: "mock-cat-living-interior", name: "인테리어", depth: 1, sortOrder: 2, parentId: "mock-cat-living" },
+  { id: "mock-cat-stationery-diary", name: "다이어리", depth: 1, sortOrder: 1, parentId: "mock-cat-stationery" },
+  { id: "mock-cat-stationery-writing", name: "필기구", depth: 1, sortOrder: 2, parentId: "mock-cat-stationery" },
+  { id: "mock-cat-fashion-clothes-top", name: "상의", depth: 2, sortOrder: 1, parentId: "mock-cat-fashion-clothes" },
+  { id: "mock-cat-fashion-clothes-bottom", name: "하의", depth: 2, sortOrder: 2, parentId: "mock-cat-fashion-clothes" },
+  { id: "mock-cat-fashion-accessory-bag", name: "가방", depth: 2, sortOrder: 1, parentId: "mock-cat-fashion-accessory" },
+  { id: "mock-cat-fashion-accessory-jewelry", name: "주얼리", depth: 2, sortOrder: 2, parentId: "mock-cat-fashion-accessory" },
+  { id: "mock-cat-living-kitchen-cup", name: "컵/머그", depth: 2, sortOrder: 1, parentId: "mock-cat-living-kitchen" },
+  { id: "mock-cat-living-kitchen-plate", name: "접시", depth: 2, sortOrder: 2, parentId: "mock-cat-living-kitchen" },
+  { id: "mock-cat-living-interior-fabric", name: "패브릭", depth: 2, sortOrder: 1, parentId: "mock-cat-living-interior" },
+  { id: "mock-cat-living-interior-light", name: "조명", depth: 2, sortOrder: 2, parentId: "mock-cat-living-interior" },
+  { id: "mock-cat-stationery-diary-planner", name: "플래너", depth: 2, sortOrder: 1, parentId: "mock-cat-stationery-diary" },
+  { id: "mock-cat-stationery-diary-note", name: "노트", depth: 2, sortOrder: 2, parentId: "mock-cat-stationery-diary" },
+  { id: "mock-cat-stationery-writing-pen", name: "펜", depth: 2, sortOrder: 1, parentId: "mock-cat-stationery-writing" },
+  { id: "mock-cat-stationery-writing-pencil", name: "연필", depth: 2, sortOrder: 2, parentId: "mock-cat-stationery-writing" },
+];
+
+const sortCategories = (items) =>
+  [...items].sort((a, b) => {
+    if ((a.sortOrder ?? 0) !== (b.sortOrder ?? 0)) {
+      return (a.sortOrder ?? 0) - (b.sortOrder ?? 0);
+    }
+
+    return a.name.localeCompare(b.name, "ko");
+  });
+
+const getMockCategoriesByDepth = (depth) =>
+  sortCategories(MOCK_CATEGORIES.filter((category) => category.depth === depth));
+
+const getMockChildCategories = (parentId) =>
+  sortCategories(MOCK_CATEGORIES.filter((category) => category.parentId === parentId));
 
 const revokePreviewUrls = (images) => {
   images.forEach((image) => {
@@ -41,41 +84,64 @@ export default function SellerProductCreatePage() {
     images: [],
     thumbnailIndex: 0,
   });
+  const [categorySelection, setCategorySelection] = useState({
+    depth0Id: "",
+    depth1Id: "",
+    depth2Id: "",
+  });
   const [errors, setErrors] = useState({});
-  const [categories, setCategories] = useState([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState({
+    depth0: [],
+    depth1: [],
+    depth2: [],
+  });
+  const [categoriesLoading, setCategoriesLoading] = useState({
+    depth0: true,
+    depth1: false,
+    depth2: false,
+  });
   const [categoryError, setCategoryError] = useState("");
+  const [categoryFallbackNotice, setCategoryFallbackNotice] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadCategories() {
+    async function loadRootCategories() {
       try {
-        setCategoriesLoading(true);
+        setCategoriesLoading((prev) => ({ ...prev, depth0: true }));
         setCategoryError("");
-        const data = await getCategoriesApi();
+        setCategoryFallbackNotice("");
+        const data = await getCategoriesApi({ depth: 0 });
 
         if (cancelled) {
           return;
         }
 
-        setCategories(data);
+        if (data.length === 0) {
+          setCategories((prev) => ({ ...prev, depth0: getMockCategoriesByDepth(0) }));
+          setCategoryFallbackNotice("등록된 카테고리가 없어 임시 카테고리 목록을 표시합니다.");
+          return;
+        }
+
+        setCategories((prev) => ({ ...prev, depth0: data }));
       } catch (error) {
         if (cancelled) {
           return;
         }
 
-        setCategoryError(error?.message || "카테고리 목록을 불러오지 못했습니다.");
+        setCategories((prev) => ({ ...prev, depth0: getMockCategoriesByDepth(0) }));
+        setCategoryFallbackNotice("카테고리 조회에 실패해 임시 카테고리 목록을 표시합니다.");
+        setCategoryError("");
       } finally {
         if (!cancelled) {
-          setCategoriesLoading(false);
+          setCategoriesLoading((prev) => ({ ...prev, depth0: false }));
         }
       }
     }
 
-    loadCategories();
+    loadRootCategories();
 
     return () => {
       cancelled = true;
@@ -88,8 +154,8 @@ export default function SellerProductCreatePage() {
     };
   }, [form.images]);
 
-  const handleChange = (key) => (e) => {
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const handleChange = (key) => (event) => {
+    setForm((prev) => ({ ...prev, [key]: event.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
     setSubmitError("");
   };
@@ -198,6 +264,80 @@ export default function SellerProductCreatePage() {
     });
   };
 
+  const loadChildCategories = async (parentId, fallbackDepth) => {
+    try {
+      const children = await getChildCategoriesApi(parentId);
+
+      if (children.length === 0) {
+        setCategoryFallbackNotice("등록된 카테고리가 없어 임시 카테고리 목록을 표시합니다.");
+        return getMockChildCategories(parentId).filter((category) => category.depth === fallbackDepth);
+      }
+
+      return children;
+    } catch (error) {
+      setCategoryFallbackNotice("카테고리 조회에 실패해 임시 카테고리 목록을 표시합니다.");
+      setCategoryError("");
+      return getMockChildCategories(parentId).filter((category) => category.depth === fallbackDepth);
+    }
+  };
+
+  const handleCategoryChange = async (depthKey, nextCategoryId) => {
+    setSubmitError("");
+    setErrors((prev) => ({ ...prev, categoryId: "" }));
+    setCategoryError("");
+
+    if (depthKey === "depth0Id") {
+      setCategorySelection({
+        depth0Id: nextCategoryId,
+        depth1Id: "",
+        depth2Id: "",
+      });
+      setCategories((prev) => ({ ...prev, depth1: [], depth2: [] }));
+      setForm((prev) => ({ ...prev, categoryId: nextCategoryId }));
+
+      if (!nextCategoryId) {
+        return;
+      }
+
+      setCategoriesLoading((prev) => ({ ...prev, depth1: true, depth2: false }));
+      const children = await loadChildCategories(nextCategoryId, 1);
+      setCategories((prev) => ({ ...prev, depth1: children, depth2: [] }));
+      setCategoriesLoading((prev) => ({ ...prev, depth1: false, depth2: false }));
+      return;
+    }
+
+    if (depthKey === "depth1Id") {
+      setCategorySelection((prev) => ({
+        ...prev,
+        depth1Id: nextCategoryId,
+        depth2Id: "",
+      }));
+      setCategories((prev) => ({ ...prev, depth2: [] }));
+      setForm((prev) => ({
+        ...prev,
+        categoryId: nextCategoryId || categorySelection.depth0Id,
+      }));
+
+      if (!nextCategoryId) {
+        return;
+      }
+
+      setCategoriesLoading((prev) => ({ ...prev, depth2: true }));
+      const children = await loadChildCategories(nextCategoryId, 2);
+      setCategories((prev) => ({ ...prev, depth2: children }));
+      setCategoriesLoading((prev) => ({ ...prev, depth2: false }));
+      return;
+    }
+
+    if (depthKey === "depth2Id") {
+      setCategorySelection((prev) => ({ ...prev, depth2Id: nextCategoryId }));
+      setForm((prev) => ({
+        ...prev,
+        categoryId: nextCategoryId || categorySelection.depth1Id || categorySelection.depth0Id,
+      }));
+    }
+  };
+
   const validate = () => {
     const next = {};
 
@@ -225,8 +365,8 @@ export default function SellerProductCreatePage() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     if (!validate()) {
       return;
@@ -274,6 +414,12 @@ export default function SellerProductCreatePage() {
         </span>
       </div>
 
+      {categoryFallbackNotice ? (
+        <section className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+          {categoryFallbackNotice}
+        </section>
+      ) : null}
+
       {submitError ? (
         <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
           {submitError}
@@ -283,11 +429,13 @@ export default function SellerProductCreatePage() {
       <SellerProductForm
         form={form}
         errors={errors}
+        categorySelection={categorySelection}
         categories={categories}
         categoriesLoading={categoriesLoading}
         categoryError={categoryError}
         imageConstraints={IMAGE_CONSTRAINTS}
         onChange={handleChange}
+        onCategoryChange={handleCategoryChange}
         onIncreaseStock={handleIncreaseStock}
         onDecreaseStock={handleDecreaseStock}
         onImagesChange={handleImagesChange}
@@ -311,3 +459,4 @@ export default function SellerProductCreatePage() {
     </PageContainer>
   );
 }
+

@@ -21,11 +21,13 @@ function formatFileSize(size) {
 export default function SellerProductForm({
   form,
   errors,
+  categorySelection,
   categories,
   categoriesLoading,
   categoryError,
   imageConstraints,
   onChange,
+  onCategoryChange,
   onIncreaseStock,
   onDecreaseStock,
   onImagesChange,
@@ -127,28 +129,89 @@ export default function SellerProductForm({
             />
           </FormField>
 
-          <FormField
-            label="카테고리"
-            htmlFor="categoryId"
-            required
-            error={errors.categoryId || categoryError}
-            helpText={categoriesLoading ? "카테고리를 불러오는 중입니다." : undefined}
-          >
-            <select
-              id="categoryId"
-              value={form.categoryId}
-              onChange={onChange("categoryId")}
-              disabled={categoriesLoading}
-              className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <FormField
+              label="1차 카테고리"
+              htmlFor="categoryDepth0"
+              required
+              error={errors.categoryId && !categorySelection.depth0Id ? errors.categoryId : undefined}
+              helpText={categoriesLoading.depth0 ? "1차 카테고리를 불러오는 중입니다." : undefined}
             >
-              <option value="">카테고리 선택</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {`${"- ".repeat(category.depth)}${category.name}`}
-                </option>
-              ))}
-            </select>
-          </FormField>
+              <select
+                id="categoryDepth0"
+                value={categorySelection.depth0Id}
+                onChange={(event) => onCategoryChange("depth0Id", event.target.value)}
+                disabled={categoriesLoading.depth0}
+                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">1차 카테고리 선택</option>
+                {categories.depth0.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField
+              label="2차 카테고리"
+              htmlFor="categoryDepth1"
+              helpText={
+                !categorySelection.depth0Id
+                  ? "1차 카테고리를 먼저 선택해 주세요."
+                  : categoriesLoading.depth1
+                    ? "2차 카테고리를 불러오는 중입니다."
+                    : undefined
+              }
+            >
+              <select
+                id="categoryDepth1"
+                value={categorySelection.depth1Id}
+                onChange={(event) => onCategoryChange("depth1Id", event.target.value)}
+                disabled={!categorySelection.depth0Id || categoriesLoading.depth1 || categories.depth1.length === 0}
+                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">2차 카테고리 선택</option>
+                {categories.depth1.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+
+            <FormField
+              label="3차 카테고리"
+              htmlFor="categoryDepth2"
+              error={categoryError || undefined}
+              helpText={
+                !categorySelection.depth1Id
+                  ? "2차 카테고리를 먼저 선택해 주세요."
+                  : categoriesLoading.depth2
+                    ? "3차 카테고리를 불러오는 중입니다."
+                    : undefined
+              }
+            >
+              <select
+                id="categoryDepth2"
+                value={categorySelection.depth2Id}
+                onChange={(event) => onCategoryChange("depth2Id", event.target.value)}
+                disabled={!categorySelection.depth1Id || categoriesLoading.depth2 || categories.depth2.length === 0}
+                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <option value="">3차 카테고리 선택</option>
+                {categories.depth2.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          </div>
+
+          <div className="rounded-2xl bg-purple-50/80 px-4 py-3 text-sm text-gray-700 ring-1 ring-purple-100">
+            최종 선택 카테고리: <span className="font-semibold text-violet-700">{form.categoryId || "선택 없음"}</span>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField label="재고" htmlFor="stockQuantity" required error={errors.stockQuantity}>
@@ -226,3 +289,4 @@ export default function SellerProductForm({
     </form>
   );
 }
+

@@ -40,6 +40,15 @@ const toUiProduct = (product) => {
   };
 };
 
+const toUiCategory = (category) => ({
+  id: category.categoryId,
+  name: category.name,
+  description: category.description || "",
+  depth: category.depth ?? 0,
+  sortOrder: category.sortOrder ?? 0,
+  parentId: category.parentId ?? null,
+});
+
 async function getProductsApi(params = {}) {
   const response = await apiClient("/api/product", {
     params,
@@ -65,24 +74,35 @@ async function getProductDetailApi(productId) {
   return toUiProduct(response.data);
 }
 
-async function getCategoriesApi() {
-  const response = await apiClient("/api/category");
+async function getCategoriesApi(options = {}) {
+  const { depth } = options;
+  const response = await apiClient("/api/categories", {
+    params: depth === undefined ? undefined : { depth },
+  });
   const categories = Array.isArray(response.data) ? response.data : [];
 
   return categories
-    .map((category) => ({
-      id: category.categoryId,
-      name: category.name,
-      description: category.description || "",
-      depth: category.depth ?? 0,
-      sortOrder: category.sortOrder ?? 0,
-      parentId: category.parentId ?? null,
-    }))
+    .map(toUiCategory)
     .sort((a, b) => {
       if (a.depth !== b.depth) {
         return a.depth - b.depth;
       }
 
+      if (a.sortOrder !== b.sortOrder) {
+        return a.sortOrder - b.sortOrder;
+      }
+
+      return a.name.localeCompare(b.name, "ko");
+    });
+}
+
+async function getChildCategoriesApi(categoryId) {
+  const response = await apiClient(`/api/categories/${categoryId}/children`);
+  const categories = Array.isArray(response.data) ? response.data : [];
+
+  return categories
+    .map(toUiCategory)
+    .sort((a, b) => {
       if (a.sortOrder !== b.sortOrder) {
         return a.sortOrder - b.sortOrder;
       }
@@ -129,4 +149,11 @@ async function createProductApi({
   return toUiProduct(response.data);
 }
 
-export { createProductApi, getCategoriesApi, getProductDetailApi, getProductsApi };
+export {
+  createProductApi,
+  getCategoriesApi,
+  getChildCategoriesApi,
+  getProductDetailApi,
+  getProductsApi,
+};
+
