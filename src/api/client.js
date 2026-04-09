@@ -10,6 +10,7 @@ class ApiError extends Error {
     this.code = code;
     this.data = data;
   }
+
 }
 
 const defaultOptions = {
