@@ -2,8 +2,7 @@
 
 const TOSS_SDK_SRC = "https://js.tosspayments.com/v2/standard";
 const PENDING_CHARGE_KEY_PREFIX = "deposit-charge:";
-// TODO: API 응답 구조가 일관되지 않아서 payload 추출 및 UI 변환 로직이 복잡해짐. 
-//  API 응답 구조 개선 후 리팩토링 필요.
+// TODO: API 응답 구조가 일관되지 않아서 payload 추출 및 UI 변환 로직이 복잡해짐.
 function getApiPayload(data) {
   return data?.data ?? data;
 }
