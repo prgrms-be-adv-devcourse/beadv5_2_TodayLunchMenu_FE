@@ -1,3 +1,5 @@
+docs_gitignore
+
 .env
 
 .idea
