@@ -40,9 +40,25 @@ export default function PaymentCardSuccessPage() {
   );
 
   useEffect(() => {
+    console.info("[PaymentCardSuccessPage] landed", {
+      paymentKey: result.paymentKey,
+      orderId: result.orderId,
+      amount: result.amount,
+      hasPendingPayment: Boolean(pendingPayment),
+    });
+  }, [pendingPayment, result.amount, result.orderId, result.paymentKey]);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function confirm() {
+      console.info("[PaymentCardSuccessPage] confirm start", {
+        paymentKey: result.paymentKey,
+        orderId: result.orderId,
+        amount: result.amount,
+        hasPendingPayment: Boolean(pendingPayment),
+      });
+
       if (!result.paymentKey || !result.orderId || !result.amount) {
         navigate("/payments/card/fail", {
           replace: true,
