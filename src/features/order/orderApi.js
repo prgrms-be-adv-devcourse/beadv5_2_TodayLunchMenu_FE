@@ -1,4 +1,4 @@
-﻿import { apiClient } from "../../api/client";
+import { apiClient } from "../../api/client";
 
 function toUiOrder(order) {
   return {
@@ -29,7 +29,7 @@ async function createOrderApi({
   receiverPhone,
   items,
 }) {
-  const response = await apiClient("/api/orders", {
+  const response = await apiClient("/api/orders/deposit", {
     method: "POST",
     body: {
       address,

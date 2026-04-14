@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
+import { ApiError } from "../../api/client";
+import { sendEmailVerificationApi } from "../../features/auth/authApi";
 import { useAuth } from "../../features/auth/useAuth";
 
 export default function LoginPage() {
@@ -17,10 +19,15 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [verificationPending, setVerificationPending] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState("");
 
   const handleChange = (key) => (e) => {
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
+    setVerificationPending(false);
+    setVerificationMessage("");
   };
 
   const validate = () => {
@@ -40,16 +47,57 @@ export default function LoginPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
+  const handleResendVerification = async () => {
+    const email = form.email.trim();
+    if (!email) {
+      setErrors((prev) => ({ ...prev, email: "이메일을 입력해 주세요." }));
+      return;
+    }
+
+    try {
+      setIsResending(true);
+      setVerificationMessage("");
+      await sendEmailVerificationApi({ email });
+      navigate(`/signup/pending-verification?email=${encodeURIComponent(email)}`);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.code === "EMAIL_VERIFICATION_NOT_ALLOWED") {
+          setVerificationMessage("현재 상태에서는 인증 메일을 다시 보낼 수 없습니다.");
+        } else {
+          setVerificationMessage(error.message || "인증 메일 재발송에 실패했습니다.");
+        }
+      } else {
+        setVerificationMessage("인증 메일 재발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+    } finally {
+      setIsResending(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     try {
       setIsSubmitting(true);
+      setVerificationPending(false);
+      setVerificationMessage("");
       await login(form);
       navigate("/products");
     } catch (error) {
       console.error(error);
+
+      const isVerificationRequired =
+        error instanceof ApiError && error.code === "EMAIL_VERIFICATION_REQUIRED";
+
+      if (isVerificationRequired) {
+        setVerificationPending(true);
+        setErrors({
+          common: "이메일 인증이 완료되지 않은 계정입니다. 인증 후 로그인해 주세요.",
+        });
+        return;
+      }
+
       setErrors({
         common:
           error?.message ||
@@ -97,11 +145,7 @@ export default function LoginPage() {
         <div className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <FormField
-                label="Email Address"
-                htmlFor="email"
-                error={errors.email}
-              >
+              <FormField label="Email Address" htmlFor="email" error={errors.email}>
                 <Input
                   id="email"
                   type="email"
@@ -112,11 +156,7 @@ export default function LoginPage() {
                 />
               </FormField>
 
-              <FormField
-                label="Password"
-                htmlFor="password"
-                error={errors.password}
-              >
+              <FormField label="Password" htmlFor="password" error={errors.password}>
                 <div className="relative">
                   <Input
                     id="password"
@@ -154,12 +194,30 @@ export default function LoginPage() {
               </div>
             ) : null}
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              disabled={submitDisabled}
-            >
+            {verificationPending ? (
+              <div className="rounded-2xl bg-violet-50 px-4 py-4 text-sm text-violet-900">
+                <p className="font-semibold">이메일 인증 후 로그인할 수 있습니다.</p>
+                <p className="mt-1 text-violet-700">
+                  인증 메일을 다시 보내려면 아래 버튼을 눌러 주세요.
+                </p>
+                {verificationMessage ? (
+                  <p className="mt-2 font-medium text-red-600">{verificationMessage}</p>
+                ) : null}
+                <div className="mt-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleResendVerification}
+                    disabled={isResending}
+                    className="w-full"
+                  >
+                    {isResending ? "인증 메일 재발송 중..." : "인증 메일 다시 보내기"}
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            <Button type="submit" size="lg" className="w-full" disabled={submitDisabled}>
               {submitDisabled ? "로그인 중..." : "로그인"}
             </Button>
           </form>
@@ -196,10 +254,7 @@ export default function LoginPage() {
           <div className="mt-12 text-center">
             <p className="text-sm font-medium text-gray-500">
               아직 계정이 없나요?
-              <Link
-                to="/signup"
-                className="ml-1 font-bold text-violet-700 hover:underline"
-              >
+              <Link to="/signup" className="ml-1 font-bold text-violet-700 hover:underline">
                 회원가입
               </Link>
             </p>

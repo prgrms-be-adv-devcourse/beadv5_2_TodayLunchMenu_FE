@@ -60,6 +60,14 @@ export default function CheckoutPage() {
   const [submitError, setSubmitError] = useState("");
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("DEPOSIT");
+  const isDepositPayment = selectedPaymentMethod === "DEPOSIT";
+  const paymentMethodLabel =
+    selectedPaymentMethod === "CARD" ? "카드 결제" : "예치금 결제";
+  const paymentMethodDescription =
+    selectedPaymentMethod === "CARD"
+      ? "토스 결제창에서 카드 결제를 진행할 수 있도록 다음 단계로 이동합니다."
+      : "보유한 예치금으로 즉시 결제합니다.";
 
   const summary = useMemo(() => {
     const subtotal = checkoutItems.reduce(
@@ -117,7 +125,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!summary.hasEnoughDeposit) {
+    if (isDepositPayment && !summary.hasEnoughDeposit) {
       return;
     }
 
@@ -159,8 +167,10 @@ export default function CheckoutPage() {
         shippingFee: summary.shippingFee,
         totalPrice: summary.total,
         depositBalance: MOCK_DEPOSIT_BALANCE,
-        paymentMethod: "예치금 결제",
+        paymentMethod: paymentMethodLabel,
+        paymentMethodCode: selectedPaymentMethod,
         depositLabel: "Deposit / Vivid Pay",
+        selectedPaymentMethod,
         pendingOrder: true,
       };
 
@@ -209,8 +219,139 @@ export default function CheckoutPage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
+        <div className="space-y-6 pb-32">
+          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
+              결제수단 선택
+            </h2>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setSelectedPaymentMethod("DEPOSIT")}
+                className={[
+                  "w-full rounded-[24px] border p-4 text-left transition",
+                  selectedPaymentMethod === "DEPOSIT"
+                    ? "border-violet-300 bg-violet-50 ring-2 ring-violet-200"
+                    : "border-purple-100 bg-white hover:bg-purple-50/70",
+                ].join(" ")}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-extrabold text-gray-900">예치금 결제</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      보유한 예치금으로 즉시 결제합니다.
+                    </p>
+                  </div>
+                  <span
+                    className={[
+                      "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
+                      selectedPaymentMethod === "DEPOSIT"
+                        ? "bg-violet-700 text-white"
+                        : "bg-purple-100 text-violet-700",
+                    ].join(" ")}
+                  >
+                    {selectedPaymentMethod === "DEPOSIT" ? "선택됨" : "사용 가능"}
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedPaymentMethod("CARD")}
+                className={[
+                  "w-full rounded-[24px] border p-4 text-left transition",
+                  selectedPaymentMethod === "CARD"
+                    ? "border-amber-300 bg-amber-50 ring-2 ring-amber-200"
+                    : "border-purple-100 bg-white hover:bg-purple-50/70",
+                ].join(" ")}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-extrabold text-gray-900">카드 결제</p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      토스 결제창에서 카드 결제를 진행합니다.
+                    </p>
+                  </div>
+                  <span
+                    className={[
+                      "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
+                      selectedPaymentMethod === "CARD"
+                        ? "bg-amber-500 text-white"
+                        : "bg-amber-100 text-amber-700",
+                    ].join(" ")}
+                  >
+                    {selectedPaymentMethod === "CARD" ? "선택됨" : "선택 가능"}
+                  </span>
+                </div>
+              </button>
+
+              {selectedPaymentMethod === "CARD" ? (
+                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                  카드 결제는 결제 페이지까지 먼저 연결하고, 실제 PG 연동은 다음 단계에서 붙일 예정입니다.
+                </div>
+              ) : null}
+            </div>
+          </section>
+
+          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
+              {isDepositPayment ? "예치금 결제" : "결제수단 안내"}
+            </h2>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">선택한 결제수단</span>
+                <span className="font-extrabold text-violet-700">{paymentMethodLabel}</span>
+              </div>
+
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">결제 예정 금액</span>
+                <span className="font-extrabold text-gray-900">
+                  {formatPrice(summary.total)}원
+                </span>
+              </div>
+
+              {isDepositPayment ? (
+                <>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500">현재 예치금</span>
+                    <span className="font-extrabold text-violet-700">
+                      {formatPrice(MOCK_DEPOSIT_BALANCE)}원
+                    </span>
+                  </div>
+
+                  <div className="border-t border-purple-100 pt-3">
+                    {summary.hasEnoughDeposit ? (
+                      <p className="text-sm font-medium text-violet-700">
+                        {paymentMethodDescription}
+                      </p>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-sm font-medium text-red-500">
+                          예치금이 부족합니다. {formatPrice(summary.shortageAmount)}원이 더 필요해요.
+                        </p>
+                        <Button
+                          variant="secondary"
+                          className="w-full"
+                          onClick={() => navigate("/deposits")}
+                        >
+                          예치금 충전하러 가기
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                  {paymentMethodDescription}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="space-y-6">
             <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
               <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
                 배송 정보
@@ -351,50 +492,7 @@ export default function CheckoutPage() {
             </section>
           </div>
 
-          <div className="space-y-6">
-            <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
-              <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-                예치금 결제
-              </h2>
-
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">현재 예치금</span>
-                  <span className="font-extrabold text-violet-700">
-                    {formatPrice(MOCK_DEPOSIT_BALANCE)}원
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">결제 예정 금액</span>
-                  <span className="font-extrabold text-gray-900">
-                    {formatPrice(summary.total)}원
-                  </span>
-                </div>
-
-                <div className="border-t border-purple-100 pt-3">
-                  {summary.hasEnoughDeposit ? (
-                    <p className="text-sm font-medium text-violet-700">
-                      예치금으로 바로 결제할 수 있어요.
-                    </p>
-                  ) : (
-                    <div className="space-y-3">
-                      <p className="text-sm font-medium text-red-500">
-                        예치금이 부족합니다. {formatPrice(summary.shortageAmount)}원이 더 필요해요.
-                      </p>
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        onClick={() => navigate("/deposits")}
-                      >
-                        예치금 충전하러 가기
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-
+            <div className="space-y-6">
             <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
               <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
                 결제 요약
@@ -429,26 +527,36 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="mt-6">
-                <Button
-                  size="lg"
-                  className="w-full"
-                  disabled={!summary.hasEnoughDeposit || isSubmitting}
-                  onClick={handleOpenConfirm}
-                >
-                  {isSubmitting ? "이동 중..." : "결제 페이지로 이동"}
-                </Button>
-              </div>
             </section>
+            </div>
           </div>
         </div>
       </PageContainer>
+
+      <footer className="fixed bottom-0 left-0 z-40 w-full bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <span>{paymentMethodLabel}</span>
+            <span className="text-lg font-extrabold text-violet-700">
+              {formatPrice(summary.total)}원
+            </span>
+          </div>
+          <Button
+            size="lg"
+            className="w-full"
+            disabled={isDepositPayment ? !summary.hasEnoughDeposit || isSubmitting : isSubmitting}
+            onClick={handleOpenConfirm}
+          >
+            {isSubmitting ? "이동 중..." : "결제 페이지로 이동"}
+          </Button>
+        </div>
+      </footer>
 
       <ConfirmModal
         open={openConfirmModal}
         onClose={() => setOpenConfirmModal(false)}
         title="결제 페이지로 이동할까요?"
-        description={`총 ${formatPrice(summary.total)}원 결제 정보를 다음 단계로 전달합니다.`}
+        description={`${paymentMethodLabel}로 총 ${formatPrice(summary.total)}원 결제 정보를 다음 단계로 전달합니다.`}
         confirmText="다음으로"
         loading={isSubmitting}
         onConfirm={handleSubmitOrder}

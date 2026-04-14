@@ -36,6 +36,24 @@ async function signupApi({
   return unwrapResponse(response);
 }
 
+async function sendEmailVerificationApi({ email }) {
+  const response = await apiClient("/api/auth/email-verifications", {
+    method: "POST",
+    body: { email },
+  });
+
+  return unwrapResponse(response);
+}
+
+async function confirmEmailVerificationApi({ token }) {
+  const response = await apiClient("/api/auth/email-verifications/confirm", {
+    method: "POST",
+    body: { token },
+  });
+
+  return unwrapResponse(response);
+}
+
 async function getMyInfoApi() {
   const response = await apiClient("/api/members/me");
 
@@ -54,4 +72,11 @@ async function logoutApi(memberId) {
   return unwrapResponse(response);
 }
 
-export { getMyInfoApi, loginApi, logoutApi, signupApi };
+export {
+  confirmEmailVerificationApi,
+  getMyInfoApi,
+  loginApi,
+  logoutApi,
+  sendEmailVerificationApi,
+  signupApi,
+};
