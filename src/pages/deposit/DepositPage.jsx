@@ -15,6 +15,18 @@ import {
 } from "../../features/payment/paymentApi";
 
 const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY;
+const IS_DEV = import.meta.env.DEV;
+
+function createMockCharge(amount) {
+  return {
+    chargeId: `mock-charge-${Date.now()}`,
+    walletId: null,
+    pgOrderId: `TEST-CHARGE-${Date.now()}`,
+    amount,
+    pgProvider: "TOSS",
+    chargeStatus: "PENDING",
+  };
+}
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
@@ -89,6 +101,7 @@ export default function DepositPage() {
 
   const parsedChargeAmount = Number(chargeAmount || 0);
   const quickAmounts = [10000, 30000, 50000, 100000];
+  const isSdkTestMode = IS_DEV && !wallet;
 
   useEffect(() => {
     let mounted = true;
@@ -160,7 +173,7 @@ export default function DepositPage() {
       return;
     }
 
-    if (!wallet?.memberId && !wallet?.walletId) {
+    if (!isSdkTestMode && !wallet?.memberId && !wallet?.walletId) {
       setError("충전용 지갑 정보를 찾을 수 없습니다.");
       return;
     }
@@ -169,19 +182,31 @@ export default function DepositPage() {
       setIsCharging(true);
       setError("");
 
-      const charge = await createChargeApi(parsedChargeAmount);
+      let charge;
+
+      try {
+        charge = await createChargeApi(parsedChargeAmount);
+      } catch (createError) {
+        if (!isSdkTestMode) {
+          throw createError;
+        }
+
+        charge = createMockCharge(parsedChargeAmount);
+      }
+
       savePendingCharge(charge);
 
       const TossPayments = await loadTossPaymentsSdk();
       const tossPayments = TossPayments(TOSS_CLIENT_KEY);
       const payment = tossPayments.payment({
-        customerKey: wallet.memberId || wallet.walletId,
+        customerKey:
+          wallet?.memberId || wallet?.walletId || `test-customer-${Date.now()}`,
       });
 
       setOpenChargeModal(false);
 
       await payment.requestPayment({
-        method: "CARD",
+        method: "TRANSFER",
         amount: {
           currency: "KRW",
           value: charge.amount,
@@ -191,10 +216,6 @@ export default function DepositPage() {
         successUrl: `${window.location.origin}/payments/toss/success`,
         failUrl: `${window.location.origin}/payments/toss/fail`,
         customerName: "예치금 충전",
-        card: {
-          useEscrow: false,
-          flowMode: "DEFAULT",
-        },
       });
     } catch (requestError) {
       setError(
@@ -206,7 +227,7 @@ export default function DepositPage() {
     }
   };
 
-  const canSubmit = parsedChargeAmount >= 1000 && !loading && !isCharging;
+  const canSubmit = parsedChargeAmount >= 1000 && (!loading || isSdkTestMode) && !isCharging;
 
   return (
     <>
@@ -216,6 +237,12 @@ export default function DepositPage() {
         {error ? (
           <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
             {error}
+          </section>
+        ) : null}
+
+        {isSdkTestMode ? (
+          <section className="mb-6 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+            백엔드 연결 없이 토스 결제창만 테스트 중입니다. 성공 후 승인 완료 처리는 동작하지 않을 수 있습니다.
           </section>
         ) : null}
 
@@ -353,7 +380,7 @@ export default function DepositPage() {
         open={openChargeModal}
         onClose={() => setOpenChargeModal(false)}
         title="토스 결제창으로 이동할까요?"
-        description={`예치금 ${formatPrice(parsedChargeAmount)}원을 충전하기 위해 토스 결제창으로 이동합니다.`}
+        description={`예치금 ${formatPrice(parsedChargeAmount)}원을 충전하기 위해 토스 퀵계좌이체 창으로 이동합니다.`}
         confirmText="결제창 열기"
         loading={isCharging}
         onConfirm={handleRequestCharge}

@@ -35,7 +35,7 @@ export async function updateCurrentMemberApi({
 }
 
 export async function presignProfileImageUploadApi({ fileName, contentType }) {
-  const response = await apiClient('/api/members/profile-images/presign', {
+  const response = await apiClient('/api/auth/profile-images/presign', {
     method: 'POST',
     body: { fileName, contentType },
   });
