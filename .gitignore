@@ -1,5 +1,7 @@
 docs_gitignore
 
+.vercel
+
 .env
 
 .idea
