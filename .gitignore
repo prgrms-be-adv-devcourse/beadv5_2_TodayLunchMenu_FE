@@ -1,4 +1,5 @@
 docs_gitignore
+docs_private
 
 .env
 
