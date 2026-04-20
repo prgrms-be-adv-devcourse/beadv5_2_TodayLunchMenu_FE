@@ -1,6 +1,8 @@
 docs_gitignore
 docs_private
 
+.vercel
+
 .env
 
 .idea
