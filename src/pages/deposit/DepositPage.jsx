@@ -17,17 +17,6 @@ import {
 const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY;
 const IS_DEV = import.meta.env.DEV;
 
-function createMockCharge(amount) {
-  return {
-    chargeId: `mock-charge-${Date.now()}`,
-    walletId: null,
-    pgOrderId: `TEST-CHARGE-${Date.now()}`,
-    amount,
-    pgProvider: "TOSS",
-    chargeStatus: "PENDING",
-  };
-}
-
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
@@ -102,7 +91,6 @@ export default function DepositPage() {
   const parsedChargeAmount = Number(chargeAmount || 0);
   const quickAmounts = [10000, 30000, 50000, 100000];
   const isSdkTestMode = IS_DEV && !wallet;
-
   useEffect(() => {
     let mounted = true;
 
@@ -182,17 +170,7 @@ export default function DepositPage() {
       setIsCharging(true);
       setError("");
 
-      let charge;
-
-      try {
-        charge = await createChargeApi(parsedChargeAmount);
-      } catch (createError) {
-        if (!isSdkTestMode) {
-          throw createError;
-        }
-
-        charge = createMockCharge(parsedChargeAmount);
-      }
+      const charge = await createChargeApi(parsedChargeAmount);
 
       savePendingCharge(charge);
 
@@ -388,3 +366,5 @@ export default function DepositPage() {
     </>
   );
 }
+
+

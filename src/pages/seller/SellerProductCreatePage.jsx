@@ -239,6 +239,7 @@ export default function SellerProductCreatePage() {
     setSubmitError("");
     setErrors((prev) => ({ ...prev, categoryId: "" }));
     setCategoryError("");
+    setCategoryEmptyNotice("");
 
     if (depthKey === "depth0Id") {
       setCategorySelection({
@@ -425,4 +426,3 @@ export default function SellerProductCreatePage() {
     </PageContainer>
   );
 }
-
