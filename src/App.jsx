@@ -28,6 +28,8 @@ import NotificationListPage from './pages/notification/NotificationListPage'
 import SellerRegisterPage from './pages/seller/SellerRegisterPage'
 import SellerProductCreatePage from './pages/seller/SellerProductCreatePage'
 import SellerProductListPage from './pages/seller/SellerProductListPage'
+import AuctionListPage from './pages/auction/AuctionListPage'
+import AuctionDetailPage from './pages/auction/AuctionDetailPage'
 
 const router = createBrowserRouter([
   {
@@ -61,6 +63,8 @@ const router = createBrowserRouter([
       { path: 'seller/register', element: <SellerRegisterPage /> },
       { path: 'seller/products', element: <SellerProductListPage /> },
       { path: 'seller/products/new', element: <SellerProductCreatePage /> },
+      { path: 'auctions', element: <AuctionListPage /> },
+      { path: 'auctions/:auctionId', element: <AuctionDetailPage /> },
     ],
   },
 ])

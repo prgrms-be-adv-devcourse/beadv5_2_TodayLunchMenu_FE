@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api *)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if 'product' in t['path'].lower\\(\\) or 'category' in t['path'].lower\\(\\)]\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if \\('gateway' in t['path'].lower\\(\\) or 'application.yml' in t['path'].lower\\(\\) or 'docker-compose' in t['path'].lower\\(\\) or 'product-service.yml' in t['path'].lower\\(\\)\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if \\('Cors' in t['path'] or 'WebConfig' in t['path'] or 'CurrentMember' in t['path'] or 'AuthenticatedMember' in t['path']\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if 'AuthHeaders' in t['path'] and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if t['path'].startswith\\('product/'\\) and 'config' in t['path'].lower\\(\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if \\(t['path'].startswith\\('product/src/main'\\) and \\('kafka' in t['path'].lower\\(\\) or 'event' in t['path'].lower\\(\\) or 'messaging' in t['path'].lower\\(\\)\\)\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if 'seed' in t['path'].lower\\(\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if 'Login' in t['path'] and 'member' in t['path'].lower\\(\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if \\('AuthController' in t['path'] or 'LoginController' in t['path']\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if t['path'].startswith\\('member/'\\) and 'jwt' in t['path'].lower\\(\\) and t['type']=='blob']\")",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(t['path']\\) for t in d['tree'] if 'config/src/main/resources/configs' in t['path'] and t['type']=='blob']\")",
+      "Bash(docker exec goods-mall-gateway *)",
+      "Bash(docker exec goods-mall-member *)",
+      "Bash(curl -i -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJtZW1iZXItc2VydmljZSIsInN1YiI6IjIyMjIyMjIyLTIyMjItMjIyMi0yMjIyLTIyMjIyMjIyMjIwMiIsImp0aSI6IjE0MjhiNjdkLTY2MzktNGM2Ni1hN2NiLTIyOWE4NDQ0ZTE5MyIsIm1lbWJlcklkIjoiMjIyMjIyMjItMjIyMi0yMjIyLTIyMjItMjIyMjIyMjIyMjAyIiwic2Vzc2lvbklkIjoiMTAyMThhMjAtMTU5Yi00YTZjLWEzNmMtMDAyZmRlMGM5ZjIwIiwiZW1haWwiOiJzZWxsZXJAdGVzdC5sb2NhbCIsInJvbGUiOiJTRUxMRVIiLCJ0b2tlblR5cGUiOiJBQ0NFU1MiLCJpYXQiOjE3NzYzOTY4MzAsImV4cCI6MTc3NjQwMDQzMH0.LKYZA5t0eoGiNUzzAAFlMOXWlfgL_GY7G6vFiUo26U3Jv0_jMKEKHyS4VsKJWklS6lvVo2xej7KfyC_HVQ3thw' http://localhost:8080/api/members/me)",
+      "Bash(docker exec *)",
+      "Bash(python -c \"import jwt; print\\('pyjwt ok'\\)\")",
+      "Bash(pip install *)",
+      "Bash(curl -s http://localhost:8761/eureka/apps -H \"Accept: application/json\")",
+      "Bash(python -c ' *)",
+      "Bash(echo \"Gateway:    $\\(docker exec goods-mall-gateway date -u +%s\\) / $\\(docker exec goods-mall-gateway date -u\\)\")",
+      "Bash(echo \"Member:     $\\(docker exec goods-mall-member date -u +%s\\) / $\\(docker exec goods-mall-member date -u\\)\")",
+      "Bash(docker-compose up *)"
+    ]
+  }
+}
