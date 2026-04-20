@@ -1,11 +1,13 @@
 {
+  "functions": {
+    "api/[...path].js": {
+      "memory": 128,
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "http://3.36.235.7:8080/api/$1"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ],
