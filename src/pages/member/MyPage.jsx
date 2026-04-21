@@ -71,10 +71,10 @@ export default function MyPage() {
       icon: '🔔',
     },
     {
-      title: '쿠폰',
-      description: `${me.coupons}개 사용 가능`,
-      to: '/me/coupons',
-      icon: '🎟️',
+      title: '외부 계정',
+      description: '카카오 등 로그인 연동 관리',
+      to: '/me/external-accounts',
+      icon: '🔗',
     },
   ];
 
@@ -189,6 +189,15 @@ export default function MyPage() {
         >
           <span>🔒</span>
           <span className="flex-1 text-sm font-semibold">개인정보 / 보안</span>
+          <span className="text-gray-400">›</span>
+        </Link>
+
+        <Link
+          to="/me/external-accounts"
+          className="flex items-center gap-4 rounded-2xl p-4 transition hover:bg-white/60"
+        >
+          <span>🔗</span>
+          <span className="flex-1 text-sm font-semibold">외부 계정 연동</span>
           <span className="text-gray-400">›</span>
         </Link>
       </section>

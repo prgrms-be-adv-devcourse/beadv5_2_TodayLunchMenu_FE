@@ -1,21 +1,32 @@
-﻿import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
-import { ApiError } from "../../api/client";
-import { sendEmailVerificationApi } from "../../features/auth/authApi";
+import {
+  getKakaoAuthorizeUrl,
+  linkKakaoAccountApi,
+  sendEmailVerificationApi,
+} from "../../features/auth/authApi";
+import {
+  clearPendingKakaoLink,
+  getPendingKakaoLink,
+} from "../../features/auth/kakaoLinkStorage";
 import { useAuth } from "../../features/auth/useAuth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, loading } = useAuth();
+  const pendingKakaoLink = useMemo(() => getPendingKakaoLink(), []);
+  const initialEmail = searchParams.get("email") || pendingKakaoLink?.email || "";
 
   const [form, setForm] = useState({
-    email: "",
+    email: initialEmail,
     password: "",
   });
-
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,13 +45,13 @@ export default function LoginPage() {
     const nextErrors = {};
 
     if (!form.email.trim()) {
-      nextErrors.email = "이메일을 입력해 주세요.";
+      nextErrors.email = "Please enter your email.";
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      nextErrors.email = "올바른 이메일 형식이 아닙니다.";
+      nextErrors.email = "Please enter a valid email address.";
     }
 
     if (!form.password) {
-      nextErrors.password = "비밀번호를 입력해 주세요.";
+      nextErrors.password = "Please enter your password.";
     }
 
     setErrors(nextErrors);
@@ -50,7 +61,7 @@ export default function LoginPage() {
   const handleResendVerification = async () => {
     const email = form.email.trim();
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: "이메일을 입력해 주세요." }));
+      setErrors((prev) => ({ ...prev, email: "Please enter your email." }));
       return;
     }
 
@@ -61,13 +72,13 @@ export default function LoginPage() {
       navigate(`/signup/pending-verification?email=${encodeURIComponent(email)}`);
     } catch (error) {
       if (error instanceof ApiError) {
-        if (error.code === "EMAIL_VERIFICATION_NOT_ALLOWED") {
-          setVerificationMessage("현재 상태에서는 인증 메일을 다시 보낼 수 없습니다.");
-        } else {
-          setVerificationMessage(error.message || "인증 메일 재발송에 실패했습니다.");
-        }
+        setVerificationMessage(
+          error.code === "EMAIL_VERIFICATION_NOT_ALLOWED"
+            ? "Verification email cannot be resent right now."
+            : error.message || "Failed to resend verification email."
+        );
       } else {
-        setVerificationMessage("인증 메일 재발송에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        setVerificationMessage("Failed to resend verification email. Please try again later.");
       }
     } finally {
       setIsResending(false);
@@ -83,25 +94,37 @@ export default function LoginPage() {
       setVerificationPending(false);
       setVerificationMessage("");
       await login(form);
+
+      if (pendingKakaoLink?.linkToken) {
+        await linkKakaoAccountApi({ linkToken: pendingKakaoLink.linkToken });
+        clearPendingKakaoLink();
+      }
+
       navigate("/products");
     } catch (error) {
-      console.error(error);
-
       const isVerificationRequired =
         error instanceof ApiError && error.code === "EMAIL_VERIFICATION_REQUIRED";
 
       if (isVerificationRequired) {
         setVerificationPending(true);
         setErrors({
-          common: "이메일 인증이 완료되지 않은 계정입니다. 인증 후 로그인해 주세요.",
+          common: "Email verification is required before sign-in.",
+        });
+        return;
+      }
+
+      if (pendingKakaoLink?.linkToken) {
+        setErrors({
+          common:
+            error?.message ||
+            "Sign-in succeeded, but Kakao account linking failed. Please try again.",
         });
         return;
       }
 
       setErrors({
         common:
-          error?.message ||
-          "로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.",
+          error?.message || "Sign-in failed. Please check your email and password.",
       });
     } finally {
       setIsSubmitting(false);
@@ -116,11 +139,11 @@ export default function LoginPage() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
-            aria-label="뒤로가기"
+            aria-label="Go back"
             onClick={() => navigate(-1)}
             className="rounded-full p-2 text-violet-700 transition hover:bg-violet-100 active:scale-95"
           >
-            ←
+            {"<"}
           </button>
 
           <div className="flex-1 text-center">
@@ -138,12 +161,22 @@ export default function LoginPage() {
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight">ZeroMarket</h2>
           <p className="mt-2 font-medium text-gray-500">
-            오늘 점심 메뉴를 가장 빠르게 만나는 방법
+            The fastest way to meet today&apos;s lunch menu.
           </p>
         </div>
 
         <div className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {pendingKakaoLink?.linkToken ? (
+              <div className="rounded-2xl border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
+                <p className="font-semibold">A Kakao link is waiting for this account.</p>
+                <p className="mt-1">
+                  Sign in with your existing account and we&apos;ll complete the Kakao link
+                  automatically.
+                </p>
+              </div>
+            ) : null}
+
             <div className="space-y-4">
               <FormField label="Email Address" htmlFor="email" error={errors.email}>
                 <Input
@@ -161,7 +194,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="비밀번호를 입력해 주세요"
+                    placeholder="Enter your password"
                     value={form.password}
                     onChange={handleChange("password")}
                     error={!!errors.password}
@@ -173,7 +206,7 @@ export default function LoginPage() {
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-violet-700"
                   >
-                    {showPassword ? "숨김" : "보기"}
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 </div>
 
@@ -182,7 +215,7 @@ export default function LoginPage() {
                     to="/forgot-password"
                     className="text-xs font-semibold text-violet-700 transition hover:text-violet-800"
                   >
-                    비밀번호를 잊으셨나요?
+                    Forgot password?
                   </Link>
                 </div>
               </FormField>
@@ -196,9 +229,9 @@ export default function LoginPage() {
 
             {verificationPending ? (
               <div className="rounded-2xl bg-violet-50 px-4 py-4 text-sm text-violet-900">
-                <p className="font-semibold">이메일 인증 후 로그인할 수 있습니다.</p>
+                <p className="font-semibold">Email verification is required.</p>
                 <p className="mt-1 text-violet-700">
-                  인증 메일을 다시 보내려면 아래 버튼을 눌러 주세요.
+                  Use the button below if you need a new verification email.
                 </p>
                 {verificationMessage ? (
                   <p className="mt-2 font-medium text-red-600">{verificationMessage}</p>
@@ -211,14 +244,14 @@ export default function LoginPage() {
                     disabled={isResending}
                     className="w-full"
                   >
-                    {isResending ? "인증 메일 재발송 중..." : "인증 메일 다시 보내기"}
+                    {isResending ? "Resending..." : "Resend verification email"}
                   </Button>
                 </div>
               </div>
             ) : null}
 
             <Button type="submit" size="lg" className="w-full" disabled={submitDisabled}>
-              {submitDisabled ? "로그인 중..." : "로그인"}
+              {submitDisabled ? "Signing in..." : "Login"}
             </Button>
           </form>
 
@@ -245,7 +278,10 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
-              className="flex items-center justify-center rounded-xl border border-purple-100 bg-white p-4 transition hover:bg-purple-50"
+              onClick={() => {
+                window.location.href = getKakaoAuthorizeUrl();
+              }}
+              className="flex items-center justify-center rounded-xl border border-purple-100 bg-white p-4 font-semibold transition hover:bg-purple-50"
             >
               K
             </button>
@@ -253,9 +289,9 @@ export default function LoginPage() {
 
           <div className="mt-12 text-center">
             <p className="text-sm font-medium text-gray-500">
-              아직 계정이 없나요?
+              Don&apos;t have an account?
               <Link to="/signup" className="ml-1 font-bold text-violet-700 hover:underline">
-                회원가입
+                Sign up
               </Link>
             </p>
           </div>
