@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -88,7 +88,6 @@ export default function PaymentCardSuccessPage() {
 
       try {
         setConfirming(true);
-        // TODO: confirm 실패 시 order 상태를 어떻게 해석할지 order 모듈 정책 확인 필요.
         const response = await confirmCardPaymentApi({
           orderId: result.orderId,
           paymentKey: result.paymentKey,
@@ -104,7 +103,8 @@ export default function PaymentCardSuccessPage() {
             replace: true,
             state: {
               errorTitle: "카드 결제 승인 실패",
-              errorMessage: error?.message || "카드 결제 승인 중 오류가 발생했습니다.",
+              errorMessage:
+                error?.message || "카드 결제 승인 중 오류가 발생했습니다.",
               errorCode: error?.code || "CARD_PAYMENT_CONFIRM_FAILED",
               pgOrderId: result.orderId,
               orderId: pendingPayment.orderId,
@@ -166,15 +166,21 @@ export default function PaymentCardSuccessPage() {
           <div className="space-y-3 rounded-2xl bg-purple-50/70 p-4 text-sm">
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">paymentKey</span>
-              <span className="font-mono font-semibold text-gray-900">{result.paymentKey || "-"}</span>
+              <span className="font-mono font-semibold text-gray-900">
+                {result.paymentKey || "-"}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">orderId</span>
-              <span className="font-mono font-semibold text-gray-900">{result.orderId || "-"}</span>
+              <span className="font-mono font-semibold text-gray-900">
+                {result.orderId || "-"}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">amount</span>
-              <span className="font-semibold text-gray-900">{formatPrice(result.amount)}</span>
+              <span className="font-semibold text-gray-900">
+                {formatPrice(result.amount)}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">승인 상태</span>

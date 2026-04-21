@@ -103,7 +103,6 @@ async function prepareCardPaymentApi(payload) {
 }
 
 async function confirmCardPaymentApi(payload) {
-  // TODO: payment 모듈 confirm API가 주문 PG 결제용으로 최종 확정됐는지 확인 필요.
   const response = await apiClient(PAYMENT_ENDPOINTS.cardConfirm, {
     method: "POST",
     body: {
@@ -117,7 +116,6 @@ async function confirmCardPaymentApi(payload) {
 }
 
 async function failCardPaymentApi(payload) {
-  // TODO: 주문 PG fail 처리용 API가 필요하면 payment 모듈 기준으로 다시 확인 필요.
   void payload;
   void PAYMENT_ENDPOINTS.cardFail;
   throw createCardPaymentNotImplementedError("failCardPayment");
