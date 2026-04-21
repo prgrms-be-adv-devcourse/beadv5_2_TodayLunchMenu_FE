@@ -104,7 +104,11 @@ async function prepareCardPaymentApi(payload) {
 
 async function confirmCardPaymentApi(payload) {
   // TODO: payment 모듈 confirm API가 주문 PG 결제용으로 최종 확정됐는지 확인 필요.
+<<<<<<< Updated upstream
   const response = await apiClient(PAYMENT_ENDPOINTS.cardConfirm, {
+=======
+  const response = await apiClient("/api/payments/card/confirm", {
+>>>>>>> Stashed changes
     method: "POST",
     body: {
       orderId: payload?.orderId,
@@ -132,4 +136,8 @@ export {
   getTransactionsApi,
   getWalletSummaryApi,
   prepareCardPaymentApi,
+<<<<<<< Updated upstream
 };
+=======
+};
+>>>>>>> Stashed changes

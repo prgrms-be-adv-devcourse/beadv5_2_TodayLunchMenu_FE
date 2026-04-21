@@ -15,9 +15,55 @@ function toUiOrderSummary(order) {
     totalAmount: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
     createdAt: order?.createdAt ?? null,
-    representativeProductName: order?.representativeProductName ?? "상품명 없음",
+    representativeProductName:
+      order?.representativeProductName ?? "상품명 없음",
     representativeThumbnailKey: order?.representativeThumbnailKey ?? "",
     itemCount: order?.itemCount ?? 0,
+  };
+}
+
+function toUiOrderItem(item) {
+  const unitPrice = item?.unitPrice ?? 0;
+  const quantity = item?.quantity ?? 0;
+
+  return {
+    productId: item?.productId,
+    productName: item?.productName ?? "상품명 없음",
+    unitPrice,
+    quantity,
+    status: item?.status ?? "UNKNOWN",
+    thumbnailKey: item?.thumbnailKey ?? "",
+    totalPrice: Number(unitPrice) * Number(quantity),
+  };
+}
+
+function toUiOrderDetail(order) {
+  const items = Array.isArray(order?.items)
+    ? order.items.map(toUiOrderItem)
+    : [];
+  const itemStatuses = items.map((item) => item.status).filter(Boolean);
+  const firstStatus = itemStatuses[0] ?? "UNKNOWN";
+  const hasMixedStatuses = itemStatuses.some(
+    (status) => status !== firstStatus,
+  );
+  const totalFromItems = items.reduce(
+    (sum, item) => sum + Number(item.totalPrice ?? 0),
+    0,
+  );
+
+  return {
+    orderId: order?.orderId,
+    totalPrice: order?.totalPrice ?? totalFromItems,
+    createdAt: order?.createdAt ?? null,
+    address: order?.address ?? "",
+    addressDetail: order?.addressDetail ?? "",
+    zipCode: order?.zipCode ?? "",
+    receiver: order?.receiver ?? "",
+    receiverPhone: order?.receiverPhone ?? "",
+    itemCount: order?.itemCount ?? items.length,
+    items,
+    status: hasMixedStatuses ? "MIXED" : firstStatus,
+    hasMixedStatuses,
   };
 }
 
@@ -67,4 +113,17 @@ async function getOrdersApi(params = {}) {
   };
 }
 
+<<<<<<< Updated upstream
 export { createOrderApi, getOrdersApi };
+=======
+async function getOrderDetailApi(orderId) {
+  const response = await apiClient(`/api/orders/${orderId}`, {
+    method: "GET",
+  });
+
+  const payload = response.data?.data ?? response.data;
+  return toUiOrderDetail(payload);
+}
+
+export { createOrderApi, getOrderDetailApi, getOrdersApi };
+>>>>>>> Stashed changes
