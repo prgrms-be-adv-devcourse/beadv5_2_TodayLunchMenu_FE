@@ -119,6 +119,38 @@ export default function SellerProductForm({
             </div>
           ) : null}
 
+          <FormField label="상품 유형" htmlFor="type" required error={errors.type}>
+            <div className="flex gap-3">
+              {[
+                { value: "GENERAL", label: "일반" },
+                { value: "AUCTION", label: "경매" },
+              ].map((option) => {
+                const checked = form.type === option.value;
+                return (
+                  <label
+                    key={option.value}
+                    className={[
+                      "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition",
+                      checked
+                        ? "bg-violet-600 text-white shadow-sm"
+                        : "bg-purple-100/70 text-gray-700 hover:bg-purple-200/70",
+                    ].join(" ")}
+                  >
+                    <input
+                      type="radio"
+                      name="type"
+                      value={option.value}
+                      checked={checked}
+                      onChange={onChange("type")}
+                      className="sr-only"
+                    />
+                    {option.label}
+                  </label>
+                );
+              })}
+            </div>
+          </FormField>
+
           <FormField label="상품명" htmlFor="title" required error={errors.title}>
             <Input
               id="title"
@@ -131,11 +163,11 @@ export default function SellerProductForm({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <FormField
-              label="1차 카테고리"
+              label="대분류"
               htmlFor="categoryDepth0"
               required
               error={errors.categoryId && !categorySelection.depth0Id ? errors.categoryId : undefined}
-              helpText={categoriesLoading.depth0 ? "1차 카테고리를 불러오는 중입니다." : undefined}
+              helpText={categoriesLoading.depth0 ? "대분류를 불러오는 중입니다." : undefined}
             >
               <select
                 id="categoryDepth0"
@@ -144,7 +176,7 @@ export default function SellerProductForm({
                 disabled={categoriesLoading.depth0}
                 className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">1차 카테고리 선택</option>
+                <option value="">대분류 선택</option>
                 {categories.depth0.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -154,14 +186,16 @@ export default function SellerProductForm({
             </FormField>
 
             <FormField
-              label="2차 카테고리"
+              label="중분류"
               htmlFor="categoryDepth1"
               helpText={
                 !categorySelection.depth0Id
-                  ? "1차 카테고리를 먼저 선택해 주세요."
+                  ? "대분류를 먼저 선택해 주세요."
                   : categoriesLoading.depth1
-                    ? "2차 카테고리를 불러오는 중입니다."
-                    : undefined
+                    ? "중분류를 불러오는 중입니다."
+                    : categories.depth1.length === 0
+                      ? "등록된 중분류가 없어 건너뜁니다."
+                      : "선택 사항입니다."
               }
             >
               <select
@@ -171,7 +205,7 @@ export default function SellerProductForm({
                 disabled={!categorySelection.depth0Id || categoriesLoading.depth1 || categories.depth1.length === 0}
                 className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">2차 카테고리 선택</option>
+                <option value="">중분류 선택</option>
                 {categories.depth1.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -181,15 +215,17 @@ export default function SellerProductForm({
             </FormField>
 
             <FormField
-              label="3차 카테고리"
+              label="소분류"
               htmlFor="categoryDepth2"
               error={categoryError || undefined}
               helpText={
                 !categorySelection.depth1Id
-                  ? "2차 카테고리를 먼저 선택해 주세요."
+                  ? "중분류를 먼저 선택해 주세요."
                   : categoriesLoading.depth2
-                    ? "3차 카테고리를 불러오는 중입니다."
-                    : undefined
+                    ? "소분류를 불러오는 중입니다."
+                    : categories.depth2.length === 0
+                      ? "등록된 소분류가 없어 건너뜁니다."
+                      : "선택 사항입니다."
               }
             >
               <select
@@ -199,7 +235,7 @@ export default function SellerProductForm({
                 disabled={!categorySelection.depth1Id || categoriesLoading.depth2 || categories.depth2.length === 0}
                 className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <option value="">3차 카테고리 선택</option>
+                <option value="">소분류 선택</option>
                 {categories.depth2.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -214,7 +250,13 @@ export default function SellerProductForm({
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField label="재고" htmlFor="stockQuantity" required error={errors.stockQuantity}>
+            <FormField
+              label="재고"
+              htmlFor="stockQuantity"
+              required
+              error={errors.stockQuantity}
+              helpText="최소 1개 이상"
+            >
               <div className="flex h-14 items-center rounded-xl bg-purple-100/70 px-2">
                 <button
                   type="button"
@@ -227,7 +269,8 @@ export default function SellerProductForm({
                 <input
                   id="stockQuantity"
                   type="number"
-                  min="0"
+                  min="1"
+                  step="1"
                   value={form.stockQuantity}
                   onChange={onChange("stockQuantity")}
                   className="w-full bg-transparent text-center font-bold outline-none"
@@ -243,7 +286,13 @@ export default function SellerProductForm({
               </div>
             </FormField>
 
-            <FormField label="가격" htmlFor="price" required error={errors.price}>
+            <FormField
+              label="가격"
+              htmlFor="price"
+              required
+              error={errors.price}
+              helpText="1,000원 이상 정수"
+            >
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">
                   원
@@ -251,8 +300,9 @@ export default function SellerProductForm({
                 <Input
                   id="price"
                   type="number"
-                  min="1"
-                  placeholder="0"
+                  min="1000"
+                  step="1"
+                  placeholder="1000"
                   value={form.price}
                   onChange={onChange("price")}
                   error={!!errors.price}

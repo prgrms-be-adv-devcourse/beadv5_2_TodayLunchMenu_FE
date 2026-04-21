@@ -1,6 +1,29 @@
-﻿import { apiClient } from "../../api/client";
+import { apiClient } from "../../api/client";
 
 const unwrapResponse = (response) => response?.data?.data ?? null;
+
+const API_BASE = import.meta.env.VITE_SERVER_URL ?? "";
+
+function getKakaoAuthorizeUrl() {
+  return `${API_BASE}/api/auth/oauth/kakao/authorize`;
+}
+
+function getKakaoLinkAuthorizeUrl() {
+  return `${API_BASE}/api/auth/oauth/kakao/link/authorize`;
+}
+
+async function fetchKakaoLinkAuthorizeUrlApi() {
+  const response = await apiClient("/api/auth/oauth/kakao/link/authorize-url");
+  return unwrapResponse(response);
+}
+
+async function fetchKakaoOAuthResultApi({ resultKey }) {
+  const response = await apiClient("/api/auth/oauth/kakao/result", {
+    params: { resultKey },
+  });
+
+  return unwrapResponse(response);
+}
 
 async function loginApi({ email, password }) {
   const response = await apiClient("/api/auth/login", {
@@ -36,6 +59,24 @@ async function signupApi({
   return unwrapResponse(response);
 }
 
+async function sendEmailVerificationApi({ email }) {
+  const response = await apiClient("/api/auth/email-verifications", {
+    method: "POST",
+    body: { email },
+  });
+
+  return unwrapResponse(response);
+}
+
+async function confirmEmailVerificationApi({ token }) {
+  const response = await apiClient("/api/auth/email-verifications/confirm", {
+    method: "POST",
+    body: { token },
+  });
+
+  return unwrapResponse(response);
+}
+
 async function getMyInfoApi() {
   const response = await apiClient("/api/members/me");
 
@@ -54,4 +95,25 @@ async function logoutApi(memberId) {
   return unwrapResponse(response);
 }
 
-export { getMyInfoApi, loginApi, logoutApi, signupApi };
+async function linkKakaoAccountApi({ linkToken }) {
+  const response = await apiClient("/api/auth/oauth/kakao/link", {
+    method: "POST",
+    body: { linkToken },
+  });
+
+  return unwrapResponse(response);
+}
+
+export {
+  confirmEmailVerificationApi,
+  fetchKakaoLinkAuthorizeUrlApi,
+  fetchKakaoOAuthResultApi,
+  getKakaoAuthorizeUrl,
+  getKakaoLinkAuthorizeUrl,
+  getMyInfoApi,
+  linkKakaoAccountApi,
+  loginApi,
+  logoutApi,
+  sendEmailVerificationApi,
+  signupApi,
+};

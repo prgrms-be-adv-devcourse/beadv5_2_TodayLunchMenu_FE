@@ -34,6 +34,27 @@ export async function updateCurrentMemberApi({
   return unwrapResponse(response);
 }
 
+export async function getMyOauthAccountsApi() {
+  const response = await apiClient('/api/members/me/oauth-accounts');
+  return unwrapResponse(response);
+}
+
+export async function unlinkMyOauthAccountApi(provider) {
+  if (!provider) {
+    throw new ApiError({
+      status: 400,
+      code: 'BAD_REQUEST',
+      message: '해제할 외부 계정 정보가 필요합니다.',
+    });
+  }
+
+  const response = await apiClient(`/api/members/me/oauth-accounts/${provider}`, {
+    method: 'DELETE',
+  });
+
+  return unwrapResponse(response);
+}
+
 export async function presignProfileImageUploadApi({ fileName, contentType }) {
   const response = await apiClient('/api/auth/profile-images/presign', {
     method: 'POST',

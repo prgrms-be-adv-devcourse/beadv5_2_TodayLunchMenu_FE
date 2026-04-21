@@ -1,11 +1,13 @@
-﻿import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import CheckboxField from "../../components/common/CheckboxField";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
-import { ApiError } from "../../api/client";
 import { signupApi } from "../../features/auth/authApi";
+import { getPendingKakaoLink } from "../../features/auth/kakaoLinkStorage";
 import {
   presignProfileImageUploadApi,
   uploadProfileImageToS3,
@@ -15,10 +17,13 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const pendingKakaoLink = useMemo(() => getPendingKakaoLink(), []);
+  const initialEmail = searchParams.get("email") || pendingKakaoLink?.email || "";
 
   const [form, setForm] = useState({
     name: "",
-    email: "",
+    email: initialEmail,
     password: "",
     confirmPassword: "",
     agree: false,
@@ -29,14 +34,12 @@ export default function SignupPage() {
 
   const handleChange = (key) => (e) => {
     const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
   };
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files?.[0] ?? null;
-
     setProfileImage(file);
     setErrors((prev) => ({ ...prev, profileImage: "", common: "" }));
   };
@@ -45,53 +48,44 @@ export default function SignupPage() {
     const nextErrors = {};
 
     if (!form.name.trim()) {
-      nextErrors.name = "이름을 입력해 주세요.";
+      nextErrors.name = "Please enter your name.";
     }
-
     if (!form.email.trim()) {
-      nextErrors.email = "이메일을 입력해 주세요.";
+      nextErrors.email = "Please enter your email.";
     } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      nextErrors.email = "올바른 이메일 형식이 아닙니다.";
+      nextErrors.email = "Please enter a valid email address.";
     }
-
     if (!form.password) {
-      nextErrors.password = "비밀번호를 입력해 주세요.";
+      nextErrors.password = "Please enter your password.";
     } else if (form.password.length < 8) {
-      nextErrors.password = "비밀번호는 8자 이상이어야 합니다.";
+      nextErrors.password = "Password must be at least 8 characters.";
     }
-
     if (!form.confirmPassword) {
-      nextErrors.confirmPassword = "비밀번호 확인을 입력해 주세요.";
+      nextErrors.confirmPassword = "Please confirm your password.";
     } else if (form.password !== form.confirmPassword) {
-      nextErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+      nextErrors.confirmPassword = "Passwords do not match.";
     }
-
     if (profileImage && !ACCEPTED_IMAGE_TYPES.includes(profileImage.type)) {
-      nextErrors.profileImage = "jpg, png, webp 형식의 이미지 파일만 업로드할 수 있습니다.";
+      nextErrors.profileImage = "Only jpg, png, and webp images are supported.";
     }
-
     if (!form.agree) {
-      nextErrors.agree = "약관 동의가 필요합니다.";
+      nextErrors.agree = "Agreement is required.";
     }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
 
-  // 프로필 이미지가 선택된 경우 S3에 업로드하고 objectKey를 반환하는 함수
   const uploadProfileImageIfNeeded = async () => {
-    // 프로필 이미지가 선택되지 않은 경우 업로드 과정 생략
     if (!profileImage) {
       return null;
     }
 
-    // S3 업로드를 위한 presigned URL 발급 요청
     const presignedData = await presignProfileImageUploadApi({
       fileName: profileImage.name,
       contentType: profileImage.type,
     });
 
-    // S3에 이미지 업로드
     await uploadProfileImageToS3({
       uploadUrl: presignedData.uploadUrl,
       file: profileImage,
@@ -111,7 +105,7 @@ export default function SignupPage() {
 
       const profileImageKey = await uploadProfileImageIfNeeded();
 
-      await signupApi({
+      const signupData = await signupApi({
         email: form.email.trim(),
         password: form.password,
         nickname: form.name.trim(),
@@ -121,17 +115,26 @@ export default function SignupPage() {
         role: "USER",
       });
 
-      navigate("/login");
+      if (signupData?.status === "PENDING_VERIFICATION") {
+        navigate(
+          `/signup/pending-verification?email=${encodeURIComponent(
+            signupData.email || form.email.trim()
+          )}`
+        );
+        return;
+      }
+
+      navigate(`/login?email=${encodeURIComponent(form.email.trim())}`);
     } catch (error) {
       if (error instanceof ApiError) {
         setErrors((prev) => ({
           ...prev,
-          common: error.message || "회원가입에 실패했습니다.",
+          common: error.message || "Sign-up failed.",
         }));
       } else {
         setErrors((prev) => ({
           ...prev,
-          common: "회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+          common: "Sign-up failed. Please try again later.",
         }));
       }
     } finally {
@@ -145,11 +148,11 @@ export default function SignupPage() {
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
-            aria-label="뒤로가기"
+            aria-label="Go back"
             onClick={() => navigate(-1)}
             className="rounded-full p-2 text-violet-700 transition hover:bg-violet-100 active:scale-95"
           >
-            ←
+            {"<"}
           </button>
 
           <div className="flex-1 text-center">
@@ -176,26 +179,36 @@ export default function SignupPage() {
                 Legacy.
               </h2>
               <p className="max-w-xs font-medium text-gray-600">
-                취향과 기록을 모으는 사람들을 위한 마켓에 참여해 보세요.
+                Join the marketplace built for people who collect daily taste and
+                favorite meals.
               </p>
             </div>
           </section>
 
           <section className="mx-auto w-full max-w-md space-y-10">
             <div className="space-y-2">
-              <h2 className="text-4xl font-extrabold tracking-tight">회원가입</h2>
+              <h2 className="text-4xl font-extrabold tracking-tight">Sign Up</h2>
               <p className="font-medium text-gray-500">
-                정보를 입력하고 TodayLunchMenu를 시작해 보세요.
+                Create your TodayLunch account to continue.
               </p>
             </div>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {pendingKakaoLink?.linkToken ? (
+                <div className="rounded-2xl border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
+                  <p className="font-semibold">A Kakao link is ready after sign-up.</p>
+                  <p className="mt-1">
+                    Finish sign-up first, then sign in to connect your Kakao account.
+                  </p>
+                </div>
+              ) : null}
+
               <div className="space-y-4">
                 <FormField label="Full Name" htmlFor="name" required error={errors.name}>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="닉네임"
+                    placeholder="Your nickname"
                     value={form.name}
                     onChange={handleChange("name")}
                     error={!!errors.name}
@@ -222,7 +235,9 @@ export default function SignupPage() {
                     className="block w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-200"
                   />
                   {profileImage ? (
-                    <p className="mt-2 text-xs font-medium text-gray-500">선택한 파일: {profileImage.name}</p>
+                    <p className="mt-2 text-xs font-medium text-gray-500">
+                      Selected file: {profileImage.name}
+                    </p>
                   ) : null}
                 </FormField>
 
@@ -238,7 +253,12 @@ export default function SignupPage() {
                     />
                   </FormField>
 
-                  <FormField label="Confirm" htmlFor="confirmPassword" required error={errors.confirmPassword}>
+                  <FormField
+                    label="Confirm"
+                    htmlFor="confirmPassword"
+                    required
+                    error={errors.confirmPassword}
+                  >
                     <Input
                       id="confirmPassword"
                       type="password"
@@ -258,11 +278,11 @@ export default function SignupPage() {
                 error={errors.agree}
                 label={
                   <>
-                    이용약관 및{' '}
+                    I agree to the terms and{" "}
                     <a href="#" className="font-semibold text-violet-700 hover:underline">
-                      개인정보 처리방침
+                      privacy policy
                     </a>
-                    에 동의합니다.
+                    .
                   </>
                 }
               />
@@ -275,16 +295,16 @@ export default function SignupPage() {
 
               <div className="pt-2">
                 <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "가입 중..." : "회원가입"}
+                  {isSubmitting ? "Creating account..." : "Sign Up"}
                 </Button>
               </div>
             </form>
 
             <div className="pt-4 text-center">
               <p className="font-medium text-gray-500">
-                이미 계정이 있나요?
+                Already have an account?
                 <Link to="/login" className="ml-1 font-bold text-violet-700 hover:underline">
-                  로그인
+                  Login
                 </Link>
               </p>
             </div>
@@ -294,4 +314,3 @@ export default function SignupPage() {
     </div>
   );
 }
-

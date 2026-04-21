@@ -165,8 +165,23 @@ export default function ProductDetailPage() {
         description={`${product.name} ${quantity}개를 구매합니다.`}
         confirmText="구매하기"
         onConfirm={() => {
-          console.log("구매 진행", product.id, quantity);
           setOpenModal(false);
+          navigate("/orders/checkout", {
+            state: {
+              items: [
+                {
+                  productId: product.id,
+                  name: product.name,
+                  category: product.category,
+                  quantity,
+                  price: product.price,
+                  image: product.image,
+                  status: product.status,
+                  stockCount: product.stockCount,
+                },
+              ],
+            },
+          });
         }}
       />
     </>
