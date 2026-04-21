@@ -12,7 +12,12 @@ import {
 
 const MAX_IMAGE_FILES = 10;
 const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 const IMAGE_CONSTRAINTS = {
   maxFiles: MAX_IMAGE_FILES,
   maxFileSizeLabel: "10MB",
@@ -20,6 +25,12 @@ const IMAGE_CONSTRAINTS = {
   accept: "image/jpeg,image/png,image/webp,image/gif",
 };
 
+<<<<<<< Updated upstream
+=======
+const MIN_PRICE = 1000;
+const MIN_STOCK = 1;
+
+>>>>>>> Stashed changes
 const revokePreviewUrls = (images) => {
   images.forEach((image) => {
     if (image?.previewUrl) {
@@ -37,9 +48,10 @@ export default function SellerProductCreatePage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    type: "GENERAL",
     title: "",
     categoryId: "",
-    stockQuantity: 1,
+    stockQuantity: MIN_STOCK,
     price: "",
     description: "",
     images: [],
@@ -62,7 +74,11 @@ export default function SellerProductCreatePage() {
     depth2: false,
   });
   const [categoryError, setCategoryError] = useState("");
+<<<<<<< Updated upstream
   const [categoryEmptyNotice, setCategoryEmptyNotice] = useState("");
+=======
+  const [categoryNotice, setCategoryNotice] = useState("");
+>>>>>>> Stashed changes
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,13 +89,26 @@ export default function SellerProductCreatePage() {
       try {
         setCategoriesLoading((prev) => ({ ...prev, depth0: true }));
         setCategoryError("");
+<<<<<<< Updated upstream
         setCategoryEmptyNotice("");
+=======
+        setCategoryNotice("");
+>>>>>>> Stashed changes
         const data = await getCategoriesApi({ depth: 0 });
 
         if (cancelled) {
           return;
         }
 
+<<<<<<< Updated upstream
+=======
+        if (data.length === 0) {
+          setCategoryNotice(
+            "등록된 대분류 카테고리가 없습니다. 관리자에게 문의해 주세요.",
+          );
+        }
+
+>>>>>>> Stashed changes
         setCategories((prev) => ({ ...prev, depth0: data }));
 
         if (data.length === 0) {
@@ -91,7 +120,13 @@ export default function SellerProductCreatePage() {
         }
 
         setCategories((prev) => ({ ...prev, depth0: [] }));
+<<<<<<< Updated upstream
         setCategoryError(error?.message || "카테고리 목록을 불러오지 못했습니다.");
+=======
+        setCategoryNotice(
+          "카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+        );
+>>>>>>> Stashed changes
       } finally {
         if (!cancelled) {
           setCategoriesLoading((prev) => ({ ...prev, depth0: false }));
@@ -128,7 +163,7 @@ export default function SellerProductCreatePage() {
   const handleDecreaseStock = () => {
     setForm((prev) => ({
       ...prev,
-      stockQuantity: Math.max(0, Number(prev.stockQuantity || 0) - 1),
+      stockQuantity: Math.max(MIN_STOCK, Number(prev.stockQuantity || 0) - 1),
     }));
   };
 
@@ -140,11 +175,14 @@ export default function SellerProductCreatePage() {
       return;
     }
 
-    const invalidTypeFile = files.find((file) => !ACCEPTED_IMAGE_TYPES.includes(file.type));
+    const invalidTypeFile = files.find(
+      (file) => !ACCEPTED_IMAGE_TYPES.includes(file.type),
+    );
     if (invalidTypeFile) {
       setErrors((prev) => ({
         ...prev,
-        images: "JPG, PNG, WEBP, GIF 형식의 이미지 파일만 업로드할 수 있습니다.",
+        images:
+          "JPG, PNG, WEBP, GIF 형식의 이미지 파일만 업로드할 수 있습니다.",
       }));
       return;
     }
@@ -187,7 +225,9 @@ export default function SellerProductCreatePage() {
         ...prev,
         images: nextImages,
         thumbnailIndex:
-          nextImages.length === 0 ? 0 : Math.min(prev.thumbnailIndex, nextImages.length - 1),
+          nextImages.length === 0
+            ? 0
+            : Math.min(prev.thumbnailIndex, nextImages.length - 1),
       };
     });
   };
@@ -203,7 +243,9 @@ export default function SellerProductCreatePage() {
         URL.revokeObjectURL(targetImage.previewUrl);
       }
 
-      const nextImages = prev.images.filter((_, currentIndex) => currentIndex !== index);
+      const nextImages = prev.images.filter(
+        (_, currentIndex) => currentIndex !== index,
+      );
       let nextThumbnailIndex = prev.thumbnailIndex;
 
       if (nextImages.length === 0) {
@@ -222,6 +264,7 @@ export default function SellerProductCreatePage() {
     });
   };
 
+<<<<<<< Updated upstream
   const loadChildCategories = async (parentId, depthKey) => {
     try {
       const children = await getChildCategoriesApi(parentId);
@@ -235,6 +278,14 @@ export default function SellerProductCreatePage() {
     } catch (error) {
       setCategories((prev) => ({ ...prev, [depthKey]: [] }));
       setCategoryError(error?.message || "하위 카테고리를 불러오지 못했습니다.");
+=======
+  const loadChildCategories = async (parentId) => {
+    try {
+      return await getChildCategoriesApi(parentId);
+    } catch (error) {
+      setCategoryError("하위 카테고리를 불러오지 못했습니다.");
+      return [];
+>>>>>>> Stashed changes
     }
   };
 
@@ -257,9 +308,24 @@ export default function SellerProductCreatePage() {
         return;
       }
 
+<<<<<<< Updated upstream
       setCategoriesLoading((prev) => ({ ...prev, depth1: true, depth2: false }));
       await loadChildCategories(nextCategoryId, "depth1");
       setCategoriesLoading((prev) => ({ ...prev, depth1: false, depth2: false }));
+=======
+      setCategoriesLoading((prev) => ({
+        ...prev,
+        depth1: true,
+        depth2: false,
+      }));
+      const children = await loadChildCategories(nextCategoryId);
+      setCategories((prev) => ({ ...prev, depth1: children, depth2: [] }));
+      setCategoriesLoading((prev) => ({
+        ...prev,
+        depth1: false,
+        depth2: false,
+      }));
+>>>>>>> Stashed changes
       return;
     }
 
@@ -280,7 +346,12 @@ export default function SellerProductCreatePage() {
       }
 
       setCategoriesLoading((prev) => ({ ...prev, depth2: true }));
+<<<<<<< Updated upstream
       await loadChildCategories(nextCategoryId, "depth2");
+=======
+      const children = await loadChildCategories(nextCategoryId);
+      setCategories((prev) => ({ ...prev, depth2: children }));
+>>>>>>> Stashed changes
       setCategoriesLoading((prev) => ({ ...prev, depth2: false }));
       return;
     }
@@ -289,7 +360,10 @@ export default function SellerProductCreatePage() {
       setCategorySelection((prev) => ({ ...prev, depth2Id: nextCategoryId }));
       setForm((prev) => ({
         ...prev,
-        categoryId: nextCategoryId || categorySelection.depth1Id || categorySelection.depth0Id,
+        categoryId:
+          nextCategoryId ||
+          categorySelection.depth1Id ||
+          categorySelection.depth0Id,
       }));
     }
   };
@@ -297,24 +371,39 @@ export default function SellerProductCreatePage() {
   const validate = () => {
     const next = {};
 
+    if (form.type !== "GENERAL" && form.type !== "AUCTION") {
+      next.type = "상품 유형을 선택해 주세요.";
+    }
+
     if (!form.title.trim()) {
       next.title = "상품명을 입력해 주세요.";
     }
 
     if (!form.categoryId) {
-      next.categoryId = "카테고리를 선택해 주세요.";
+      next.categoryId = "대분류 카테고리를 선택해 주세요.";
     }
 
-    if (!String(form.price).trim()) {
+    const priceText = String(form.price).trim();
+    const priceNumber = Number(priceText);
+    if (!priceText) {
       next.price = "가격을 입력해 주세요.";
-    } else if (Number(form.price) <= 0) {
-      next.price = "가격은 0보다 커야 합니다.";
+    } else if (!Number.isInteger(priceNumber)) {
+      next.price = "가격은 정수로 입력해 주세요.";
+    } else if (priceNumber < MIN_PRICE) {
+      next.price = `가격은 ${MIN_PRICE.toLocaleString()}원 이상이어야 합니다.`;
     }
 
-    if (form.stockQuantity === "" || form.stockQuantity === null || form.stockQuantity === undefined) {
+    const stockNumber = Number(form.stockQuantity);
+    if (
+      form.stockQuantity === "" ||
+      form.stockQuantity === null ||
+      form.stockQuantity === undefined
+    ) {
       next.stockQuantity = "재고를 입력해 주세요.";
-    } else if (Number(form.stockQuantity) < 0) {
-      next.stockQuantity = "재고는 0 이상이어야 합니다.";
+    } else if (!Number.isInteger(stockNumber)) {
+      next.stockQuantity = "재고는 정수로 입력해 주세요.";
+    } else if (stockNumber < MIN_STOCK) {
+      next.stockQuantity = `재고는 ${MIN_STOCK} 이상이어야 합니다.`;
     }
 
     setErrors(next);
@@ -332,22 +421,23 @@ export default function SellerProductCreatePage() {
       setIsSubmitting(true);
       setSubmitError("");
 
-      const createdProduct = await createProductApi({
+      await createProductApi({
         title: form.title.trim(),
         description: form.description.trim(),
         price: Number(form.price),
         stockQuantity: Number(form.stockQuantity),
         categoryId: form.categoryId,
+        type: form.type,
         images: form.images,
         thumbnailIndex: form.thumbnailIndex,
       });
 
-      navigate(`/products/${createdProduct.id}`);
+      navigate("/seller/products");
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
           ? error.message
-          : "상품 등록 중 오류가 발생했습니다."
+          : "상품 등록 중 오류가 발생했습니다.",
       );
     } finally {
       setIsSubmitting(false);
@@ -370,9 +460,15 @@ export default function SellerProductCreatePage() {
         </span>
       </div>
 
+<<<<<<< Updated upstream
       {categoryEmptyNotice ? (
         <section className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
           {categoryEmptyNotice}
+=======
+      {categoryNotice ? (
+        <section className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+          {categoryNotice}
+>>>>>>> Stashed changes
         </section>
       ) : null}
 

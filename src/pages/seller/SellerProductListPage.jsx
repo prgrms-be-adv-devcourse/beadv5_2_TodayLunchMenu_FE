@@ -1,52 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import { useAuth } from "../../features/auth/useAuth";
-
-const MOCK_PRODUCTS = [
-  {
-    id: 1,
-    name: "보라 머그컵",
-    sku: "ZM-MUG-001",
-    price: 12000,
-    stock: 12,
-    totalStock: 50,
-    status: "ON_SALE",
-    image:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    name: "제로마켓 키링",
-    sku: "ZM-KEY-002",
-    price: 8000,
-    stock: 0,
-    totalStock: 20,
-    status: "SOLD_OUT",
-    image:
-      "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    name: "아트 포스터",
-    sku: "ZM-ART-003",
-    price: 22000,
-    stock: 5,
-    totalStock: 5,
-    status: "HIDDEN",
-    image:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80",
-  },
-];
+import { getSellerProductsApi } from "../../features/product/productApi";
 
 const FILTERS = [
   { value: "ALL", label: "전체" },
-  { value: "ON_SALE", label: "판매중" },
+  { value: "ACTIVE", label: "판매중" },
   { value: "SOLD_OUT", label: "품절" },
-  { value: "HIDDEN", label: "비공개" },
+  { value: "INACTIVE", label: "비공개" },
 ];
 
 function formatPrice(value) {
@@ -55,7 +21,7 @@ function formatPrice(value) {
 
 function getStatusMeta(status) {
   switch (status) {
-    case "ON_SALE":
+    case "ACTIVE":
       return {
         label: "판매중",
         className: "bg-violet-100 text-violet-700",
@@ -65,14 +31,14 @@ function getStatusMeta(status) {
         label: "품절",
         className: "bg-pink-100 text-pink-700",
       };
-    case "HIDDEN":
+    case "INACTIVE":
       return {
         label: "비공개",
         className: "bg-gray-100 text-gray-600",
       };
     default:
       return {
-        label: status,
+        label: status ?? "",
         className: "bg-gray-100 text-gray-600",
       };
   }
@@ -85,14 +51,58 @@ export default function SellerProductListPage() {
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [products, setProducts] = useState(MOCK_PRODUCTS);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isSeller) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadSellerProducts() {
+      try {
+        setLoading(true);
+        setError("");
+        const { items } = await getSellerProductsApi({ page: 0, size: 50 });
+
+        if (cancelled) {
+          return;
+        }
+
+        setProducts(items);
+      } catch (err) {
+        if (cancelled) {
+          return;
+        }
+
+        setError(
+          err instanceof ApiError
+            ? err.message
+            : "상품 목록을 불러오지 못했습니다."
+        );
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadSellerProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isSeller]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesFilter = filter === "ALL" ? true : product.status === filter;
-      const matchesKeyword = keyword.trim()
-        ? product.name.toLowerCase().includes(keyword.toLowerCase()) ||
-          product.sku.toLowerCase().includes(keyword.toLowerCase())
+      const trimmed = keyword.trim().toLowerCase();
+      const matchesKeyword = trimmed
+        ? (product.name || "").toLowerCase().includes(trimmed)
         : true;
 
       return matchesFilter && matchesKeyword;
@@ -116,11 +126,10 @@ export default function SellerProductListPage() {
   }
 
   const totalValue = products.reduce(
-    (sum, product) => sum + product.price * product.stock,
+    (sum, product) => sum + product.price * product.stockCount,
     0
   );
-  const liveCount = products.filter((p) => p.status === "ON_SALE").length;
-  const approvalRate = 98.2;
+  const liveCount = products.filter((p) => p.status === "ACTIVE").length;
 
   const handleDelete = () => {
     setProducts((prev) => prev.filter((item) => item.id !== deleteTarget.id));
@@ -142,7 +151,7 @@ export default function SellerProductListPage() {
 
           <div className="flex flex-col gap-3">
             <Input
-              placeholder="상품명 또는 SKU 검색"
+              placeholder="상품명 검색"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
             />
@@ -176,81 +185,103 @@ export default function SellerProductListPage() {
           </div>
         </section>
 
+        {error ? (
+          <section className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            {error}
+          </section>
+        ) : null}
+
         <section className="mt-6 space-y-4">
-          {filteredProducts.map((product) => {
-            const statusMeta = getStatusMeta(product.status);
+          {loading ? (
+            <p className="py-12 text-center text-sm text-gray-500">
+              상품을 불러오는 중입니다...
+            </p>
+          ) : filteredProducts.length === 0 ? (
+            <p className="py-12 text-center text-sm text-gray-500">
+              {products.length === 0
+                ? "등록된 상품이 없습니다. 우측 상단에서 새 상품을 등록해 보세요."
+                : "조건에 맞는 상품이 없습니다."}
+            </p>
+          ) : (
+            filteredProducts.map((product) => {
+              const statusMeta = getStatusMeta(product.status);
 
-            return (
-              <article
-                key={product.id}
-                className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-purple-100"
-              >
-                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-purple-50">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-3">
-                    <span
-                      className={[
-                        "inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight",
-                        statusMeta.className,
-                      ].join(" ")}
-                    >
-                      {statusMeta.label}
-                    </span>
-
-                    <div className="flex gap-2 text-gray-400">
-                      <Link
-                        to={`/seller/products/${product.id}/edit`}
-                        className="transition hover:text-violet-700"
-                      >
-                        ✎
-                      </Link>
-                      <button
-                        type="button"
-                        className="transition hover:text-red-500"
-                        onClick={() => setDeleteTarget(product)}
-                      >
-                        🗑
-                      </button>
-                    </div>
+              return (
+                <article
+                  key={product.id}
+                  className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-purple-100"
+                >
+                  <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-purple-50 text-xs font-semibold text-violet-600">
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      "이미지 없음"
+                    )}
                   </div>
 
-                  <h3 className="truncate font-bold text-gray-900">
-                    {product.name}
-                  </h3>
-                  <p className="mb-1 text-[10px] text-gray-400">
-                    SKU: {product.sku}
-                  </p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <span
+                        className={[
+                          "inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight",
+                          statusMeta.className,
+                        ].join(" ")}
+                      >
+                        {statusMeta.label}
+                      </span>
 
-                  <div className="flex items-end justify-between">
-                    <div className="space-y-0.5">
-                      <p className="text-lg font-extrabold text-violet-700">
-                        {formatPrice(product.price)}원
-                      </p>
-                      <p className="text-[10px] text-gray-500">
-                        재고:{" "}
-                        <span
-                          className={
-                            product.stock === 0
-                              ? "font-bold text-red-500"
-                              : "font-bold text-violet-700"
-                          }
+                      <div className="flex gap-2 text-gray-400">
+                        <Link
+                          to={`/seller/products/${product.id}/edit`}
+                          className="transition hover:text-violet-700"
                         >
-                          {product.stock}/{product.totalStock}
-                        </span>
-                      </p>
+                          ✎
+                        </Link>
+                        <button
+                          type="button"
+                          className="transition hover:text-red-500"
+                          onClick={() => setDeleteTarget(product)}
+                        >
+                          🗑
+                        </button>
+                      </div>
+                    </div>
+
+                    <h3 className="truncate font-bold text-gray-900">
+                      {product.name}
+                    </h3>
+                    <p className="mb-1 text-[10px] text-gray-400">
+                      {product.category}
+                    </p>
+
+                    <div className="flex items-end justify-between">
+                      <div className="space-y-0.5">
+                        <p className="text-lg font-extrabold text-violet-700">
+                          {formatPrice(product.price)}원
+                        </p>
+                        <p className="text-[10px] text-gray-500">
+                          재고:{" "}
+                          <span
+                            className={
+                              product.stockCount === 0
+                                ? "font-bold text-red-500"
+                                : "font-bold text-violet-700"
+                            }
+                          >
+                            {product.stockCount}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
+                </article>
+              );
+            })
+          )}
         </section>
 
         <section className="mt-8 overflow-hidden rounded-[28px] bg-purple-100/70 p-6 shadow-sm">
@@ -275,13 +306,6 @@ export default function SellerProductListPage() {
               <p className="text-xs text-gray-500">상품 수</p>
               <p className="text-2xl font-black text-gray-900">
                 {products.length}개
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500">노출율</p>
-              <p className="text-2xl font-black text-gray-900">
-                {approvalRate}%
               </p>
             </div>
           </div>
