@@ -74,6 +74,26 @@ async function getProductDetailApi(productId) {
   return toUiProduct(response.data);
 }
 
+async function getSellerProductsApi(params = {}) {
+  const response = await apiClient("/api/products/seller", {
+    params,
+  });
+
+  const page = response.data ?? {};
+
+  return {
+    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    pageInfo: {
+      page: page.number ?? 0,
+      size: page.size ?? 0,
+      totalElements: page.totalElements ?? 0,
+      totalPages: page.totalPages ?? 0,
+      first: page.first ?? true,
+      last: page.last ?? true,
+    },
+  };
+}
+
 async function getCategoriesApi(options = {}) {
   const { depth } = options;
   const response = await apiClient("/api/categories", {
@@ -117,6 +137,7 @@ async function createProductApi({
   price,
   stockQuantity,
   categoryId,
+  type = "GENERAL",
   images = [],
   thumbnailIndex = 0,
 }) {
@@ -130,6 +151,7 @@ async function createProductApi({
       price,
       stockQuantity,
       categoryId,
+      type,
     })
   );
 
@@ -155,5 +177,6 @@ export {
   getChildCategoriesApi,
   getProductDetailApi,
   getProductsApi,
+  getSellerProductsApi,
 };
 

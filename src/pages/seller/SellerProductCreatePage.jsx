@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -10,9 +10,16 @@ import {
   getChildCategoriesApi,
 } from "../../features/product/productApi";
 
+const MIN_PRICE = 1000;
+const MIN_STOCK = 1;
 const MAX_IMAGE_FILES = 10;
 const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
 const IMAGE_CONSTRAINTS = {
   maxFiles: MAX_IMAGE_FILES,
   maxFileSizeLabel: "10MB",
@@ -37,9 +44,10 @@ export default function SellerProductCreatePage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
+    type: "GENERAL",
     title: "",
     categoryId: "",
-    stockQuantity: 1,
+    stockQuantity: MIN_STOCK,
     price: "",
     description: "",
     images: [],
@@ -62,7 +70,7 @@ export default function SellerProductCreatePage() {
     depth2: false,
   });
   const [categoryError, setCategoryError] = useState("");
-  const [categoryEmptyNotice, setCategoryEmptyNotice] = useState("");
+  const [categoryNotice, setCategoryNotice] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,7 +81,7 @@ export default function SellerProductCreatePage() {
       try {
         setCategoriesLoading((prev) => ({ ...prev, depth0: true }));
         setCategoryError("");
-        setCategoryEmptyNotice("");
+        setCategoryNotice("");
         const data = await getCategoriesApi({ depth: 0 });
 
         if (cancelled) {
@@ -83,7 +91,9 @@ export default function SellerProductCreatePage() {
         setCategories((prev) => ({ ...prev, depth0: data }));
 
         if (data.length === 0) {
-          setCategoryEmptyNotice("등록된 1차 카테고리가 없습니다. 관리자에게 카테고리 등록을 요청해 주세요.");
+          setCategoryNotice(
+            "등록된 대분류 카테고리가 없습니다. 관리자에게 문의해 주세요."
+          );
         }
       } catch (error) {
         if (cancelled) {
@@ -92,6 +102,9 @@ export default function SellerProductCreatePage() {
 
         setCategories((prev) => ({ ...prev, depth0: [] }));
         setCategoryError(error?.message || "카테고리 목록을 불러오지 못했습니다.");
+        setCategoryNotice(
+          "카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
+        );
       } finally {
         if (!cancelled) {
           setCategoriesLoading((prev) => ({ ...prev, depth0: false }));
@@ -128,7 +141,7 @@ export default function SellerProductCreatePage() {
   const handleDecreaseStock = () => {
     setForm((prev) => ({
       ...prev,
-      stockQuantity: Math.max(0, Number(prev.stockQuantity || 0) - 1),
+      stockQuantity: Math.max(MIN_STOCK, Number(prev.stockQuantity || 0) - 1),
     }));
   };
 
@@ -140,7 +153,9 @@ export default function SellerProductCreatePage() {
       return;
     }
 
-    const invalidTypeFile = files.find((file) => !ACCEPTED_IMAGE_TYPES.includes(file.type));
+    const invalidTypeFile = files.find(
+      (file) => !ACCEPTED_IMAGE_TYPES.includes(file.type)
+    );
     if (invalidTypeFile) {
       setErrors((prev) => ({
         ...prev,
@@ -187,7 +202,9 @@ export default function SellerProductCreatePage() {
         ...prev,
         images: nextImages,
         thumbnailIndex:
-          nextImages.length === 0 ? 0 : Math.min(prev.thumbnailIndex, nextImages.length - 1),
+          nextImages.length === 0
+            ? 0
+            : Math.min(prev.thumbnailIndex, nextImages.length - 1),
       };
     });
   };
@@ -203,7 +220,9 @@ export default function SellerProductCreatePage() {
         URL.revokeObjectURL(targetImage.previewUrl);
       }
 
-      const nextImages = prev.images.filter((_, currentIndex) => currentIndex !== index);
+      const nextImages = prev.images.filter(
+        (_, currentIndex) => currentIndex !== index
+      );
       let nextThumbnailIndex = prev.thumbnailIndex;
 
       if (nextImages.length === 0) {
@@ -228,9 +247,11 @@ export default function SellerProductCreatePage() {
       setCategories((prev) => ({ ...prev, [depthKey]: children }));
 
       if (children.length === 0) {
-        setCategoryEmptyNotice("선택한 상위 카테고리에 연결된 하위 카테고리가 없습니다.");
+        setCategoryNotice(
+          "선택한 상위 카테고리에 연결된 하위 카테고리가 없습니다."
+        );
       } else {
-        setCategoryEmptyNotice("");
+        setCategoryNotice("");
       }
     } catch (error) {
       setCategories((prev) => ({ ...prev, [depthKey]: [] }));
@@ -242,7 +263,7 @@ export default function SellerProductCreatePage() {
     setSubmitError("");
     setErrors((prev) => ({ ...prev, categoryId: "" }));
     setCategoryError("");
-    setCategoryEmptyNotice("");
+    setCategoryNotice("");
 
     if (depthKey === "depth0Id") {
       setCategorySelection({
@@ -257,9 +278,17 @@ export default function SellerProductCreatePage() {
         return;
       }
 
-      setCategoriesLoading((prev) => ({ ...prev, depth1: true, depth2: false }));
+      setCategoriesLoading((prev) => ({
+        ...prev,
+        depth1: true,
+        depth2: false,
+      }));
       await loadChildCategories(nextCategoryId, "depth1");
-      setCategoriesLoading((prev) => ({ ...prev, depth1: false, depth2: false }));
+      setCategoriesLoading((prev) => ({
+        ...prev,
+        depth1: false,
+        depth2: false,
+      }));
       return;
     }
 
@@ -289,7 +318,10 @@ export default function SellerProductCreatePage() {
       setCategorySelection((prev) => ({ ...prev, depth2Id: nextCategoryId }));
       setForm((prev) => ({
         ...prev,
-        categoryId: nextCategoryId || categorySelection.depth1Id || categorySelection.depth0Id,
+        categoryId:
+          nextCategoryId ||
+          categorySelection.depth1Id ||
+          categorySelection.depth0Id,
       }));
     }
   };
@@ -297,24 +329,39 @@ export default function SellerProductCreatePage() {
   const validate = () => {
     const next = {};
 
+    if (form.type !== "GENERAL" && form.type !== "AUCTION") {
+      next.type = "상품 유형을 선택해 주세요.";
+    }
+
     if (!form.title.trim()) {
       next.title = "상품명을 입력해 주세요.";
     }
 
     if (!form.categoryId) {
-      next.categoryId = "카테고리를 선택해 주세요.";
+      next.categoryId = "대분류 카테고리를 선택해 주세요.";
     }
 
-    if (!String(form.price).trim()) {
+    const priceText = String(form.price).trim();
+    const priceNumber = Number(priceText);
+    if (!priceText) {
       next.price = "가격을 입력해 주세요.";
-    } else if (Number(form.price) <= 0) {
-      next.price = "가격은 0보다 커야 합니다.";
+    } else if (!Number.isInteger(priceNumber)) {
+      next.price = "가격은 정수로 입력해 주세요.";
+    } else if (priceNumber < MIN_PRICE) {
+      next.price = `가격은 ${MIN_PRICE.toLocaleString()}원 이상이어야 합니다.`;
     }
 
-    if (form.stockQuantity === "" || form.stockQuantity === null || form.stockQuantity === undefined) {
+    const stockNumber = Number(form.stockQuantity);
+    if (
+      form.stockQuantity === "" ||
+      form.stockQuantity === null ||
+      form.stockQuantity === undefined
+    ) {
       next.stockQuantity = "재고를 입력해 주세요.";
-    } else if (Number(form.stockQuantity) < 0) {
-      next.stockQuantity = "재고는 0 이상이어야 합니다.";
+    } else if (!Number.isInteger(stockNumber)) {
+      next.stockQuantity = "재고는 정수로 입력해 주세요.";
+    } else if (stockNumber < MIN_STOCK) {
+      next.stockQuantity = `재고는 ${MIN_STOCK} 이상이어야 합니다.`;
     }
 
     setErrors(next);
@@ -332,17 +379,18 @@ export default function SellerProductCreatePage() {
       setIsSubmitting(true);
       setSubmitError("");
 
-      const createdProduct = await createProductApi({
+      await createProductApi({
         title: form.title.trim(),
         description: form.description.trim(),
         price: Number(form.price),
         stockQuantity: Number(form.stockQuantity),
         categoryId: form.categoryId,
+        type: form.type,
         images: form.images,
         thumbnailIndex: form.thumbnailIndex,
       });
 
-      navigate(`/products/${createdProduct.id}`);
+      navigate("/seller/products");
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
@@ -370,9 +418,9 @@ export default function SellerProductCreatePage() {
         </span>
       </div>
 
-      {categoryEmptyNotice ? (
+      {categoryNotice ? (
         <section className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-          {categoryEmptyNotice}
+          {categoryNotice}
         </section>
       ) : null}
 
