@@ -5,6 +5,8 @@ import ProductListPage from './pages/product/ProductListPage'
 import ProductDetailPage from './pages/product/ProductDetailPage'
 import LoginPage from './pages/auth/LoginPage'
 import SignupPage from './pages/auth/SignupPage'
+import SignupPendingVerificationPage from './pages/auth/SignupPendingVerificationPage'
+import EmailVerificationPage from './pages/auth/EmailVerificationPage'
 import CartPage from './pages/cart/CartPage'
 import DepositPage from './pages/deposit/DepositPage'
 import DepositConfirmPage from './pages/deposit/DepositConfirmPage'
@@ -14,6 +16,8 @@ import CheckoutPage from './pages/order/CheckoutPage'
 import OrderListPage from './pages/order/OrderListPage'
 import OrderDetailPage from './pages/order/OrderDetailPage'
 import PaymentPage from './pages/payment/PaymentPage'
+import PaymentCardSuccessPage from './pages/payment/PaymentCardSuccessPage'
+import PaymentCardFailPage from './pages/payment/PaymentCardFailPage'
 import PaymentSuccessPage from './pages/payment/PaymentSuccessPage'
 import PaymentFailPage from './pages/payment/PaymentFailPage'
 import MyPage from './pages/member/MyPage'
@@ -38,6 +42,8 @@ const router = createBrowserRouter([
       { path: 'products/:productId', element: <ProductDetailPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'signup/pending-verification', element: <SignupPendingVerificationPage /> },
+      { path: 'email-verification', element: <EmailVerificationPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'deposits', element: <DepositPage /> },
       { path: 'payments/toss/success', element: <DepositConfirmPage /> },
@@ -45,6 +51,8 @@ const router = createBrowserRouter([
       { path: 'payments/toss/fail', element: <DepositFailPage /> },
       { path: 'orders/checkout', element: <CheckoutPage /> },
       { path: 'payments', element: <PaymentPage /> },
+      { path: 'payments/card/success', element: <PaymentCardSuccessPage /> },
+      { path: 'payments/card/fail', element: <PaymentCardFailPage /> },
       { path: 'payments/:orderId/success', element: <PaymentSuccessPage /> },
       { path: 'payments/:orderId/fail', element: <PaymentFailPage /> },
       { path: 'orders', element: <OrderListPage /> },

@@ -78,20 +78,16 @@ export default function SignupPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  // 프로필 이미지가 선택된 경우 S3에 업로드하고 objectKey를 반환하는 함수
   const uploadProfileImageIfNeeded = async () => {
-    // 프로필 이미지가 선택되지 않은 경우 업로드 과정 생략
     if (!profileImage) {
       return null;
     }
 
-    // S3 업로드를 위한 presigned URL 발급 요청
     const presignedData = await presignProfileImageUploadApi({
       fileName: profileImage.name,
       contentType: profileImage.type,
     });
 
-    // S3에 이미지 업로드
     await uploadProfileImageToS3({
       uploadUrl: presignedData.uploadUrl,
       file: profileImage,
@@ -111,7 +107,7 @@ export default function SignupPage() {
 
       const profileImageKey = await uploadProfileImageIfNeeded();
 
-      await signupApi({
+      const signupData = await signupApi({
         email: form.email.trim(),
         password: form.password,
         nickname: form.name.trim(),
@@ -120,6 +116,15 @@ export default function SignupPage() {
         profileImageKey,
         role: "USER",
       });
+
+      if (signupData?.status === "PENDING_VERIFICATION") {
+        navigate(
+          `/signup/pending-verification?email=${encodeURIComponent(
+            signupData.email || form.email.trim()
+          )}`
+        );
+        return;
+      }
 
       navigate("/login");
     } catch (error) {
@@ -294,4 +299,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
