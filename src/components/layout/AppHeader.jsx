@@ -67,12 +67,6 @@ export default function AppHeader() {
             <NavLink to="/orders" className={navLinkClass}>
               주문내역
             </NavLink>
-            <NavLink to="/notifications" className={navLinkClass}>
-              <span className="inline-flex items-center">
-                알림
-                {isLoggedIn ? <NotificationBadge count={unreadCount} /> : null}
-              </span>
-            </NavLink>
             <NavLink to="/deposits" className={navLinkClass}>
               예치금
             </NavLink>

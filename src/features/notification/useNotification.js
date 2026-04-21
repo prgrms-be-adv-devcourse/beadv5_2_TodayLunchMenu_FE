@@ -28,17 +28,17 @@ async function refreshUnreadCount() {
   }
 }
 
-function setUnreadCount(unreadCount) {
-  setNotificationState((prev) => ({
-    ...prev,
-    unreadCount: Math.max(0, unreadCount ?? 0),
-  }));
-}
-
 function decreaseUnreadCount(amount = 1) {
   setNotificationState((prev) => ({
     ...prev,
     unreadCount: Math.max(0, prev.unreadCount - amount),
+  }));
+}
+
+function setUnreadCount(unreadCount) {
+  setNotificationState((prev) => ({
+    ...prev,
+    unreadCount: Math.max(0, unreadCount ?? 0),
   }));
 }
 
@@ -49,6 +49,7 @@ function useNotification() {
   );
   const { isAuthenticated, user, loading: authLoading } = useAuth();
   const isLoggedIn = isAuthenticated && Boolean(user);
+  const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
 
   useEffect(() => {
     if (authLoading) {
@@ -56,14 +57,16 @@ function useNotification() {
     }
 
     if (!isLoggedIn) {
-      resetNotificationState();
+      if (!hasAccessToken) {
+        resetNotificationState();
+      }
       return;
     }
 
     refreshUnreadCount().catch(() => {
       setUnreadCount(0);
     });
-  }, [authLoading, isLoggedIn]);
+  }, [authLoading, hasAccessToken, isLoggedIn]);
 
   return {
     ...notificationState,
@@ -74,4 +77,4 @@ function useNotification() {
   };
 }
 
-export { useNotification };
+export { refreshUnreadCount, useNotification };
