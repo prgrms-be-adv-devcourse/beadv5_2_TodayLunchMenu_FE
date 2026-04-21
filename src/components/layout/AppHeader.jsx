@@ -61,6 +61,9 @@ export default function AppHeader() {
             <NavLink to="/products" className={navLinkClass}>
               상품
             </NavLink>
+            <NavLink to="/auctions" className={navLinkClass}>
+              경매장
+            </NavLink>
             <NavLink to="/cart" className={navLinkClass}>
               장바구니
             </NavLink>
