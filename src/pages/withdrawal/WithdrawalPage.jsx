@@ -196,7 +196,14 @@ export default function WithdrawalPage() {
   }, [navigate]);
 
   const handleQuickAmount = (quickAmount) => {
-    setAmount(String(quickAmount));
+    setAmount((prevAmount) => {
+      const currentAmount = Number(prevAmount || 0);
+      const nextAmount = Number.isFinite(currentAmount)
+        ? currentAmount + quickAmount
+        : quickAmount;
+
+      return String(nextAmount);
+    });
   };
 
   const handleOpenConfirm = () => {
