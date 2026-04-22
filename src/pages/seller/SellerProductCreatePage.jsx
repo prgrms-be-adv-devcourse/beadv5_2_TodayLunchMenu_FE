@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
+import AiProductDraftAssistant from "../../components/seller/AiProductDraftAssistant";
 import SellerProductForm from "../../components/seller/SellerProductForm";
+import { createProductDraftFromImageApi } from "../../features/ai/aiProductDraftApi";
 import {
   createProductApi,
   getCategoriesApi,
@@ -14,6 +16,8 @@ const MIN_PRICE = 1000;
 const MIN_STOCK = 1;
 const MAX_IMAGE_FILES = 10;
 const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
+const AI_MAX_IMAGE_FILES = 5;
+const AI_MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = [
   "image/jpeg",
   "image/png",
@@ -39,6 +43,31 @@ const toImageItem = (file) => ({
   file,
   previewUrl: URL.createObjectURL(file),
 });
+
+function findCategoryName(categories, categoryId) {
+  if (!categoryId) {
+    return "";
+  }
+
+  const allCategories = [
+    ...categories.depth0,
+    ...categories.depth1,
+    ...categories.depth2,
+  ];
+  const category = allCategories.find((item) => item.id === categoryId);
+
+  return category?.name ?? "";
+}
+
+function getCategoryPathText(categories, categorySelection) {
+  return [
+    findCategoryName(categories, categorySelection.depth0Id),
+    findCategoryName(categories, categorySelection.depth1Id),
+    findCategoryName(categories, categorySelection.depth2Id),
+  ]
+    .filter(Boolean)
+    .join(" > ");
+}
 
 export default function SellerProductCreatePage() {
   const navigate = useNavigate();
@@ -73,6 +102,9 @@ export default function SellerProductCreatePage() {
   const [categoryNotice, setCategoryNotice] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiDraft, setAiDraft] = useState(null);
+  const [aiDraftError, setAiDraftError] = useState("");
+  const [isCreatingAiDraft, setIsCreatingAiDraft] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -152,6 +184,9 @@ export default function SellerProductCreatePage() {
     if (files.length === 0) {
       return;
     }
+
+    setAiDraft(null);
+    setAiDraftError("");
 
     const invalidTypeFile = files.find(
       (file) => !ACCEPTED_IMAGE_TYPES.includes(file.type)
@@ -368,6 +403,96 @@ export default function SellerProductCreatePage() {
     return Object.keys(next).length === 0;
   };
 
+  const handleCreateAiDraft = async () => {
+    if (form.images.length === 0) {
+      setAiDraftError("이미지를 먼저 등록하면 AI가 상품 정보를 제안할 수 있어요.");
+      return;
+    }
+
+    const aiImages = form.images.slice(0, AI_MAX_IMAGE_FILES);
+    const oversizedAiImage = aiImages.find(
+      (image) => image.file.size > AI_MAX_IMAGE_FILE_SIZE
+    );
+
+    if (oversizedAiImage) {
+      setAiDraftError("AI 분석에는 파일당 5MB 이하 이미지만 사용할 수 있습니다.");
+      return;
+    }
+
+    try {
+      setIsCreatingAiDraft(true);
+      setAiDraftError("");
+
+      const categoryName = findCategoryName(categories, form.categoryId);
+      const categoryPathText = getCategoryPathText(
+        categories,
+        categorySelection
+      );
+      const thumbnailIndex =
+        form.thumbnailIndex < aiImages.length ? form.thumbnailIndex : 0;
+
+      const draft = await createProductDraftFromImageApi({
+        images: aiImages,
+        inputFields: [
+          {
+            fieldKey: "TITLE",
+            fieldLabel: "상품명",
+            maxLength: 60,
+            currentValue: form.title,
+          },
+          {
+            fieldKey: "DESCRIPTION",
+            fieldLabel: "상품 설명",
+            maxLength: 1000,
+            currentValue: form.description,
+          },
+          {
+            fieldKey: "PRICE",
+            fieldLabel: "판매가",
+            maxLength: 10,
+            currentValue: String(form.price ?? ""),
+          },
+        ],
+        titleDraft: form.title,
+        descriptionDraft: form.description,
+        priceDraft: String(form.price ?? ""),
+        categoryName,
+        categoryPathText,
+        thumbnailIndex,
+      });
+
+      setAiDraft(draft);
+    } catch (error) {
+      setAiDraftError(
+        error instanceof ApiError
+          ? error.message
+          : "AI가 상품 초안을 만들지 못했습니다."
+      );
+    } finally {
+      setIsCreatingAiDraft(false);
+    }
+  };
+
+  const handleApplyAiDraft = () => {
+    if (!aiDraft) {
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      title: aiDraft.suggestedTitle || prev.title,
+      description: aiDraft.suggestedDescription || prev.description,
+      price: aiDraft.suggestedPrice || prev.price,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      title: "",
+      description: "",
+      price: "",
+    }));
+    setSubmitError("");
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -447,6 +572,23 @@ export default function SellerProductCreatePage() {
         onRemoveImage={handleRemoveImage}
         onSubmit={handleSubmit}
         submitText={isSubmitting ? "상품 등록 중..." : "상품 등록"}
+        aiDraftAction={
+          <AiProductDraftAssistant
+            disabled={form.images.length === 0 || isSubmitting}
+            loading={isCreatingAiDraft}
+            draft={aiDraft}
+            error={aiDraftError}
+            helperText={
+              form.images.length === 0
+                ? "이미지를 먼저 등록하면 AI가 상품 정보를 제안할 수 있어요."
+                : form.images.length > AI_MAX_IMAGE_FILES
+                  ? `AI 분석에는 대표 이미지 기준 최대 ${AI_MAX_IMAGE_FILES}장까지 사용합니다.`
+                  : ""
+            }
+            onGenerate={handleCreateAiDraft}
+            onApply={handleApplyAiDraft}
+          />
+        }
         secondaryAction={
           <Button
             type="button"
