@@ -3,9 +3,11 @@ export {
   confirmCardPaymentApi,
   createChargeApi,
   createOrderForCardPaymentApi,
+  createWithdrawalApi,
   failCardPaymentApi,
   getTransactionsApi,
   getWalletSummaryApi,
+  getWithdrawalsApi,
   prepareCardPaymentApi,
 } from "./paymentService";
 export {

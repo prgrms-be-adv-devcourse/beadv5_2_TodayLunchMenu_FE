@@ -59,6 +59,12 @@ export default function MyPage() {
       icon: '💳',
     },
     {
+      title: '출금',
+      description: '예치금을 계좌로 출금',
+      to: '/withdrawals',
+      icon: '↗',
+    },
+    {
       title: '내 신고 이력',
       description: '제출한 신고와 처리 현황 확인',
       to: '/member-reports/me',
@@ -143,6 +149,9 @@ export default function MyPage() {
           </Link>
           <Link to="/deposits">
             <Button variant="secondary">예치금 보기</Button>
+          </Link>
+          <Link to="/withdrawals">
+            <Button variant="secondary">출금하기</Button>
           </Link>
           <Link to="/member-reports/me">
             <Button variant="secondary">내 신고 이력</Button>
