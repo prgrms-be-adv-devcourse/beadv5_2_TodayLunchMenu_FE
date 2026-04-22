@@ -3,8 +3,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
+import AiBidRecommendation from "../../components/auction/AiBidRecommendation";
 import BigCountdown from "../../components/auction/BigCountdown";
 import CountdownPill from "../../components/auction/CountdownPill";
+import { recommendAuctionBidPriceApi } from "../../features/auction/auctionAiApi";
 import { useAuth } from "../../features/auth/useAuth";
 import { formatKRW, statusLabel } from "../../features/auction/format";
 import {
@@ -114,6 +116,9 @@ export default function AuctionDetailPage() {
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
+  const [aiBidRecommendation, setAiBidRecommendation] = useState(null);
+  const [aiBidError, setAiBidError] = useState("");
+  const [aiBidLoading, setAiBidLoading] = useState(false);
 
   const currentPrice = auction?.currentPrice ?? 0;
   const bidUnit = auction?.bidUnit ?? 0;
@@ -178,6 +183,60 @@ export default function AuctionDetailPage() {
     const base = nextMin;
     return [base, base + bidUnit * 2, base + bidUnit * 5, base + bidUnit * 10];
   }, [auction, bidUnit, nextMin]);
+
+  const requestAiBidRecommendation = async () => {
+    if (!auction) {
+      return;
+    }
+
+    try {
+      setAiBidLoading(true);
+      setAiBidError("");
+
+      const remainingSeconds = auction.endsAt
+        ? Math.max(0, Math.floor((auction.endsAt - Date.now()) / 1000))
+        : null;
+      const recommendation = await recommendAuctionBidPriceApi({
+        auctionId: auction.id,
+        productId: auction.productId,
+        currentBidPrice: Math.max(currentPrice, nextMin),
+        startPrice: auction.startPrice,
+        productName: auction.productId ? `상품 ${auction.productId}` : "",
+        bidCount: bids.length,
+        remainingSeconds,
+      });
+      const recommendedBidPrice = Math.max(
+        recommendation.recommendedBidPrice,
+        nextMin
+      );
+      const expectedFinalPrice = Math.max(
+        recommendation.expectedFinalPrice,
+        recommendedBidPrice
+      );
+
+      setAiBidRecommendation({
+        ...recommendation,
+        recommendedBidPrice,
+        expectedFinalPrice,
+      });
+    } catch (nextError) {
+      setAiBidRecommendation(null);
+      setAiBidError(
+        nextError?.message || "AI 추천 입찰가를 불러오지 못했습니다."
+      );
+    } finally {
+      setAiBidLoading(false);
+    }
+  };
+
+  const applyAiBidRecommendation = () => {
+    if (!aiBidRecommendation?.recommendedBidPrice) {
+      return;
+    }
+
+    setBidInput(String(aiBidRecommendation.recommendedBidPrice));
+    setToast({ type: "success", message: "AI 추천가를 입력했습니다." });
+  };
 
   const place = async () => {
     if (!isAuthenticated) {
@@ -360,6 +419,15 @@ export default function AuctionDetailPage() {
                   );
                 })}
               </div>
+
+              <AiBidRecommendation
+                recommendation={aiBidRecommendation}
+                loading={aiBidLoading}
+                error={aiBidError}
+                disabled={submitting || ended}
+                onRequest={requestAiBidRecommendation}
+                onApply={applyAiBidRecommendation}
+              />
 
               <span className="mt-5 block text-sm font-bold text-gray-700">직접 입력</span>
               <div className="relative mt-2">

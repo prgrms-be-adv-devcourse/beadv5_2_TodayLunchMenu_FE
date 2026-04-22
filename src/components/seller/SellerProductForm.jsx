@@ -36,6 +36,7 @@ export default function SellerProductForm({
   onSubmit,
   submitText = "상품 등록",
   secondaryAction,
+  aiDraftAction,
 }) {
   return (
     <form className="space-y-8" onSubmit={onSubmit}>
@@ -118,6 +119,8 @@ export default function SellerProductForm({
               </div>
             </div>
           ) : null}
+
+          {aiDraftAction}
 
           <FormField label="상품 유형" htmlFor="type" required error={errors.type}>
             <div className="flex gap-3">

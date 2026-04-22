@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import PageContainer from "../../components/common/PageContainer";
+import ProductRecommendationSection from "../../components/product/ProductRecommendationSection";
+import { useProductRecommendations } from "../../features/ai/useProductRecommendations";
 import { useCart } from "../../features/cart/useCart";
 import { useProduct } from "../../features/product/useProducts";
 
@@ -40,6 +42,11 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { productId } = useParams();
   const { product, loading, error } = useProduct(productId);
+  const {
+    recommendations,
+    loading: recommendationsLoading,
+    error: recommendationsError,
+  } = useProductRecommendations(product?.id);
   const { addToCart } = useCart({ autoLoad: false });
   const [quantity, setQuantity] = useState(1);
   const [openModal, setOpenModal] = useState(false);
@@ -150,6 +157,12 @@ export default function ProductDetailPage() {
             구매하기
           </Button>
         </section>
+
+        <ProductRecommendationSection
+          recommendations={recommendations}
+          loading={recommendationsLoading}
+          error={recommendationsError}
+        />
 
         <section className="mt-4">
           <Button variant="ghost" onClick={() => navigate(-1)}>
