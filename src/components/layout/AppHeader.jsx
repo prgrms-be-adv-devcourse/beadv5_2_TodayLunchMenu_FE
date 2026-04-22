@@ -73,6 +73,9 @@ export default function AppHeader() {
             <NavLink to="/deposits" className={navLinkClass}>
               예치금
             </NavLink>
+            <NavLink to="/withdrawals" className={navLinkClass}>
+              출금
+            </NavLink>
             {isAdmin && (
               <NavLink to="/seller/products" className={navLinkClass}>
                 판매자 메뉴

@@ -37,6 +37,7 @@ import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
+import WithdrawalPage from "./pages/withdrawal/WithdrawalPage";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
       { path: "auth/kakao/link-required", element: <KakaoLinkRequiredPage /> },
       { path: "cart", element: <CartPage /> },
       { path: "deposits", element: <DepositPage /> },
+      { path: "withdrawals", element: <WithdrawalPage /> },
       { path: "payments/toss/success", element: <DepositConfirmPage /> },
       { path: "deposits/success", element: <DepositSuccessPage /> },
       { path: "payments/toss/fail", element: <DepositFailPage /> },

@@ -24,6 +24,25 @@ function toUiTransaction(transaction) {
   };
 }
 
+function toNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function toUiWithdrawal(withdrawal) {
+  return {
+    withdrawRequestId: withdrawal?.withdrawRequestId ?? null,
+    amount: toNumber(withdrawal?.amount),
+    fee: toNumber(withdrawal?.fee),
+    actualAmount: toNumber(withdrawal?.actualAmount),
+    maskedBankAccount: withdrawal?.maskedBankAccount ?? "",
+    status: withdrawal?.status ?? "UNKNOWN",
+    walletBalance: toNumber(withdrawal?.walletBalance),
+    requestedAt: withdrawal?.requestedAt ?? null,
+    processedAt: withdrawal?.processedAt ?? null,
+  };
+}
+
 function toUiChargeCreateResult(result) {
   return {
     chargeId: result?.chargeId ?? null,
@@ -62,5 +81,6 @@ export {
   toUiChargeConfirmResult,
   toUiChargeCreateResult,
   toUiTransaction,
+  toUiWithdrawal,
   toUiWalletSummary,
 };
