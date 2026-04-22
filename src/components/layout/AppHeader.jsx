@@ -31,6 +31,7 @@ export default function AppHeader() {
   const { cartCount } = useCart();
   const isLoggedIn = isAuthenticated && Boolean(user);
   const isAdmin = user?.role === "ADMIN";
+  const isSeller = user?.role === "SELLER";
   const displayName = user?.nickname || "회원";
 
   useEffect(() => {
@@ -76,9 +77,14 @@ export default function AppHeader() {
             <NavLink to="/withdrawals" className={navLinkClass}>
               출금
             </NavLink>
-            {isAdmin && (
+            {(isSeller || isAdmin) && (
               <NavLink to="/seller/products" className={navLinkClass}>
                 판매자 메뉴
+              </NavLink>
+            )}
+            {isSeller && (
+              <NavLink to="/seller/settlements" className={navLinkClass}>
+                정산 관리
               </NavLink>
             )}
           </nav>
