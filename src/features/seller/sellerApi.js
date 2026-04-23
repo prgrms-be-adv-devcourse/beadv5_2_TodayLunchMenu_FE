@@ -19,7 +19,7 @@ async function getMySellerInfoApi() {
     const response = await apiClient("/api/sellers/me");
     return unwrapResponse(response);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
+    if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
       return null;
     }
 

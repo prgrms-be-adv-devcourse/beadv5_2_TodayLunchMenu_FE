@@ -33,6 +33,7 @@ import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
 import ProductDetailPage from "./pages/product/ProductDetailPage";
 import ProductListPage from "./pages/product/ProductListPage";
 import SellerRegisterPage from "./pages/seller/SellerRegisterPage";
+import SellerAccountVerificationPage from "./pages/seller/SellerAccountVerificationPage";
 import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
 import SellerSettlementPage from "./pages/seller/SellerSettlementPage";
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
         element: <AdminMemberRestrictionListPage />,
       },
       { path: "seller/register", element: <SellerRegisterPage /> },
+      {
+        path: "seller/account-verification",
+        element: <SellerAccountVerificationPage />,
+      },
       { path: "seller/products", element: <SellerProductListPage /> },
       { path: "seller/products/new", element: <SellerProductCreatePage /> },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
