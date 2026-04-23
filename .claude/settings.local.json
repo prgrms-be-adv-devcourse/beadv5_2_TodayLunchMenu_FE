@@ -23,7 +23,10 @@
       "Bash(python -c ' *)",
       "Bash(echo \"Gateway:    $\\(docker exec goods-mall-gateway date -u +%s\\) / $\\(docker exec goods-mall-gateway date -u\\)\")",
       "Bash(echo \"Member:     $\\(docker exec goods-mall-member date -u +%s\\) / $\\(docker exec goods-mall-member date -u\\)\")",
-      "Bash(docker-compose up *)"
+      "Bash(docker-compose up *)",
+      "Read(//c/Users/home/IdeaProjects/**)",
+      "Bash(dir \"C:\\\\Users\\\\home\\\\IdeaProjects\")",
+      "Bash(xargs grep *)"
     ]
   }
 }
