@@ -1,4 +1,4 @@
-﻿import Button from "../common/Button";
+import Button from "../common/Button";
 import FormField from "../common/FormField";
 import Input from "../common/Input";
 
