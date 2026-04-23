@@ -131,6 +131,14 @@ async function getChildCategoriesApi(categoryId) {
     });
 }
 
+async function updateProductApi(productId, { title, description, price, stockQuantity, categoryId }) {
+  const response = await apiClient(`/api/products/${productId}`, {
+    method: "PUT",
+    body: { title, description: description || null, price, stockQuantity, categoryId },
+  });
+  return toUiProduct(response.data);
+}
+
 async function createProductApi({
   title,
   description,
@@ -171,11 +179,42 @@ async function createProductApi({
   return toUiProduct(response.data);
 }
 
+async function uploadProductImageApi(productId, file, { sortOrder = 0, isThumbnail = false } = {}) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("sortOrder", String(sortOrder));
+  formData.append("isThumbnail", String(isThumbnail));
+
+  const response = await apiClient(`/api/products/${productId}/images`, {
+    method: "POST",
+    body: formData,
+  });
+  return toUiImage(response.data);
+}
+
+async function deleteProductImageApi(productId, imageId) {
+  await apiClient(`/api/products/${productId}/images/${imageId}`, {
+    method: "DELETE",
+  });
+}
+
+async function getProductsByIdsApi(productIds) {
+  if (!productIds || productIds.length === 0) return [];
+  const query = productIds.map((id) => `productIds=${encodeURIComponent(id)}`).join("&");
+  const response = await apiClient(`/api/products/by-ids?${query}`);
+  const list = Array.isArray(response.data) ? response.data : [];
+  return list.map(toUiProduct);
+}
+
 export {
   createProductApi,
+  updateProductApi,
+  uploadProductImageApi,
+  deleteProductImageApi,
   getCategoriesApi,
   getChildCategoriesApi,
   getProductDetailApi,
+  getProductsByIdsApi,
   getProductsApi,
   getSellerProductsApi,
 };

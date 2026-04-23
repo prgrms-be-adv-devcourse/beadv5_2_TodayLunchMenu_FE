@@ -5,6 +5,7 @@ import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import AuctionCard from "../../components/auction/AuctionCard";
 import { useAuctions } from "../../features/auction/useAuctions";
+import { getProductsByIdsApi } from "../../features/product/productApi";
 
 const FILTERS = [
   { key: "ALL", label: "전체", status: null },
@@ -23,6 +24,20 @@ export default function AuctionListPage() {
     page,
     size: 9,
   });
+
+  const [productImageMap, setProductImageMap] = useState({});
+
+  useEffect(() => {
+    if (!auctions.length) return;
+    const ids = [...new Set(auctions.map((a) => a.productId).filter(Boolean))];
+    if (!ids.length) return;
+    getProductsByIdsApi(ids)
+      .then((products) => {
+        const map = Object.fromEntries(products.map((p) => [p.id, p.image]));
+        setProductImageMap((prev) => ({ ...prev, ...map }));
+      })
+      .catch(() => {});
+  }, [auctions]);
 
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -96,7 +111,11 @@ export default function AuctionListPage() {
         <>
           <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((auction) => (
-              <AuctionCard key={auction.id} auction={auction} />
+              <AuctionCard
+                key={auction.id}
+                auction={auction}
+                productImage={productImageMap[auction.productId] ?? null}
+              />
             ))}
           </section>
 
