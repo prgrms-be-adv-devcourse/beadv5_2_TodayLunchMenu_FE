@@ -209,7 +209,8 @@ export default function SellerProductListPage() {
               return (
                 <article
                   key={product.id}
-                  className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-purple-100"
+                  className="flex cursor-pointer items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-purple-100 transition hover:ring-violet-300"
+                  onClick={() => navigate(`/products/${product.id}`)}
                 >
                   <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-purple-50 text-xs font-semibold text-violet-600">
                     {product.image ? (
@@ -238,13 +239,14 @@ export default function SellerProductListPage() {
                         <Link
                           to={`/seller/products/${product.id}/edit`}
                           className="transition hover:text-violet-700"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           ✎
                         </Link>
                         <button
                           type="button"
                           className="transition hover:text-red-500"
-                          onClick={() => setDeleteTarget(product)}
+                          onClick={(e) => { e.stopPropagation(); setDeleteTarget(product); }}
                         >
                           🗑
                         </button>
