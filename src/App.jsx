@@ -35,6 +35,7 @@ import ProductListPage from "./pages/product/ProductListPage";
 import SellerRegisterPage from "./pages/seller/SellerRegisterPage";
 import SellerAccountVerificationPage from "./pages/seller/SellerAccountVerificationPage";
 import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
+import SellerProductEditPage from "./pages/seller/SellerProductEditPage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
 import SellerSettlementPage from "./pages/seller/SellerSettlementPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
@@ -97,6 +98,7 @@ const router = createBrowserRouter([
       },
       { path: "seller/products", element: <SellerProductListPage /> },
       { path: "seller/products/new", element: <SellerProductCreatePage /> },
+      { path: "seller/products/:productId/edit", element: <SellerProductEditPage /> },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
       { path: "auctions", element: <AuctionListPage /> },
       { path: "auctions/:auctionId", element: <AuctionDetailPage /> },
