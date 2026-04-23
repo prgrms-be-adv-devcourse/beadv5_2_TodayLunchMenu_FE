@@ -1,9 +1,8 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
 import PageContainer from '../../components/common/PageContainer';
 import { useAuth } from '../../features/auth/useAuth';
-import { useSeller } from '../../features/seller/useSeller';
 
 const DEFAULT_DEPOSIT_BALANCE = 0;
 const DEFAULT_ACTIVE_ORDERS = 0;
@@ -28,11 +27,8 @@ function formatJoinedAt(value) {
 }
 
 export default function MyPage() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const isSeller = user?.role === 'SELLER';
-  const { seller, loading: sellerLoading, error: sellerError } = useSeller(
-    isAuthenticated && !authLoading && isSeller
-  );
 
   const me = {
     name: user?.nickname ?? '게스트',
@@ -127,16 +123,9 @@ export default function MyPage() {
           <span className="text-sm font-bold text-violet-700">{formatPrice(me.depositBalance)}원</span>
         </div>
 
-        {sellerLoading ? <p className="mt-4 text-sm text-gray-500">판매자 정보를 확인하고 있습니다.</p> : null}
-
-        {!sellerLoading && sellerError ? (
-          <p className="mt-4 text-sm text-red-600">판매자 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</p>
-        ) : null}
-
-        {isSeller && seller ? (
+        {isSeller ? (
           <div className="mt-4 rounded-2xl bg-white/70 p-4 text-sm text-gray-700 ring-1 ring-purple-100">
-            <p>등록 은행: {seller.bankName || '-'}</p>
-            <p>정산 계좌: {seller.account || '-'}</p>
+            판매자 계정이 활성화되어 있습니다. 판매자 센터에서 상품, 주문, 정산 기능을 이용할 수 있습니다.
           </div>
         ) : null}
 

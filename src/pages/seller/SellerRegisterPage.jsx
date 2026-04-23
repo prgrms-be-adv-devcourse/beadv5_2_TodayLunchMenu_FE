@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
-import { useAuth } from "../../features/auth/useAuth";
+import { savePendingSellerVerification } from "../../features/seller/accountVerificationStorage";
 import { useSeller } from "../../features/seller/useSeller";
 
 export default function SellerRegisterPage() {
   const navigate = useNavigate();
-  const { refreshUser } = useAuth();
   const { registerSeller } = useSeller(false);
 
   const [form, setForm] = useState({
@@ -54,28 +54,29 @@ export default function SellerRegisterPage() {
     setOpenConfirm(true);
   };
 
-  // 판매자 등록을 확정하는 함수 (API 호출, 사용자 정보 새로고침)
   const handleConfirm = async () => {
-    console.log("판매자 등록 정보:", form);
     setIsSubmitting(true);
     setSubmitError("");
 
     try {
-      // 판매자 등록 API를 호출하여 판매자 등록을 시도합니다. 
-      await registerSeller({
+      const verification = await registerSeller({
         bankName: form.bankName.trim(),
         account: form.account.trim(),
       });
-      // 등록이 성공하면 사용자 정보를 새로고침하여 판매자 권한이 반영되도록 합니다.
-      await refreshUser();
 
+      const nextState = {
+        ...verification,
+        bankName: form.bankName.trim(),
+      };
+
+      savePendingSellerVerification(nextState);
       setOpenConfirm(false);
-      navigate("/seller/products");
+      navigate("/seller/account-verification", { state: nextState });
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
           ? error.message
-          : "판매자 등록 중 오류가 발생했습니다."
+          : "판매자 등록 요청 중 오류가 발생했습니다."
       );
       setOpenConfirm(false);
     } finally {
@@ -89,20 +90,21 @@ export default function SellerRegisterPage() {
         <section className="mb-8">
           <div className="mb-2 flex items-end justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-700">
-              Step 1 of 1
+              Step 1 of 2
             </span>
             <span className="text-sm font-bold text-gray-500">판매자 등록</span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-purple-100">
-            <div className="h-full w-full rounded-full bg-gradient-to-r from-violet-700 to-violet-600" />
+            <div className="h-full w-1/2 rounded-full bg-gradient-to-r from-violet-700 to-violet-600" />
           </div>
         </section>
 
         <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-gray-900">
-          정산 계좌를 등록해 판매를 시작해보세요
+          정산 계좌를 등록하고 판매를 시작해보세요
         </h1>
         <p className="mb-8 text-sm leading-relaxed text-gray-500">
-          현재 백엔드 판매자 등록 API는 은행명과 계좌번호를 기준으로 판매자 정보를 생성합니다.
+          계좌 정보를 먼저 등록하면 다음 단계에서 mock 인증 코드가 자동 입력된 계좌
+          인증 화면으로 이동합니다.
         </p>
 
         <form className="space-y-8" onSubmit={handleSubmit}>
@@ -116,7 +118,7 @@ export default function SellerRegisterPage() {
               >
                 <Input
                   id="bankName"
-                  placeholder="예: 국민은행"
+                  placeholder="예: 우리의은행"
                   value={form.bankName}
                   onChange={handleChange("bankName")}
                   error={!!errors.bankName}
@@ -128,11 +130,11 @@ export default function SellerRegisterPage() {
                 htmlFor="account"
                 required
                 error={errors.account}
-                helpText="하이픈 포함 여부와 관계없이 입력하실 수 있습니다."
+                helpText="하이픈은 자동으로 무시되므로 편한 형식으로 입력해도 됩니다."
               >
                 <Input
                   id="account"
-                  placeholder="예: 123456-78-123456"
+                  placeholder="예: 1234-5678-9012"
                   value={form.account}
                   onChange={handleChange("account")}
                   error={!!errors.account}
@@ -148,42 +150,32 @@ export default function SellerRegisterPage() {
           ) : null}
 
           <section className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 flex items-center gap-4 rounded-2xl bg-purple-50/80 p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
-                ₩
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-gray-900">간단한 등록</h4>
-                <p className="text-xs text-gray-500">
-                  정산 계좌 정보만 입력하면 바로 판매자 등록을 완료할 수 있습니다.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100">
-              <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-pink-100 text-pink-700">
-                ✓
-              </div>
-              <h4 className="text-xs font-bold text-gray-900">정산 정보 저장</h4>
-              <p className="mt-1 text-[10px] leading-relaxed text-gray-500">
-                등록 시 입력한 은행명과 계좌번호가 판매자 정보로 저장됩니다.
+            <div className="col-span-2 rounded-2xl bg-purple-50/80 p-4">
+              <h4 className="text-sm font-bold text-gray-900">다음 단계 자동 연결</h4>
+              <p className="mt-1 text-xs leading-relaxed text-gray-500">
+                등록이 완료되면 계좌 인증 후속 페이지로 이동하고, mock 인증 코드는 자동으로
+                입력됩니다.
               </p>
             </div>
 
             <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100">
-              <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-violet-700">
-                →
-              </div>
-              <h4 className="text-xs font-bold text-gray-900">판매자 센터 이동</h4>
-              <p className="mt-1 text-[10px] leading-relaxed text-gray-500">
-                등록이 끝나면 상품 관리 화면으로 이동합니다.
+              <h4 className="text-xs font-bold text-gray-900">자동 입력 코드</h4>
+              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
+                개발용 인증 코드는 다음 화면에서 자동으로 채워집니다.
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100">
+              <h4 className="text-xs font-bold text-gray-900">판매자 전환</h4>
+              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
+                계좌 인증 완료 후 판매 기능 화면으로 자연스럽게 이어집니다.
               </p>
             </div>
           </section>
 
           <div className="sticky bottom-4 z-10">
             <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "등록 중..." : "판매자 등록 완료"}
+              {isSubmitting ? "등록 중..." : "계좌 인증 단계로 이동"}
             </Button>
           </div>
         </form>
@@ -192,9 +184,9 @@ export default function SellerRegisterPage() {
       <ConfirmModal
         open={openConfirm}
         onClose={() => !isSubmitting && setOpenConfirm(false)}
-        title="판매자로 등록할까요?"
-        description="등록 후 바로 판매자 전용 메뉴를 사용할 수 있습니다."
-        confirmText={isSubmitting ? "등록 중..." : "등록하기"}
+        title="계좌 인증을 시작할까요?"
+        description="등록 후 다음 화면에서 자동 입력된 mock 인증 코드로 계좌 인증을 완료할 수 있습니다."
+        confirmText={isSubmitting ? "등록 중..." : "인증 시작하기"}
         onConfirm={handleConfirm}
       />
     </>
