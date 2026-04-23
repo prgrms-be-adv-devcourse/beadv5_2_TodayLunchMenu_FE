@@ -560,7 +560,7 @@ export default function SellerProductCreatePage() {
           productTitle: product.name,
           startPrice: Number(auctionForm.startPrice),
           bidUnit: Number(auctionForm.bidUnit),
-          startedAt: new Date(auctionForm.startedAt).toISOString(),
+          startedAt: auctionForm.startedAt.length === 16 ? auctionForm.startedAt + ":00" : auctionForm.startedAt,
           durationMinutes: Number(auctionForm.durationMinutes),
         });
       }

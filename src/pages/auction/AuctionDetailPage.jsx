@@ -126,6 +126,12 @@ export default function AuctionDetailPage() {
   const animatedPrice = useAnimatedNumber(currentPrice);
 
   useEffect(() => {
+    if (auction?.status !== "WAITING") return undefined;
+    const timer = setInterval(reload, 10_000);
+    return () => clearInterval(timer);
+  }, [auction?.status, reload]);
+
+  useEffect(() => {
     if (!auction) {
       return;
     }
@@ -301,6 +307,7 @@ export default function AuctionDetailPage() {
   }
 
   const isSeller = myId && auction.sellerId && myId === auction.sellerId;
+  const isWaiting = auction.status === "WAITING";
   const initial = auction.id?.slice(0, 1).toUpperCase() || "A";
   const topBid = bids[0];
 
@@ -319,7 +326,7 @@ export default function AuctionDetailPage() {
             <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
               Lot {auction.id?.slice(0, 6).toUpperCase()}
             </span>
-            <CountdownPill endsAt={auction.endsAt} />
+            <CountdownPill endsAt={auction.endsAt} status={auction.status} />
             <span className="select-none text-[180px] font-black leading-none tracking-tight text-violet-700">
               {initial}
             </span>
@@ -396,7 +403,18 @@ export default function AuctionDetailPage() {
             </div>
           </div>
 
-          {!ended && !isSeller && (
+          {isWaiting && (
+            <div className="rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
+              <p className="text-sm font-medium text-gray-500">경매가 아직 시작되지 않았어요.</p>
+              {auction.startedAt && (
+                <p className="mt-1 text-sm font-bold text-violet-700">
+                  시작 시간: {new Date(auction.startedAt).toLocaleString("ko-KR")}
+                </p>
+              )}
+            </div>
+          )}
+
+          {!ended && !isSeller && !isWaiting && (
             <div className="rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
               <span className="block text-sm font-bold text-gray-700">빠른 입찰</span>
               <div className="mt-2 grid grid-cols-2 gap-2">
