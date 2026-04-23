@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
@@ -249,6 +249,13 @@ export default function DepositPage() {
               </p>
             </div>
           </div>
+
+          <Link
+            to="/withdrawals"
+            className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full bg-white/15 px-5 text-sm font-bold text-white transition hover:bg-white/25"
+          >
+            출금하기
+          </Link>
         </section>
 
         <section className="mb-8 rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">

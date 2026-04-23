@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -35,8 +35,12 @@ function buildPaymentModel(state) {
   const items = Array.isArray(source?.items) ? source.items : [];
   const itemPrice =
     source?.itemPrice ??
-    items.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
-  const shippingFee = source?.shippingFee ?? (itemPrice >= 30000 || itemPrice === 0 ? 0 : 3000);
+    items.reduce(
+      (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
+      0
+    );
+  const shippingFee =
+    source?.shippingFee ?? (itemPrice >= 30000 || itemPrice === 0 ? 0 : 3000);
   const totalPrice = source?.totalPrice ?? itemPrice + shippingFee;
 
   return {
@@ -47,7 +51,7 @@ function buildPaymentModel(state) {
     paymentMethod: source?.paymentMethod ?? "결제",
     paymentMethodCode: source?.paymentMethodCode ?? null,
     selectedPaymentMethod: source?.selectedPaymentMethod ?? null,
-    depositLabel: source?.depositLabel ?? "",
+    depositLabel: source?.depositLabel ?? "예치금 결제",
     itemPrice,
     shippingFee,
     totalPrice,
@@ -57,7 +61,9 @@ function buildPaymentModel(state) {
 function isUuid(value) {
   return (
     typeof value === "string" &&
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value
+    )
   );
 }
 
@@ -79,12 +85,16 @@ export default function PaymentPage() {
     payment.paymentMethodCode === "CARD" ||
     payment.paymentMethod === "카드 결제" ||
     payment.paymentMethod === "카드결제";
-  const paymentMethodLabel = isCardPayment ? "카드 결제" : payment.depositLabel || "예치금 결제";
+  const paymentMethodLabel = isCardPayment
+    ? "카드 결제"
+    : payment.depositLabel || "예치금 결제";
 
   const primaryItem = payment.items[0] ?? null;
-  const effectiveDepositBalance = typeof walletBalance === "number" ? walletBalance : null;
+  const effectiveDepositBalance =
+    typeof walletBalance === "number" ? walletBalance : null;
   const hasEnoughDeposit =
-    typeof effectiveDepositBalance === "number" && effectiveDepositBalance >= payment.totalPrice;
+    typeof effectiveDepositBalance === "number" &&
+    effectiveDepositBalance >= payment.totalPrice;
   const shortageAmount =
     typeof effectiveDepositBalance === "number"
       ? Math.max(payment.totalPrice - effectiveDepositBalance, 0)
@@ -109,7 +119,9 @@ export default function PaymentPage() {
       } catch (error) {
         if (!cancelled) {
           setWalletBalance(null);
-          setWalletError(error?.message || "예치금 정보를 불러오지 못했습니다.");
+          setWalletError(
+            error?.message || "예치금 정보를 불러오지 못했습니다."
+          );
         }
       } finally {
         if (!cancelled) {
@@ -199,7 +211,9 @@ export default function PaymentPage() {
       setSubmitError("");
 
       if (!hasPaymentItems) {
-        setSubmitError("주문 데이터가 없습니다. 장바구니에서 다시 시작해 주세요.");
+        setSubmitError(
+          "주문 데이터가 없습니다. 장바구니에서 다시 시작해 주세요."
+        );
         return;
       }
 
@@ -211,13 +225,17 @@ export default function PaymentPage() {
       if (isCardPayment) {
         const createdOrder = preparedCardOrder;
         if (!createdOrder) {
-          setSubmitError("카드 결제 주문 정보를 아직 준비하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+          setSubmitError(
+            "카드 결제 주문 정보를 아직 준비하지 못했습니다. 잠시 후 다시 시도해 주세요."
+          );
           return;
         }
 
         const orderId = String(createdOrder.orderId);
         if (!orderId || orderId === "null" || orderId.startsWith("pending-")) {
-          setSubmitError("실제 주문 UUID를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+          setSubmitError(
+            "실제 주문 UUID를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요."
+          );
           return;
         }
 
@@ -236,35 +254,10 @@ export default function PaymentPage() {
           selectedPaymentMethod: payment.selectedPaymentMethod,
         });
 
-        console.info("[PaymentPage] loading Toss SDK", {
-          orderId,
-          amount,
-          orderName,
-        });
-
         const TossPayments = await loadTossPaymentsSdk();
-        console.info("[PaymentPage] Toss SDK loaded");
-        console.info("[PaymentPage] creating TossPayments factory");
         const tossPayments = TossPayments(TOSS_CLIENT_KEY);
-        console.info("[PaymentPage] TossPayments factory created");
-
-        let tossPayment;
-        try {
-          tossPayment = tossPayments.payment({
-            customerKey: `order-${orderId}`,
-          });
-          console.info("[PaymentPage] Toss payment object created");
-        } catch (error) {
-          console.error("[PaymentPage] Toss payment object creation failed", error);
-          throw error;
-        }
-
-        console.info("[PaymentPage] Toss requestPayment start", {
-          orderId,
-          amount,
-          orderName,
-          successUrl: `${window.location.origin}/payments/card/success`,
-          failUrl: `${window.location.origin}/payments/card/fail`,
+        const tossPayment = tossPayments.payment({
+          customerKey: `order-${orderId}`,
         });
 
         await tossPayment.requestPayment({
@@ -312,7 +305,8 @@ export default function PaymentPage() {
       navigate(`/payments/${payment.orderId || "pending"}/fail`, {
         state: {
           ...payment,
-          errorCode: error instanceof ApiError ? error.code : "ORDER_REQUEST_FAILED",
+          errorCode:
+            error instanceof ApiError ? error.code : "ORDER_REQUEST_FAILED",
           errorTitle: isCardPayment ? "카드 결제 시작 실패" : "주문/결제 요청 실패",
           errorMessage,
         },
@@ -385,7 +379,9 @@ export default function PaymentPage() {
                 )}
               </div>
               <div>
-                <p className="text-lg font-extrabold text-gray-900">{primaryItem?.name || "상품 정보 없음"}</p>
+                <p className="text-lg font-extrabold text-gray-900">
+                  {primaryItem?.name || "상품 정보 없음"}
+                </p>
                 <p className="mt-1 text-sm text-gray-500">
                   {primaryItem?.subtitle || `${primaryItem?.quantity || 0}개 주문`}
                 </p>
@@ -400,26 +396,38 @@ export default function PaymentPage() {
             <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-100">
               Total Amount
             </p>
-            <p className="mt-3 text-4xl font-black tracking-tight">{formatPrice(payment.totalPrice)}</p>
+            <p className="mt-3 text-4xl font-black tracking-tight">
+              {formatPrice(payment.totalPrice)}
+            </p>
             <div className="mt-5 inline-flex rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]">
-              {payment.paymentMethod}
+              {paymentMethodLabel}
             </div>
           </div>
         </section>
 
         <section className="mb-6 rounded-[28px] bg-purple-50/85 p-6 ring-1 ring-purple-100">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-extrabold tracking-tight text-gray-900">배송 요약</h2>
+            <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
+              배송 요약
+            </h2>
           </div>
 
           <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">수령인</p>
-              <p className="mt-2 text-base font-bold text-gray-900">{payment.shipping?.receiver || "-"}</p>
-              <p className="mt-1 text-sm text-gray-500">{payment.shipping?.receiverPhone || "-"}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
+                수령인
+              </p>
+              <p className="mt-2 text-base font-bold text-gray-900">
+                {payment.shipping?.receiver || "-"}
+              </p>
+              <p className="mt-1 text-sm text-gray-500">
+                {payment.shipping?.receiverPhone || "-"}
+              </p>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">배송지</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
+                배송지
+              </p>
               <p className="mt-2 text-sm leading-6 text-gray-700">
                 {payment.shipping?.address || "-"}
                 <br />
@@ -432,21 +440,27 @@ export default function PaymentPage() {
         </section>
 
         <section className="mb-6 rounded-[28px] border border-purple-100 bg-white p-6 shadow-[0_30px_60px_-40px_rgba(56,39,76,0.2)]">
-          <h2 className="text-xl font-extrabold tracking-tight text-gray-900">결제 수단</h2>
+          <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
+            결제 수단
+          </h2>
 
           <div
             className={[
               "mt-5 flex items-center rounded-[24px] border p-4",
-              isCardPayment ? "border-amber-200 bg-amber-50/80" : "border-violet-200 bg-violet-50/70",
+              isCardPayment
+                ? "border-amber-200 bg-amber-50/80"
+                : "border-violet-200 bg-violet-50/70",
             ].join(" ")}
           >
             <div
               className={[
                 "flex h-14 w-14 items-center justify-center rounded-2xl text-2xl text-white shadow-lg",
-                isCardPayment ? "bg-amber-500 shadow-amber-500/20" : "bg-violet-700 shadow-violet-500/25",
+                isCardPayment
+                  ? "bg-amber-500 shadow-amber-500/20"
+                  : "bg-violet-700 shadow-violet-500/25",
               ].join(" ")}
             >
-              {isCardPayment ? "💳" : "₩"}
+              {isCardPayment ? "카" : "원"}
             </div>
             <div className="ml-4 flex-1">
               <p className="text-lg font-extrabold text-gray-900">
@@ -474,7 +488,55 @@ export default function PaymentPage() {
                 카드 결제는 주문 생성 후 토스 결제창으로 이동합니다.
               </div>
               <div className="rounded-2xl border border-amber-200 bg-white px-4 py-4 text-sm text-gray-600">
-                승인 완료 후에는 성공 URL에서 결제 확정 API를 호출하고 최종 상태를 반영합니다.
+                승인 완료 후에는 성공 URL에서 결제 확정 API를 호출하고 최종
+                상태를 반영합니다.
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        <section className="mb-6 rounded-[28px] bg-white p-6 ring-1 ring-purple-100">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
+              {isCardPayment ? "카드 결제 준비" : "예치금 확인"}
+            </h2>
+            {!isCardPayment ? (
+              <span
+                className={[
+                  "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
+                  hasEnoughDeposit
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "bg-red-50 text-red-500",
+                ].join(" ")}
+              >
+                {hasEnoughDeposit ? "결제 가능" : "잔액 부족"}
+              </span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-700">
+                연동 대기
+              </span>
+            )}
+          </div>
+
+          {isCardPayment ? (
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl bg-amber-50 px-4 py-4 text-sm font-medium text-amber-700">
+                카드 결제는 예치금 잔액과 무관하게 주문 생성 후 PG 결제창에서
+                진행됩니다.
+              </div>
+              <div className="space-y-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-4 text-sm text-gray-600">
+                <div className="flex items-center justify-between">
+                  <span>현재 단계</span>
+                  <span className="font-semibold text-gray-900">
+                    주문 생성 후 토스 결제창 호출
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>성공 복귀 후</span>
+                  <span className="font-semibold text-gray-900">
+                    confirm API 호출
+                  </span>
+                </div>
               </div>
             </div>
           ) : (
@@ -482,20 +544,30 @@ export default function PaymentPage() {
               <div className="flex items-center justify-between text-sm text-gray-600">
                 <span>현재 예치금</span>
                 <span className="text-base font-extrabold text-gray-900">
-                  {walletLoading ? "불러오는 중..." : walletBalance === null ? "-" : formatPrice(walletBalance)}
+                  {walletLoading
+                    ? "불러오는 중..."
+                    : walletBalance === null
+                      ? "-"
+                      : formatPrice(walletBalance)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm text-red-500">
                 <span>결제 예정 금액</span>
-                <span className="text-base font-extrabold">-{formatPrice(payment.totalPrice)}</span>
+                <span className="text-base font-extrabold">
+                  -{formatPrice(payment.totalPrice)}
+                </span>
               </div>
               <div className="h-px bg-purple-100" />
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-700">결제 후 예상 잔액</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  결제 후 예상 잔액
+                </span>
                 <span className="text-xl font-black tracking-tight text-violet-700">
                   {walletLoading || walletBalance === null
                     ? "-"
-                    : formatPrice(Math.max(effectiveDepositBalance - payment.totalPrice, 0))}
+                    : formatPrice(
+                        Math.max(effectiveDepositBalance - payment.totalPrice, 0)
+                      )}
                 </span>
               </div>
 
@@ -507,7 +579,8 @@ export default function PaymentPage() {
 
               {!walletLoading && walletBalance !== null && !hasEnoughDeposit ? (
                 <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-500">
-                  예치금이 {formatPrice(shortageAmount)} 부족합니다. 충전 후 다시 시도해 주세요.
+                  예치금이 {formatPrice(shortageAmount)} 부족합니다. 충전 후
+                  다시 시도해 주세요.
                 </div>
               ) : null}
             </div>
@@ -517,14 +590,20 @@ export default function PaymentPage() {
         <section className="mb-32 space-y-3 px-2">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>상품 금액</span>
-            <span className="font-semibold text-gray-900">{formatPrice(payment.itemPrice)}</span>
+            <span className="font-semibold text-gray-900">
+              {formatPrice(payment.itemPrice)}
+            </span>
           </div>
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>배송비</span>
-            <span className="font-semibold text-gray-900">{formatPrice(payment.shippingFee)}</span>
+            <span className="font-semibold text-gray-900">
+              {formatPrice(payment.shippingFee)}
+            </span>
           </div>
           <div className="flex items-end justify-between border-t border-purple-100 pt-4">
-            <span className="text-lg font-extrabold text-gray-900">총 결제 금액</span>
+            <span className="text-lg font-extrabold text-gray-900">
+              총 결제 금액
+            </span>
             <span className="text-3xl font-black tracking-tight text-violet-700">
               {formatPrice(payment.totalPrice)}
             </span>
@@ -536,7 +615,9 @@ export default function PaymentPage() {
         <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>{paymentMethodLabel}</span>
-            <span className="text-lg font-extrabold text-violet-700">{formatPrice(payment.totalPrice)}</span>
+            <span className="text-lg font-extrabold text-violet-700">
+              {formatPrice(payment.totalPrice)}
+            </span>
           </div>
           <Button
             size="lg"
@@ -544,7 +625,10 @@ export default function PaymentPage() {
             disabled={
               isCardPayment
                 ? isSubmitting || isPreparingCardOrder || !preparedCardOrder
-                : walletLoading || walletBalance === null || !hasEnoughDeposit || isSubmitting
+                : walletLoading ||
+                  walletBalance === null ||
+                  !hasEnoughDeposit ||
+                  isSubmitting
             }
             onClick={handleCreateOrder}
           >
@@ -564,7 +648,10 @@ export default function PaymentPage() {
                     ? `${formatPrice(payment.totalPrice)} 결제하기`
                     : "예치금이 부족합니다"}
           </Button>
-          {!isCardPayment && !walletLoading && walletBalance !== null && !hasEnoughDeposit ? (
+          {!isCardPayment &&
+          !walletLoading &&
+          walletBalance !== null &&
+          !hasEnoughDeposit ? (
             <Button
               variant="secondary"
               size="lg"
@@ -584,7 +671,9 @@ export default function PaymentPage() {
             </Button>
           ) : null}
           <p className="text-center text-[11px] font-bold uppercase tracking-[0.22em] text-gray-400">
-            {isCardPayment ? "Order Create + Toss Card Payment" : "Secure Deposit Transaction"}
+            {isCardPayment
+              ? "Order Create + Toss Card Payment"
+              : "Secure Deposit Transaction"}
           </p>
         </div>
       </footer>

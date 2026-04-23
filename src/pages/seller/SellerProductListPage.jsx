@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
@@ -19,35 +18,25 @@ function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
 
-function getStatusMeta(status) {
-  switch (status) {
-    case "ACTIVE":
-      return {
-        label: "판매중",
-        className: "bg-violet-100 text-violet-700",
-      };
-    case "SOLD_OUT":
-      return {
-        label: "품절",
-        className: "bg-pink-100 text-pink-700",
-      };
-    case "INACTIVE":
-      return {
-        label: "비공개",
-        className: "bg-gray-100 text-gray-600",
-      };
-    default:
-      return {
-        label: status ?? "",
-        className: "bg-gray-100 text-gray-600",
-      };
-  }
+function StatusBadge({ status }) {
+  const meta = {
+    ACTIVE: { label: "판매중", className: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
+    SOLD_OUT: { label: "품절", className: "bg-red-50 text-red-600 border border-red-200" },
+    INACTIVE: { label: "비공개", className: "bg-gray-100 text-gray-500 border border-gray-200" },
+  }[status] ?? { label: status, className: "bg-gray-100 text-gray-500 border border-gray-200" };
+
+  return (
+    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${meta.className}`}>
+      {meta.label}
+    </span>
+  );
 }
 
 export default function SellerProductListPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const isSeller = user?.role === "SELLER";
+
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -56,271 +45,219 @@ export default function SellerProductListPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isSeller) {
-      return;
-    }
-
+    if (!isSeller) return;
     let cancelled = false;
 
-    async function loadSellerProducts() {
+    async function load() {
       try {
         setLoading(true);
         setError("");
         const { items } = await getSellerProductsApi({ page: 0, size: 50 });
-
-        if (cancelled) {
-          return;
-        }
-
-        setProducts(items);
+        if (!cancelled) setProducts(items);
       } catch (err) {
-        if (cancelled) {
-          return;
-        }
-
-        setError(
-          err instanceof ApiError
-            ? err.message
-            : "상품 목록을 불러오지 못했습니다."
-        );
+        if (!cancelled)
+          setError(err instanceof ApiError ? err.message : "상품 목록을 불러오지 못했습니다.");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
-    loadSellerProducts();
-
-    return () => {
-      cancelled = true;
-    };
+    load();
+    return () => { cancelled = true; };
   }, [isSeller]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesFilter = filter === "ALL" ? true : product.status === filter;
-      const trimmed = keyword.trim().toLowerCase();
-      const matchesKeyword = trimmed
-        ? (product.name || "").toLowerCase().includes(trimmed)
-        : true;
-
-      return matchesFilter && matchesKeyword;
+    const trimmed = keyword.trim().toLowerCase();
+    return products.filter((p) => {
+      const matchFilter = filter === "ALL" || p.status === filter;
+      const matchKeyword = !trimmed || (p.name || "").toLowerCase().includes(trimmed);
+      return matchFilter && matchKeyword;
     });
   }, [products, keyword, filter]);
 
   if (authLoading) {
     return (
       <PageContainer>
-        <section className="py-16 text-center">
-          <p className="text-sm font-medium text-gray-500">
-            판매자 권한을 확인하고 있습니다.
-          </p>
-        </section>
+        <p className="py-16 text-center text-sm text-gray-400">권한을 확인하는 중...</p>
       </PageContainer>
     );
   }
 
-  if (!isSeller) {
-    return <Navigate to="/seller/register" replace />;
-  }
+  if (!isSeller) return <Navigate to="/seller/register" replace />;
 
-  const totalValue = products.reduce(
-    (sum, product) => sum + product.price * product.stockCount,
-    0
-  );
-  const liveCount = products.filter((p) => p.status === "ACTIVE").length;
+  const activeCount = products.filter((p) => p.status === "ACTIVE").length;
+  const soldOutCount = products.filter((p) => p.status === "SOLD_OUT").length;
+  const inactiveCount = products.filter((p) => p.status === "INACTIVE").length;
 
   const handleDelete = () => {
-    setProducts((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+    setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
     setDeleteTarget(null);
   };
 
   return (
     <>
       <PageContainer>
-        <section className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
-              Seller Hub
-            </p>
-            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
-              내 상품 관리
-            </h1>
+        {/* 헤더 */}
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">Seller Hub</p>
+            <h1 className="mt-0.5 text-xl font-extrabold text-gray-900">상품 관리</h1>
           </div>
+          <button
+            type="button"
+            onClick={() => navigate("/seller/products/new")}
+            className="flex items-center gap-1.5 rounded-full bg-violet-700 px-4 py-2 text-sm font-bold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-800 active:scale-[0.97]"
+          >
+            <span className="text-base leading-none">+</span>
+            상품 등록
+          </button>
+        </div>
 
-          <div className="flex flex-col gap-3">
-            <Input
-              placeholder="상품명 검색"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
-
-            <Button size="lg" className="w-full" onClick={() => navigate("/seller/products/new")}>
-              + 새 상품 등록
-            </Button>
+        {/* 통계 요약 */}
+        {!loading && products.length > 0 && (
+          <div className="mb-5 grid grid-cols-4 divide-x divide-gray-100 rounded-2xl bg-white py-3 shadow-sm ring-1 ring-gray-100">
+            {[
+              { label: "전체", value: products.length, color: "text-gray-900" },
+              { label: "판매중", value: activeCount, color: "text-emerald-600" },
+              { label: "품절", value: soldOutCount, color: "text-red-500" },
+              { label: "비공개", value: inactiveCount, color: "text-gray-400" },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="flex flex-col items-center gap-0.5 px-2">
+                <span className={`text-lg font-extrabold ${color}`}>{value}</span>
+                <span className="text-[10px] text-gray-400">{label}</span>
+              </div>
+            ))}
           </div>
-        </section>
+        )}
 
-        <section className="-mx-4 mt-6 overflow-x-auto px-4">
-          <div className="flex min-w-max gap-2">
-            {FILTERS.map((item) => {
-              const active = filter === item.value;
+        {/* 검색 */}
+        <div className="mb-3">
+          <Input
+            placeholder="상품명으로 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+        </div>
+
+        {/* 상태 필터 */}
+        <div className="-mx-6 mb-5 overflow-x-auto">
+          <div className="flex gap-1.5 px-6">
+            {FILTERS.map(({ value, label }) => {
+              const active = filter === value;
               return (
                 <button
-                  key={item.value}
+                  key={value}
                   type="button"
-                  onClick={() => setFilter(item.value)}
+                  onClick={() => setFilter(value)}
                   className={[
-                    "rounded-full px-5 py-2 text-sm font-bold transition",
+                    "flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition",
                     active
-                      ? "bg-violet-700 text-white shadow-md shadow-violet-500/20"
-                      : "bg-purple-100 text-gray-500 hover:bg-purple-200",
+                      ? "bg-violet-700 text-white"
+                      : "bg-gray-100 text-gray-500 hover:bg-gray-200",
                   ].join(" ")}
                 >
-                  {item.label}
+                  {label}
                 </button>
               );
             })}
           </div>
-        </section>
+        </div>
 
-        {error ? (
-          <section className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
-            {error}
-          </section>
-        ) : null}
+        {/* 에러 */}
+        {error && (
+          <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+        )}
 
-        <section className="mt-6 space-y-4">
-          {loading ? (
-            <p className="py-12 text-center text-sm text-gray-500">
-              상품을 불러오는 중입니다...
+        {/* 상품 목록 */}
+        {loading ? (
+          <p className="py-16 text-center text-sm text-gray-400">상품을 불러오는 중...</p>
+        ) : filteredProducts.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className="text-sm text-gray-400">
+              {products.length === 0 ? "등록된 상품이 없습니다." : "조건에 맞는 상품이 없습니다."}
             </p>
-          ) : filteredProducts.length === 0 ? (
-            <p className="py-12 text-center text-sm text-gray-500">
-              {products.length === 0
-                ? "등록된 상품이 없습니다. 우측 상단에서 새 상품을 등록해 보세요."
-                : "조건에 맞는 상품이 없습니다."}
-            </p>
-          ) : (
-            filteredProducts.map((product) => {
-              const statusMeta = getStatusMeta(product.status);
-
-              return (
+            {products.length === 0 && (
+              <button
+                type="button"
+                onClick={() => navigate("/seller/products/new")}
+                className="mt-4 text-sm font-semibold text-violet-600 underline underline-offset-2"
+              >
+                첫 상품 등록하기
+              </button>
+            )}
+          </div>
+        ) : (
+          <ul className="space-y-3">
+            {filteredProducts.map((product) => (
+              <li key={product.id}>
                 <article
-                  key={product.id}
-                  className="flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-purple-100"
+                  className="flex cursor-pointer gap-3 rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100 transition hover:ring-violet-200"
+                  onClick={() => navigate(`/seller/products/${product.id}/edit`)}
                 >
-                  <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-purple-50 text-xs font-semibold text-violet-600">
+                  {/* 썸네일 */}
+                  <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden rounded-xl bg-gray-50">
                     {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-full w-full object-cover"
-                      />
+                      <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
-                      "이미지 없음"
+                      <div className="flex h-full w-full items-center justify-center text-xl font-black text-gray-300">
+                        {(product.name || "P").slice(0, 1).toUpperCase()}
+                      </div>
                     )}
                   </div>
 
+                  {/* 정보 */}
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-3">
-                      <span
-                        className={[
-                          "inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight",
-                          statusMeta.className,
-                        ].join(" ")}
-                      >
-                        {statusMeta.label}
-                      </span>
-
-                      <div className="flex gap-2 text-gray-400">
-                        <Link
-                          to={`/seller/products/${product.id}/edit`}
-                          className="transition hover:text-violet-700"
-                        >
-                          ✎
-                        </Link>
-                        <button
-                          type="button"
-                          className="transition hover:text-red-500"
-                          onClick={() => setDeleteTarget(product)}
-                        >
-                          🗑
-                        </button>
-                      </div>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="truncate text-sm font-bold text-gray-900 leading-snug">
+                        {product.name}
+                      </p>
+                      <StatusBadge status={product.status} />
                     </div>
 
-                    <h3 className="truncate font-bold text-gray-900">
-                      {product.name}
-                    </h3>
-                    <p className="mb-1 text-[10px] text-gray-400">
-                      {product.category}
+                    <p className="mt-0.5 truncate text-xs text-gray-400">{product.category}</p>
+
+                    <p className="mt-1 text-sm font-extrabold text-violet-700">
+                      {formatPrice(product.price)}원
                     </p>
 
-                    <div className="flex items-end justify-between">
-                      <div className="space-y-0.5">
-                        <p className="text-lg font-extrabold text-violet-700">
-                          {formatPrice(product.price)}원
-                        </p>
-                        <p className="text-[10px] text-gray-500">
-                          재고:{" "}
-                          <span
-                            className={
-                              product.stockCount === 0
-                                ? "font-bold text-red-500"
-                                : "font-bold text-violet-700"
-                            }
-                          >
-                            {product.stockCount}
-                          </span>
-                        </p>
-                      </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-xs text-gray-400">
+                        재고{" "}
+                        <span
+                          className={
+                            product.stockCount === 0
+                              ? "font-bold text-red-500"
+                              : "font-semibold text-gray-700"
+                          }
+                        >
+                          {product.stockCount}개
+                        </span>
+                      </p>
+
+                      <button
+                        type="button"
+                        className="text-xs text-gray-400 transition hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteTarget(product);
+                        }}
+                      >
+                        삭제
+                      </button>
                     </div>
                   </div>
                 </article>
-              );
-            })
-          )}
-        </section>
-
-        <section className="mt-8 overflow-hidden rounded-[28px] bg-purple-100/70 p-6 shadow-sm">
-          <h4 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-violet-700">
-            상품 요약
-          </h4>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-xs text-gray-500">총 상품 자산</p>
-              <p className="text-2xl font-black text-gray-900">
-                {formatPrice(totalValue)}원
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500">판매중 상품 수</p>
-              <p className="text-2xl font-black text-gray-900">{liveCount}개</p>
-            </div>
-
-            <div>
-              <p className="text-xs text-gray-500">상품 수</p>
-              <p className="text-2xl font-black text-gray-900">
-                {products.length}개
-              </p>
-            </div>
-          </div>
-        </section>
+              </li>
+            ))}
+          </ul>
+        )}
       </PageContainer>
 
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         title="상품을 삭제할까요?"
-        description={
-          deleteTarget
-            ? `${deleteTarget.name} 상품을 목록에서 제거합니다.`
-            : ""
-        }
+        description={deleteTarget ? `"${deleteTarget.name}"을(를) 삭제합니다.` : ""}
         confirmText="삭제"
         confirmVariant="danger"
         onConfirm={handleDelete}

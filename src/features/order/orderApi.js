@@ -15,7 +15,8 @@ function toUiOrderSummary(order) {
     totalAmount: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
     createdAt: order?.createdAt ?? null,
-    representativeProductName: order?.representativeProductName ?? "상품명 없음",
+    representativeProductName:
+      order?.representativeProductName ?? "상품명 없음",
     representativeThumbnailKey: order?.representativeThumbnailKey ?? "",
     itemCount: order?.itemCount ?? 0,
   };
@@ -37,7 +38,9 @@ function toUiOrderItem(item) {
 }
 
 function toUiOrderDetail(order) {
-  const items = Array.isArray(order?.items) ? order.items.map(toUiOrderItem) : [];
+  const items = Array.isArray(order?.items)
+    ? order.items.map(toUiOrderItem)
+    : [];
   const itemStatuses = items.map((item) => item.status).filter(Boolean);
   const firstStatus = itemStatuses[0] ?? "UNKNOWN";
   const hasMixedStatuses = itemStatuses.some((status) => status !== firstStatus);

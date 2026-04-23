@@ -1,9 +1,8 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
 import PageContainer from '../../components/common/PageContainer';
 import { useAuth } from '../../features/auth/useAuth';
-import { useSeller } from '../../features/seller/useSeller';
 
 const DEFAULT_DEPOSIT_BALANCE = 0;
 const DEFAULT_ACTIVE_ORDERS = 0;
@@ -28,11 +27,8 @@ function formatJoinedAt(value) {
 }
 
 export default function MyPage() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const isSeller = user?.role === 'SELLER';
-  const { seller, loading: sellerLoading, error: sellerError } = useSeller(
-    isAuthenticated && !authLoading && isSeller
-  );
 
   const me = {
     name: user?.nickname ?? '게스트',
@@ -59,6 +55,12 @@ export default function MyPage() {
       icon: '💳',
     },
     {
+      title: '출금',
+      description: '예치금을 계좌로 출금',
+      to: '/withdrawals',
+      icon: '↗',
+    },
+    {
       title: '내 신고 이력',
       description: '제출한 신고와 처리 현황 확인',
       to: '/member-reports/me',
@@ -71,10 +73,10 @@ export default function MyPage() {
       icon: '🔔',
     },
     {
-      title: '쿠폰',
-      description: `${me.coupons}개 사용 가능`,
-      to: '/me/coupons',
-      icon: '🎟️',
+      title: '외부 계정',
+      description: '카카오 등 로그인 연동 관리',
+      to: '/me/external-accounts',
+      icon: '🔗',
     },
   ];
 
@@ -121,16 +123,9 @@ export default function MyPage() {
           <span className="text-sm font-bold text-violet-700">{formatPrice(me.depositBalance)}원</span>
         </div>
 
-        {sellerLoading ? <p className="mt-4 text-sm text-gray-500">판매자 정보를 확인하고 있습니다.</p> : null}
-
-        {!sellerLoading && sellerError ? (
-          <p className="mt-4 text-sm text-red-600">판매자 정보를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.</p>
-        ) : null}
-
-        {isSeller && seller ? (
+        {isSeller ? (
           <div className="mt-4 rounded-2xl bg-white/70 p-4 text-sm text-gray-700 ring-1 ring-purple-100">
-            <p>등록 은행: {seller.bankName || '-'}</p>
-            <p>정산 계좌: {seller.account || '-'}</p>
+            판매자 계정이 활성화되어 있습니다. 판매자 센터에서 상품, 주문, 정산 기능을 이용할 수 있습니다.
           </div>
         ) : null}
 
@@ -143,6 +138,9 @@ export default function MyPage() {
           </Link>
           <Link to="/deposits">
             <Button variant="secondary">예치금 보기</Button>
+          </Link>
+          <Link to="/withdrawals">
+            <Button variant="secondary">출금하기</Button>
           </Link>
           <Link to="/member-reports/me">
             <Button variant="secondary">내 신고 이력</Button>
@@ -189,6 +187,15 @@ export default function MyPage() {
         >
           <span>🔒</span>
           <span className="flex-1 text-sm font-semibold">개인정보 / 보안</span>
+          <span className="text-gray-400">›</span>
+        </Link>
+
+        <Link
+          to="/me/external-accounts"
+          className="flex items-center gap-4 rounded-2xl p-4 transition hover:bg-white/60"
+        >
+          <span>🔗</span>
+          <span className="flex-1 text-sm font-semibold">외부 계정 연동</span>
           <span className="text-gray-400">›</span>
         </Link>
       </section>
