@@ -198,6 +198,14 @@ async function deleteProductImageApi(productId, imageId) {
   });
 }
 
+async function getProductsByIdsApi(productIds) {
+  if (!productIds || productIds.length === 0) return [];
+  const query = productIds.map((id) => `productIds=${encodeURIComponent(id)}`).join("&");
+  const response = await apiClient(`/api/products/by-ids?${query}`);
+  const list = Array.isArray(response.data) ? response.data : [];
+  return list.map(toUiProduct);
+}
+
 export {
   createProductApi,
   updateProductApi,
@@ -206,6 +214,7 @@ export {
   getCategoriesApi,
   getChildCategoriesApi,
   getProductDetailApi,
+  getProductsByIdsApi,
   getProductsApi,
   getSellerProductsApi,
 };

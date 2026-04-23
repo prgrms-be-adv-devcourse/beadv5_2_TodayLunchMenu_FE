@@ -5,19 +5,30 @@ import CountdownPill from "./CountdownPill";
 import { formatKRW } from "../../features/auction/format";
 import { useCountdown } from "../../features/auction/useCountdown";
 
-export default function AuctionCard({ auction }) {
+export default function AuctionCard({ auction, productImage }) {
   const { ended } = useCountdown(auction.endsAt);
-  const initial = auction.id ? auction.id.slice(0, 1).toUpperCase() : "A";
+  const title = auction.productTitle || "경매 상품";
+  const initial = title.slice(0, 1).toUpperCase();
 
   return (
     <article className="overflow-hidden rounded-[28px] bg-white/75 shadow-sm ring-1 ring-purple-100 backdrop-blur transition hover:shadow-md">
       <Link to={`/auctions/${auction.id}`} className="block">
-        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50">
+        <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50">
+          {productImage ? (
+            <img
+              src={productImage}
+              alt={title}
+              className="h-full w-full object-cover transition duration-500 hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <span className="select-none text-8xl font-black tracking-tight text-violet-700">
+                {initial}
+              </span>
+            </div>
+          )}
           <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
             Lot {auction.id?.slice(0, 6).toUpperCase()}
-          </span>
-          <span className="select-none text-8xl font-black tracking-tight text-violet-700">
-            {initial}
           </span>
           <CountdownPill endsAt={auction.endsAt} />
         </div>
@@ -29,7 +40,7 @@ export default function AuctionCard({ auction }) {
         </p>
         <Link to={`/auctions/${auction.id}`}>
           <h3 className="mb-3 line-clamp-2 text-base font-extrabold tracking-tight text-gray-900">
-            상품 ID · {auction.productId?.slice(0, 8)}
+            {title}
           </h3>
         </Link>
 

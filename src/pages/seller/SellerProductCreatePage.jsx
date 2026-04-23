@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
+import FormField from "../../components/common/FormField";
+import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import AiProductDraftAssistant from "../../components/seller/AiProductDraftAssistant";
 import SellerProductForm from "../../components/seller/SellerProductForm";
 import { createProductDraftFromImageApi } from "../../features/ai/aiProductDraftApi";
+import { createAuctionApi } from "../../features/auction/auctionApi";
 import {
   createProductApi,
   getCategoriesApi,
@@ -100,6 +103,13 @@ export default function SellerProductCreatePage() {
   });
   const [categoryError, setCategoryError] = useState("");
   const [categoryNotice, setCategoryNotice] = useState("");
+  const [auctionForm, setAuctionForm] = useState({
+    startPrice: "",
+    bidUnit: "",
+    startedAt: "",
+    durationMinutes: "",
+  });
+  const [auctionErrors, setAuctionErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiDraft, setAiDraft] = useState(null);
@@ -175,6 +185,12 @@ export default function SellerProductCreatePage() {
       ...prev,
       stockQuantity: Math.max(MIN_STOCK, Number(prev.stockQuantity || 0) - 1),
     }));
+  };
+
+  const handleAuctionChange = (key) => (event) => {
+    setAuctionForm((prev) => ({ ...prev, [key]: event.target.value }));
+    setAuctionErrors((prev) => ({ ...prev, [key]: "" }));
+    setSubmitError("");
   };
 
   const handleImagesChange = (event) => {
@@ -376,31 +392,53 @@ export default function SellerProductCreatePage() {
       next.categoryId = "대분류 카테고리를 선택해 주세요.";
     }
 
-    const priceText = String(form.price).trim();
-    const priceNumber = Number(priceText);
-    if (!priceText) {
-      next.price = "가격을 입력해 주세요.";
-    } else if (!Number.isInteger(priceNumber)) {
-      next.price = "가격은 정수로 입력해 주세요.";
-    } else if (priceNumber < MIN_PRICE) {
-      next.price = `가격은 ${MIN_PRICE.toLocaleString()}원 이상이어야 합니다.`;
+    if (form.type !== "AUCTION") {
+      const priceText = String(form.price).trim();
+      const priceNumber = Number(priceText);
+      if (!priceText) {
+        next.price = "가격을 입력해 주세요.";
+      } else if (!Number.isInteger(priceNumber)) {
+        next.price = "가격은 정수로 입력해 주세요.";
+      } else if (priceNumber < MIN_PRICE) {
+        next.price = `가격은 ${MIN_PRICE.toLocaleString()}원 이상이어야 합니다.`;
+      }
+
+      const stockNumber = Number(form.stockQuantity);
+      if (
+        form.stockQuantity === "" ||
+        form.stockQuantity === null ||
+        form.stockQuantity === undefined
+      ) {
+        next.stockQuantity = "재고를 입력해 주세요.";
+      } else if (!Number.isInteger(stockNumber)) {
+        next.stockQuantity = "재고는 정수로 입력해 주세요.";
+      } else if (stockNumber < MIN_STOCK) {
+        next.stockQuantity = `재고는 ${MIN_STOCK} 이상이어야 합니다.`;
+      }
     }
 
-    const stockNumber = Number(form.stockQuantity);
-    if (
-      form.stockQuantity === "" ||
-      form.stockQuantity === null ||
-      form.stockQuantity === undefined
-    ) {
-      next.stockQuantity = "재고를 입력해 주세요.";
-    } else if (!Number.isInteger(stockNumber)) {
-      next.stockQuantity = "재고는 정수로 입력해 주세요.";
-    } else if (stockNumber < MIN_STOCK) {
-      next.stockQuantity = `재고는 ${MIN_STOCK} 이상이어야 합니다.`;
+    const auctionNext = {};
+    if (form.type === "AUCTION") {
+      const sp = Number(auctionForm.startPrice);
+      if (!auctionForm.startPrice || Number.isNaN(sp) || sp < 1000) {
+        auctionNext.startPrice = "시작가는 1,000원 이상이어야 합니다.";
+      }
+      const bu = Number(auctionForm.bidUnit);
+      if (!auctionForm.bidUnit || Number.isNaN(bu) || bu < 100) {
+        auctionNext.bidUnit = "입찰 단위는 100원 이상이어야 합니다.";
+      }
+      if (!auctionForm.startedAt) {
+        auctionNext.startedAt = "경매 시작 시간을 입력해 주세요.";
+      }
+      const dm = Number(auctionForm.durationMinutes);
+      if (!auctionForm.durationMinutes || Number.isNaN(dm) || dm < 1) {
+        auctionNext.durationMinutes = "경매 기간은 1분 이상이어야 합니다.";
+      }
     }
 
     setErrors(next);
-    return Object.keys(next).length === 0;
+    setAuctionErrors(auctionNext);
+    return Object.keys(next).length === 0 && Object.keys(auctionNext).length === 0;
   };
 
   const handleCreateAiDraft = async () => {
@@ -504,16 +542,28 @@ export default function SellerProductCreatePage() {
       setIsSubmitting(true);
       setSubmitError("");
 
-      await createProductApi({
+      const isAuction = form.type === "AUCTION";
+      const product = await createProductApi({
         title: form.title.trim(),
         description: form.description.trim(),
-        price: Number(form.price),
-        stockQuantity: Number(form.stockQuantity),
+        price: isAuction ? Number(auctionForm.startPrice) : Number(form.price),
+        stockQuantity: isAuction ? 1 : Number(form.stockQuantity),
         categoryId: form.categoryId,
         type: form.type,
         images: form.images,
         thumbnailIndex: form.thumbnailIndex,
       });
+
+      if (form.type === "AUCTION") {
+        await createAuctionApi({
+          productId: product.id,
+          productTitle: product.name,
+          startPrice: Number(auctionForm.startPrice),
+          bidUnit: Number(auctionForm.bidUnit),
+          startedAt: new Date(auctionForm.startedAt).toISOString(),
+          durationMinutes: Number(auctionForm.durationMinutes),
+        });
+      }
 
       navigate("/seller/products");
     } catch (error) {
@@ -572,6 +622,72 @@ export default function SellerProductCreatePage() {
         onRemoveImage={handleRemoveImage}
         onSubmit={handleSubmit}
         submitText={isSubmitting ? "상품 등록 중..." : "상품 등록"}
+        auctionSection={
+          form.type === "AUCTION" ? (
+            <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
+              <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-amber-700">경매 설정</h2>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField label="시작가" htmlFor="startPrice" required error={auctionErrors.startPrice} helpText="1,000원 이상">
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
+                      <Input
+                        id="startPrice"
+                        type="number"
+                        min="1000"
+                        step="1"
+                        placeholder="1000"
+                        value={auctionForm.startPrice}
+                        onChange={handleAuctionChange("startPrice")}
+                        error={!!auctionErrors.startPrice}
+                        className="pl-10 text-right"
+                      />
+                    </div>
+                  </FormField>
+                  <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="100원 이상">
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
+                      <Input
+                        id="bidUnit"
+                        type="number"
+                        min="100"
+                        step="1"
+                        placeholder="100"
+                        value={auctionForm.bidUnit}
+                        onChange={handleAuctionChange("bidUnit")}
+                        error={!!auctionErrors.bidUnit}
+                        className="pl-10 text-right"
+                      />
+                    </div>
+                  </FormField>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField label="경매 시작 시간" htmlFor="startedAt" required error={auctionErrors.startedAt}>
+                    <Input
+                      id="startedAt"
+                      type="datetime-local"
+                      value={auctionForm.startedAt}
+                      onChange={handleAuctionChange("startedAt")}
+                      error={!!auctionErrors.startedAt}
+                    />
+                  </FormField>
+                  <FormField label="경매 기간 (분)" htmlFor="durationMinutes" required error={auctionErrors.durationMinutes} helpText="최소 1분">
+                    <Input
+                      id="durationMinutes"
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="60"
+                      value={auctionForm.durationMinutes}
+                      onChange={handleAuctionChange("durationMinutes")}
+                      error={!!auctionErrors.durationMinutes}
+                    />
+                  </FormField>
+                </div>
+              </div>
+            </section>
+          ) : null
+        }
         aiDraftAction={
           <AiProductDraftAssistant
             disabled={form.images.length === 0 || isSubmitting}

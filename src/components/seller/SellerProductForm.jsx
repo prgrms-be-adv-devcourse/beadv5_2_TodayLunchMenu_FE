@@ -37,7 +37,10 @@ export default function SellerProductForm({
   submitText = "상품 등록",
   secondaryAction,
   aiDraftAction,
+  auctionSection = null,
 }) {
+  const isAuction = form.type === "AUCTION";
+
   return (
     <form className="space-y-8" onSubmit={onSubmit}>
       <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
@@ -252,68 +255,75 @@ export default function SellerProductForm({
             최종 선택 카테고리: <span className="font-semibold text-violet-700">{form.categoryId || "선택 없음"}</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
-              label="재고"
-              htmlFor="stockQuantity"
-              required
-              error={errors.stockQuantity}
-              helpText="최소 1개 이상"
-            >
-              <div className="flex h-14 items-center rounded-xl bg-purple-100/70 px-2">
-                <button
-                  type="button"
-                  onClick={onDecreaseStock}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
-                >
-                  -
-                </button>
+          {isAuction ? (
+            <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-700 ring-1 ring-amber-200">
+              경매 상품은 <span className="font-bold">재고 1개</span>로 고정되며,{" "}
+              <span className="font-bold">가격은 시작가</span>로 자동 설정됩니다.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FormField
+                label="재고"
+                htmlFor="stockQuantity"
+                required
+                error={errors.stockQuantity}
+                helpText="최소 1개 이상"
+              >
+                <div className="flex h-14 items-center rounded-xl bg-purple-100/70 px-2">
+                  <button
+                    type="button"
+                    onClick={onDecreaseStock}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
+                  >
+                    -
+                  </button>
 
-                <input
-                  id="stockQuantity"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={form.stockQuantity}
-                  onChange={onChange("stockQuantity")}
-                  className="w-full bg-transparent text-center font-bold outline-none"
-                />
+                  <input
+                    id="stockQuantity"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={form.stockQuantity}
+                    onChange={onChange("stockQuantity")}
+                    className="w-full bg-transparent text-center font-bold outline-none"
+                  />
 
-                <button
-                  type="button"
-                  onClick={onIncreaseStock}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
-                >
-                  +
-                </button>
-              </div>
-            </FormField>
+                  <button
+                    type="button"
+                    onClick={onIncreaseStock}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
+                  >
+                    +
+                  </button>
+                </div>
+              </FormField>
 
-            <FormField
-              label="가격"
-              htmlFor="price"
-              required
-              error={errors.price}
-              helpText="1,000원 이상 정수"
-            >
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">
-                  원
-                </span>
-                <Input
-                  id="price"
-                  type="number"
-                  min="1000"
-                  step="1"
-                  placeholder="1000"
-                  value={form.price}
-                  onChange={onChange("price")}
-                  error={!!errors.price}
-                  className="pl-10 text-right"
-                />
-              </div>
-            </FormField>
-          </div>
+              <FormField
+                label="가격"
+                htmlFor="price"
+                required
+                error={errors.price}
+                helpText="1,000원 이상 정수"
+              >
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">
+                    원
+                  </span>
+                  <Input
+                    id="price"
+                    type="number"
+                    min="1000"
+                    step="1"
+                    placeholder="1000"
+                    value={form.price}
+                    onChange={onChange("price")}
+                    error={!!errors.price}
+                    className="pl-10 text-right"
+                  />
+                </div>
+              </FormField>
+            </div>
+          )}
 
           <FormField
             label="상세 설명"
@@ -332,6 +342,8 @@ export default function SellerProductForm({
           </FormField>
         </div>
       </section>
+
+      {auctionSection}
 
       <div className="grid grid-cols-2 gap-4">
         {secondaryAction}

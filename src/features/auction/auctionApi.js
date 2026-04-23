@@ -25,6 +25,7 @@ const toUiAuction = (auction) => {
   return {
     id: auction.auctionId,
     productId: auction.productId,
+    productTitle: auction.productTitle || null,
     sellerId: auction.sellerId,
     startPrice,
     bidUnit: toNumber(auction.bidUnit, 0),
@@ -89,7 +90,16 @@ async function placeBidApi(auctionId, { bidPrice }) {
   return toUiBid(unwrap(response.data));
 }
 
+async function createAuctionApi({ productId, productTitle, startPrice, bidUnit, startedAt, durationMinutes }) {
+  const response = await apiClient("/api/auctions", {
+    method: "POST",
+    body: { productId, productTitle, startPrice, bidUnit, startedAt, durationMinutes },
+  });
+  return toUiAuction(unwrap(response.data));
+}
+
 export {
+  createAuctionApi,
   getAuctionApi,
   getAuctionBidsApi,
   getAuctionsApi,

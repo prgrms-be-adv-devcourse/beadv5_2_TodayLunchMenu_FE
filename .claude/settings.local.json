@@ -26,7 +26,8 @@
       "Bash(docker-compose up *)",
       "Read(//c/Users/home/IdeaProjects/**)",
       "Bash(dir \"C:\\\\Users\\\\home\\\\IdeaProjects\")",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(grep -i \"\\\\.java$\")"
     ]
   }
 }
