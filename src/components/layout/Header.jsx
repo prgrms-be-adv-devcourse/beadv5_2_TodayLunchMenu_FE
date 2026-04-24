@@ -23,6 +23,12 @@ function UserMenu({ displayName, isSeller, onLogout }) {
 
       <div className="invisible absolute right-0 top-full z-50 w-44 -translate-y-1 rounded-2xl border border-gray-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
         <Link
+          to="/me"
+          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+        >
+          마이페이지
+        </Link>
+        <Link
           to="/orders"
           className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
         >
@@ -39,12 +45,6 @@ function UserMenu({ displayName, isSeller, onLogout }) {
           className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
         >
           출금
-        </Link>
-        <Link
-          to="/me"
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
-        >
-          마이페이지
         </Link>
         {isSeller ? (
           <>
