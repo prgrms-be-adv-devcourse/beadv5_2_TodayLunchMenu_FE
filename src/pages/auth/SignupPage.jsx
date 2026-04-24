@@ -171,7 +171,7 @@ export default function SignupPage() {
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">
                 TodayLunch Market
               </span>
-              <h2 className="text-5xl font-extrabold leading-[0.9] tracking-tighter">
+              <h2 className="text-5xl font-extrabold leading-[1.08] tracking-tighter">
                 오늘의 취향을
                 <br />
                 함께 모으는
