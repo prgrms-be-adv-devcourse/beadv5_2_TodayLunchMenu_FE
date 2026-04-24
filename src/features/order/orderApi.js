@@ -88,7 +88,7 @@ async function createOrderApi({
     },
   });
 
-  return toUiOrder(response.data);
+  return toUiOrder(response.data?.data ?? response.data);
 }
 
 async function getOrdersApi(params = {}) {
