@@ -9,6 +9,7 @@ import CountdownPill from "../../components/auction/CountdownPill";
 import { recommendAuctionBidPriceApi } from "../../features/auction/auctionAiApi";
 import { useAuth } from "../../features/auth/useAuth";
 import { formatKRW, statusLabel } from "../../features/auction/format";
+import { getProductDetailApi } from "../../features/product/productApi";
 import {
   placeBid,
   useAuction,
@@ -113,6 +114,7 @@ export default function AuctionDetailPage() {
   const { auction, setAuction, loading, error, reload } = useAuction(auctionId);
   const { bids, prependBid } = useAuctionBids(auctionId, { size: 30 });
   const { ended } = useCountdown(auction?.endsAt);
+  const [productImage, setProductImage] = useState(null);
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
@@ -126,10 +128,23 @@ export default function AuctionDetailPage() {
   const animatedPrice = useAnimatedNumber(currentPrice);
 
   useEffect(() => {
+    if (!auction?.productId) return;
+    let cancelled = false;
+    getProductDetailApi(auction.productId)
+      .then((product) => {
+        if (!cancelled) setProductImage(product.image ?? null);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [auction?.productId]);
+
+  useEffect(() => {
     if (auction?.status !== "WAITING") return undefined;
-    const timer = setInterval(reload, 10_000);
+    const startedAtPassed = auction.startedAt && auction.startedAt <= Date.now();
+    const interval = startedAtPassed ? 2_000 : 10_000;
+    const timer = setInterval(reload, interval);
     return () => clearInterval(timer);
-  }, [auction?.status, reload]);
+  }, [auction?.status, auction?.startedAt, reload]);
 
   useEffect(() => {
     if (!auction) {
@@ -323,13 +338,21 @@ export default function AuctionDetailPage() {
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div>
           <section className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[32px] bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 ring-1 ring-purple-100">
-            <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
+            <span className="absolute left-4 top-4 z-10 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
               Lot {auction.id?.slice(0, 6).toUpperCase()}
             </span>
             <CountdownPill endsAt={auction.endsAt} status={auction.status} />
-            <span className="select-none text-[180px] font-black leading-none tracking-tight text-violet-700">
-              {initial}
-            </span>
+            {productImage ? (
+              <img
+                src={productImage}
+                alt={auction.productTitle || "경매 상품"}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="select-none text-[180px] font-black leading-none tracking-tight text-violet-700">
+                {initial}
+              </span>
+            )}
           </section>
 
           <section className="mt-6 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
