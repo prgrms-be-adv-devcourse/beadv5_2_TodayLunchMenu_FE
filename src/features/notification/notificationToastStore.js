@@ -56,7 +56,7 @@ const pushToast = ({
   const id = String(nextToastId++);
   const toast = {
     id,
-    title: title || "Notification",
+    title: title || "새 알림",
     subtitle: subtitle || "",
     message: message || "",
     elapsedTime: elapsedTime || "",
