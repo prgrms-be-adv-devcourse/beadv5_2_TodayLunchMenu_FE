@@ -1,7 +1,20 @@
-import { apiClient } from "../../api/client";
+import { ApiError, apiClient } from "../../api/client";
 
-function getApiPayload(data) {
-  return data?.data ?? data;
+function getApiPayload(body) {
+  if (body && typeof body === "object" && "success" in body) {
+    if (body.success === false) {
+      throw new ApiError({
+        status: 200,
+        code: body?.error?.code || "REQUEST_FAILED",
+        message: body?.error?.message || "AI 추천 요청에 실패했습니다.",
+        data: body,
+      });
+    }
+
+    return body?.data ?? null;
+  }
+
+  return body;
 }
 
 function toNumber(value, fallback = 0) {
