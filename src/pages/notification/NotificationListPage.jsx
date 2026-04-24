@@ -9,6 +9,7 @@ import {
   formatElapsedTime,
   getNotificationActionClassName,
   getNotificationTypeMeta,
+  getVisibleNotificationSubtitle,
   resolveNotificationActionPath,
 } from "../../features/notification/notificationPresentation";
 import {
@@ -286,11 +287,7 @@ export default function NotificationListPage() {
                 {items.map((notification) => {
                   const meta = getNotificationTypeMeta(notification.type);
                   const elapsedTime = formatElapsedTime(notification);
-                  const shouldHideSubtitle =
-                    Boolean(notification.referenceId) &&
-                    typeof notification.subtitle === "string" &&
-                    notification.subtitle.includes(String(notification.referenceId));
-                  const visibleSubtitle = shouldHideSubtitle ? "" : notification.subtitle;
+                  const visibleSubtitle = getVisibleNotificationSubtitle(notification);
 
                   return (
                     <article

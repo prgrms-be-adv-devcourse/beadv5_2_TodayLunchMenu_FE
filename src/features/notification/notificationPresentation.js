@@ -88,6 +88,21 @@ function resolveNotificationActionPath(action, notification) {
     : routeResolver;
 }
 
+function getVisibleNotificationSubtitle(notification) {
+  const subtitle = notification?.subtitle;
+  const referenceId = notification?.referenceId;
+
+  if (typeof subtitle !== "string") {
+    return "";
+  }
+
+  if (referenceId && subtitle.includes(String(referenceId))) {
+    return "";
+  }
+
+  return subtitle;
+}
+
 function formatElapsedTime(notification) {
   if (notification?.elapsedTime) {
     return notification.elapsedTime;
@@ -115,6 +130,7 @@ function formatElapsedTime(notification) {
 export {
   formatElapsedTime,
   getNotificationActionClassName,
+  getVisibleNotificationSubtitle,
   getNotificationTypeMeta,
   resolveNotificationActionPath,
 };
