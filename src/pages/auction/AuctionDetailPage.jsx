@@ -115,6 +115,7 @@ export default function AuctionDetailPage() {
   const { bids, prependBid } = useAuctionBids(auctionId, { size: 30 });
   const { ended } = useCountdown(auction?.endsAt);
   const [productImage, setProductImage] = useState(null);
+  const [productName, setProductName] = useState(null);
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
@@ -132,7 +133,10 @@ export default function AuctionDetailPage() {
     let cancelled = false;
     getProductDetailApi(auction.productId)
       .then((product) => {
-        if (!cancelled) setProductImage(product.image ?? null);
+        if (!cancelled) {
+          setProductImage(product.image ?? null);
+          setProductName(product.name ?? null);
+        }
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -360,7 +364,7 @@ export default function AuctionDetailPage() {
               경매 · {statusLabel(auction.status)}
             </p>
             <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
-              상품 ID · {auction.productId?.slice(0, 8)}
+              {auction.productTitle ?? productName ?? auction.productId?.slice(0, 8)}
             </h1>
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-purple-100 pt-5 text-sm text-gray-500">
               <span>
