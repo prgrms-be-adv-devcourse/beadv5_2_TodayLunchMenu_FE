@@ -31,6 +31,7 @@ const toUiProduct = (product) => {
     price: toNumber(product.price),
     stockCount: product.count ?? 0,
     status: product.status,
+    type: product.type ?? "GENERAL",
     createdAt: product.createdAt,
     categoryId: product.categoryId ?? null,
     category: product.categoryName || "미분류",

@@ -173,6 +173,10 @@ export default function AuctionDetailPage() {
         return;
       }
 
+      if (payload.status !== "ACTIVE") {
+        return;
+      }
+
       const bidPrice = Number(payload.bidPrice);
       const endAt = payload.endAt ? new Date(payload.endAt).getTime() : null;
 
@@ -203,6 +207,16 @@ export default function AuctionDetailPage() {
   useAuctionSocket(auctionId, handleBidEvent);
 
   const myId = user?.memberId;
+
+  const validBids = useMemo(() => {
+    const seen = new Set();
+    return bids.filter((bid) => {
+      if (seen.has(bid.amount)) return false;
+      seen.add(bid.amount);
+      return true;
+    });
+  }, [bids]);
+
   const quicks = useMemo(() => {
     if (!auction || bidUnit <= 0) return [];
     const base = nextMin;
@@ -271,8 +285,12 @@ export default function AuctionDetailPage() {
     if (ended) return;
 
     const amount = Number(bidInput);
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (!Number.isFinite(amount) || !Number.isInteger(amount) || amount <= 0) {
       setToast({ type: "error", message: "올바른 금액을 입력해 주세요." });
+      return;
+    }
+    if (amount > 999_999_999) {
+      setToast({ type: "error", message: "입찰가는 9억 9천만원을 초과할 수 없습니다." });
       return;
     }
     if (amount < nextMin) {
@@ -327,7 +345,6 @@ export default function AuctionDetailPage() {
 
   const isSeller = myId && auction.sellerId && myId === auction.sellerId;
   const isWaiting = auction.status === "WAITING";
-  const initial = auction.id?.slice(0, 1).toUpperCase() || "A";
   const topBid = bids[0];
 
   return (
@@ -346,17 +363,11 @@ export default function AuctionDetailPage() {
               Lot {auction.id?.slice(0, 6).toUpperCase()}
             </span>
             <CountdownPill endsAt={auction.endsAt} status={auction.status} />
-            {productImage ? (
-              <img
-                src={productImage}
-                alt={auction.productTitle || "경매 상품"}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <span className="select-none text-[180px] font-black leading-none tracking-tight text-violet-700">
-                {initial}
-              </span>
-            )}
+            <img
+              src={productImage || "/default-product.svg"}
+              alt={auction.productTitle || "경매 상품"}
+              className="h-full w-full object-cover"
+            />
           </section>
 
           <section className="mt-6 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
@@ -391,16 +402,16 @@ export default function AuctionDetailPage() {
           <section className="mt-4 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
             <div className="mb-4 flex items-baseline justify-between">
               <h4 className="text-base font-extrabold tracking-tight">입찰 내역</h4>
-              <span className="text-xs font-medium text-gray-500">총 {bids.length}건</span>
+              <span className="text-xs font-medium text-gray-500">총 {validBids.length}건</span>
             </div>
 
-            {bids.length === 0 ? (
+            {validBids.length === 0 ? (
               <p className="py-10 text-center text-sm text-gray-500">
                 아직 입찰이 없어요.
               </p>
             ) : (
               <ul className="max-h-[360px] space-y-1 overflow-y-auto">
-                {bids.map((bid, index) => (
+                {validBids.map((bid, index) => (
                   <BidRow
                     key={bid.id}
                     bid={bid}
@@ -480,6 +491,9 @@ export default function AuctionDetailPage() {
                   type="number"
                   inputMode="numeric"
                   value={bidInput}
+                  min={nextMin}
+                  max={999_999_999}
+                  step={bidUnit || 1}
                   onChange={(e) => setBidInput(e.target.value)}
                   className="h-14 w-full rounded-xl border border-purple-100 bg-white pl-4 pr-12 text-xl font-extrabold tabular-nums tracking-tight text-gray-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-300"
                 />

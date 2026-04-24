@@ -6,19 +6,9 @@ function formatPrice(price) {
 }
 
 function ProductImage({ product }) {
-  const initial = (product.name || "P").slice(0, 1).toUpperCase();
-
-  if (!product.image) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 text-6xl font-black text-violet-700">
-        {initial}
-      </div>
-    );
-  }
-
   return (
     <img
-      src={product.image}
+      src={product.image || "/default-product.svg"}
       alt={product.name}
       className="h-full w-full object-cover transition duration-500 hover:scale-105"
     />
