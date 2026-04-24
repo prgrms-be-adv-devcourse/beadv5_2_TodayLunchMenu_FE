@@ -205,9 +205,9 @@ export default function AuctionDetailPage() {
       const recommendation = await recommendAuctionBidPriceApi({
         auctionId: auction.id,
         productId: auction.productId,
-        currentBidPrice: Math.max(currentPrice, nextMin),
+        currentBidPrice: currentPrice,
         startPrice: auction.startPrice,
-        productName: auction.productId ? `상품 ${auction.productId}` : "",
+        productName: auction.productTitle ?? null,
         bidCount: bids.length,
         remainingSeconds,
       });
