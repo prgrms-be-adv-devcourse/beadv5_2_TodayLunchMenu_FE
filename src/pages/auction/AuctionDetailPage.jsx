@@ -119,6 +119,7 @@ export default function AuctionDetailPage() {
   const [aiBidRecommendation, setAiBidRecommendation] = useState(null);
   const [aiBidError, setAiBidError] = useState("");
   const [aiBidLoading, setAiBidLoading] = useState(false);
+  const [aiRecommendationContext, setAiRecommendationContext] = useState(null);
 
   const currentPrice = auction?.currentPrice ?? 0;
   const bidUnit = auction?.bidUnit ?? 0;
@@ -189,6 +190,22 @@ export default function AuctionDetailPage() {
     const base = nextMin;
     return [base, base + bidUnit * 2, base + bidUnit * 5, base + bidUnit * 10];
   }, [auction, bidUnit, nextMin]);
+  const aiRecommendationStaleReason = useMemo(() => {
+    if (!aiRecommendationContext) {
+      return "";
+    }
+    if (aiRecommendationContext.currentPrice !== currentPrice) {
+      return "현재 최고가가 변경되어 추천 기준이 달라졌어요.";
+    }
+    if (aiRecommendationContext.nextMinimumBidPrice !== nextMin) {
+      return "다음 최소 입찰가가 바뀌어 추천을 다시 계산하는 것이 좋아요.";
+    }
+    if (aiRecommendationContext.bidCount !== bids.length) {
+      return "입찰 수가 늘어나 경매 흐름이 달라졌어요.";
+    }
+    return "";
+  }, [aiRecommendationContext, bids.length, currentPrice, nextMin]);
+  const isAiRecommendationStale = Boolean(aiRecommendationStaleReason);
 
   const requestAiBidRecommendation = async () => {
     if (!auction) {
@@ -205,11 +222,15 @@ export default function AuctionDetailPage() {
       const recommendation = await recommendAuctionBidPriceApi({
         auctionId: auction.id,
         productId: auction.productId,
-        currentBidPrice: Math.max(currentPrice, nextMin),
+        currentBidPrice: currentPrice,
         startPrice: auction.startPrice,
-        productName: auction.productId ? `상품 ${auction.productId}` : "",
+        productName: auction.productTitle ?? null,
+        bidUnit: auction.bidUnit,
+        nextMinimumBidPrice: nextMin,
         bidCount: bids.length,
         remainingSeconds,
+        auctionStatus: auction.status,
+        hasBid: auction.hasBid,
       });
       const recommendedBidPrice = Math.max(
         recommendation.recommendedBidPrice,
@@ -225,8 +246,14 @@ export default function AuctionDetailPage() {
         recommendedBidPrice,
         expectedFinalPrice,
       });
+      setAiRecommendationContext({
+        currentPrice,
+        nextMinimumBidPrice: nextMin,
+        bidCount: bids.length,
+      });
     } catch (nextError) {
       setAiBidRecommendation(null);
+      setAiRecommendationContext(null);
       setAiBidError(
         nextError?.message || "AI 추천 입찰가를 불러오지 못했습니다."
       );
@@ -443,6 +470,10 @@ export default function AuctionDetailPage() {
                 loading={aiBidLoading}
                 error={aiBidError}
                 disabled={submitting || ended}
+                stale={isAiRecommendationStale}
+                staleReason={aiRecommendationStaleReason}
+                currentPrice={currentPrice}
+                nextMinimumBidPrice={nextMin}
                 onRequest={requestAiBidRecommendation}
                 onApply={applyAiBidRecommendation}
               />
