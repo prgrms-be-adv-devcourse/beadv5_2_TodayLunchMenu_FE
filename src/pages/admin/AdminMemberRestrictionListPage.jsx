@@ -271,6 +271,7 @@ export default function AdminMemberRestrictionListPage() {
           <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Dashboard</a>
           <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/member-reports">Reports</Link>
           <span className="relative font-bold text-violet-700 after:absolute after:-bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-violet-600">Sanctions</span>
+          <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/categories">Categories</Link>
           <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Users</a>
         </div>
         <div className="flex items-center gap-4">
@@ -311,6 +312,9 @@ export default function AdminMemberRestrictionListPage() {
           <span className="flex cursor-pointer items-center gap-3 rounded-lg bg-violet-100 px-4 py-3 text-sm font-medium text-violet-700 transition-transform hover:translate-x-1">
             <span className="text-violet-600">⚖</span> Sanction History
           </span>
+          <Link to="/admin/categories" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
+            <span>🗂</span> 카테고리 관리
+          </Link>
           <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
             <span className="text-violet-600">⏱</span> System Logs
           </a>

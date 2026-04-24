@@ -82,9 +82,19 @@ export default function AppHeader() {
                 판매자 메뉴
               </NavLink>
             )}
+            {isAdmin && (
+              <NavLink to="/admin/categories" className={navLinkClass}>
+                카테고리 관리
+              </NavLink>
+            )}
             {isSeller && (
               <NavLink to="/seller/settlements" className={navLinkClass}>
                 정산 관리
+              </NavLink>
+            )}
+            {isSeller && (
+              <NavLink to="/seller/categories" className={navLinkClass}>
+                카테고리 관리
               </NavLink>
             )}
           </nav>

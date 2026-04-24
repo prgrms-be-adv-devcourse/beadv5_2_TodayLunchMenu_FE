@@ -47,6 +47,8 @@ const toUiCategory = (category) => ({
   depth: category.depth ?? 0,
   sortOrder: category.sortOrder ?? 0,
   parentId: category.parentId ?? null,
+  sellerId: category.sellerId ?? null,
+  createdAt: category.createdAt ?? null,
 });
 
 async function getProductsApi(params = {}) {
@@ -198,6 +200,44 @@ async function deleteProductImageApi(productId, imageId) {
   });
 }
 
+async function createCategoryAdminApi({ name, description, sortOrder, parentId }) {
+  const response = await apiClient("/api/categories/admin", {
+    method: "POST",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0, parentId: parentId || null },
+  });
+  return toUiCategory(response.data);
+}
+
+async function createCategorySellerApi({ name, description, sortOrder, parentId }) {
+  const response = await apiClient("/api/categories", {
+    method: "POST",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0, parentId },
+  });
+  return toUiCategory(response.data);
+}
+
+async function updateCategoryAdminApi(categoryId, { name, description, sortOrder }) {
+  const response = await apiClient(`/api/categories/admin/${categoryId}`, {
+    method: "PUT",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0 },
+  });
+  return toUiCategory(response.data);
+}
+
+async function updateCategorySellerApi(categoryId, { name, description, sortOrder }) {
+  const response = await apiClient(`/api/categories/${categoryId}`, {
+    method: "PUT",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0 },
+  });
+  return toUiCategory(response.data);
+}
+
+async function deleteCategoryApi(categoryId) {
+  await apiClient(`/api/categories/${categoryId}`, {
+    method: "DELETE",
+  });
+}
+
 async function getProductsByIdsApi(productIds) {
   if (!productIds || productIds.length === 0) return [];
   const query = productIds.map((id) => `productIds=${encodeURIComponent(id)}`).join("&");
@@ -217,5 +257,10 @@ export {
   getProductsByIdsApi,
   getProductsApi,
   getSellerProductsApi,
+  createCategoryAdminApi,
+  createCategorySellerApi,
+  updateCategoryAdminApi,
+  updateCategorySellerApi,
+  deleteCategoryApi,
 };
 

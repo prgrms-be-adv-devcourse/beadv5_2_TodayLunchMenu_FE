@@ -12,6 +12,7 @@ import DepositConfirmPage from "./pages/deposit/DepositConfirmPage";
 import DepositFailPage from "./pages/deposit/DepositFailPage";
 import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
+import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
 import AdminMemberReportListPage from "./pages/admin/AdminMemberReportListPage";
 import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestrictionListPage";
@@ -32,6 +33,7 @@ import PaymentPage from "./pages/payment/PaymentPage";
 import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
 import ProductDetailPage from "./pages/product/ProductDetailPage";
 import ProductListPage from "./pages/product/ProductListPage";
+import SellerCategoryPage from "./pages/seller/SellerCategoryPage";
 import SellerRegisterPage from "./pages/seller/SellerRegisterPage";
 import SellerAccountVerificationPage from "./pages/seller/SellerAccountVerificationPage";
 import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
@@ -82,6 +84,7 @@ const router = createBrowserRouter([
       { path: "member-reports/new", element: <MemberReportCreatePage /> },
       { path: "member-reports/me", element: <MemberReportHistoryPage /> },
       { path: "notifications", element: <NotificationListPage /> },
+      { path: "admin/categories", element: <AdminCategoryPage /> },
       { path: "admin/member-reports", element: <AdminMemberReportListPage /> },
       {
         path: "admin/member-reports/:reportId",
@@ -91,6 +94,7 @@ const router = createBrowserRouter([
         path: "admin/member-restrictions",
         element: <AdminMemberRestrictionListPage />,
       },
+      { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {
         path: "seller/account-verification",

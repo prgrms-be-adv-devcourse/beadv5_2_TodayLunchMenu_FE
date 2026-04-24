@@ -241,6 +241,7 @@ export default function AdminMemberReportDetailPage() {
           <a className="font-bold text-slate-500 hover:text-violet-500" href="#">Dashboard</a>
           <Link className="relative font-bold text-violet-700 after:absolute after:-bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-violet-600" to="/admin/member-reports">Reports</Link>
           <Link className="font-bold text-slate-500 hover:text-violet-500" to="/admin/member-restrictions">Sanctions</Link>
+          <Link className="font-bold text-slate-500 hover:text-violet-500" to="/admin/categories">Categories</Link>
           <a className="font-bold text-slate-500 hover:text-violet-500" href="#">Users</a>
         </div>
         <div className="flex items-center gap-4">
@@ -261,6 +262,10 @@ export default function AdminMemberReportDetailPage() {
             </Link>
             <div className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-white/70">Pending Review</div>
             <Link to="/admin/member-restrictions" className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-white/70 block">Sanction History</Link>
+            <Link to="/admin/member-restrictions" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:translate-x-1 hover:bg-white/70">Sanction History</Link>
+            <Link to="/admin/categories" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:translate-x-1 hover:bg-white/70">
+              <span>🗂</span> 카테고리 관리
+            </Link>
             <div className="rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-white/70">System Logs</div>
           </nav>
         </aside>
