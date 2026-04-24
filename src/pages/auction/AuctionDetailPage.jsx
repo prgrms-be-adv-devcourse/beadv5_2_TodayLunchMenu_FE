@@ -208,8 +208,12 @@ export default function AuctionDetailPage() {
         currentBidPrice: currentPrice,
         startPrice: auction.startPrice,
         productName: auction.productTitle ?? null,
+        bidUnit: auction.bidUnit,
+        nextMinimumBidPrice: nextMin,
         bidCount: bids.length,
         remainingSeconds,
+        auctionStatus: auction.status,
+        hasBid: auction.hasBid,
       });
       const recommendedBidPrice = Math.max(
         recommendation.recommendedBidPrice,

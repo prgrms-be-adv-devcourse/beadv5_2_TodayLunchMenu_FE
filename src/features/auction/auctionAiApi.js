@@ -21,15 +21,7 @@ function toUiAuctionPriceRecommendation(result) {
 async function recommendAuctionBidPriceApi(payload) {
   const response = await apiClient("/api/ai/auction-price-recommendation", {
     method: "POST",
-    body: {
-      auctionId: payload.auctionId,
-      productId: payload.productId,
-      currentBidPrice: payload.currentBidPrice,
-      startPrice: payload.startPrice,
-      productName: payload.productName,
-      bidCount: payload.bidCount,
-      remainingSeconds: payload.remainingSeconds,
-    },
+    body: payload,
     timeout: 20000,
   });
 
