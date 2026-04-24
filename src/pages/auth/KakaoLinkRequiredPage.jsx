@@ -4,6 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import {
   clearPendingKakaoLink,
+  getPendingKakaoLink,
   setPendingKakaoLink,
 } from "../../features/auth/kakaoLinkStorage";
 
@@ -20,16 +21,17 @@ function DecorativeFoodIcon({ label }) {
 export default function KakaoLinkRequiredPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const storedPendingLink = getPendingKakaoLink();
 
   const pendingLink = useMemo(
     () => ({
-      linkToken: searchParams.get("linkToken") || "",
+      linkToken: searchParams.get("linkToken") || storedPendingLink?.linkToken || "",
       provider: searchParams.get("provider") || "KAKAO",
-      email: searchParams.get("email") || FALLBACK_EMAIL,
-      nickname: searchParams.get("nickname") || "",
-      providerUserId: searchParams.get("providerUserId") || "",
+      email: searchParams.get("email") || storedPendingLink?.email || FALLBACK_EMAIL,
+      nickname: searchParams.get("nickname") || storedPendingLink?.nickname || "",
+      providerUserId: searchParams.get("providerUserId") || storedPendingLink?.providerUserId || "",
     }),
-    [searchParams]
+    [searchParams, storedPendingLink]
   );
 
   useEffect(() => {
@@ -46,14 +48,14 @@ export default function KakaoLinkRequiredPage() {
         <div className="mx-auto flex h-16 w-full max-w-md items-center justify-between px-6">
           <button
             type="button"
-            aria-label="Go back"
+            aria-label="뒤로 가기"
             onClick={() => navigate(-1)}
             className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold text-violet-700 transition hover:bg-violet-100 active:scale-95"
           >
             {"<"}
           </button>
 
-          <h1 className="text-xl font-black tracking-tight">TodayLunch</h1>
+          <h1 className="text-xl font-black tracking-tight">GoodsMall</h1>
 
           <Link
             to="/login"
@@ -94,16 +96,16 @@ export default function KakaoLinkRequiredPage() {
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-violet-600">
-              Kakao Account Linking
+              카카오 계정 연동
             </p>
             <h2 className="text-3xl font-black leading-tight tracking-tight">
-              Kakao account linking
+              카카오 계정 연동이
               <br />
-              is required
+              필요해요
             </h2>
             <p className="text-sm font-medium leading-7 text-[#67537c]">
-              Kakao authentication completed, but this Kakao identity is not linked to a
-              TodayLunch member account yet.
+              카카오 인증은 완료됐지만, 이 카카오 계정은 아직 GoodsMall 회원 계정과
+              연결되어 있지 않아요.
             </p>
           </div>
 
@@ -114,7 +116,7 @@ export default function KakaoLinkRequiredPage() {
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-violet-600">
-                  Kakao Account
+                  카카오 계정
                 </p>
                 <p className="text-sm font-semibold text-[#38274c]">{storedEmail}</p>
               </div>
@@ -122,7 +124,7 @@ export default function KakaoLinkRequiredPage() {
 
             {pendingLink.nickname ? (
               <p className="mt-3 text-xs font-medium text-[#67537c]">
-                Kakao nickname: {pendingLink.nickname}
+                카카오 닉네임: {pendingLink.nickname}
               </p>
             ) : null}
           </div>
@@ -134,7 +136,7 @@ export default function KakaoLinkRequiredPage() {
             className="w-full gap-2 bg-gradient-to-r from-violet-700 via-violet-600 to-fuchsia-500 shadow-[0_18px_30px_rgba(93,63,211,0.25)]"
             onClick={() => navigate(`/login?email=${encodeURIComponent(storedEmail)}`)}
           >
-            Link to existing account
+            기존 계정과 연결하기
             <span aria-hidden="true">-&gt;</span>
           </Button>
 
@@ -143,7 +145,7 @@ export default function KakaoLinkRequiredPage() {
             onClick={() => navigate(`/signup?email=${encodeURIComponent(storedEmail)}`)}
             className="flex h-14 w-full items-center justify-center rounded-full bg-violet-100 px-6 text-base font-bold text-violet-900 transition hover:bg-violet-200 active:scale-[0.98]"
           >
-            Sign up and link
+            회원가입 후 연결하기
           </button>
 
           <button
@@ -154,15 +156,14 @@ export default function KakaoLinkRequiredPage() {
             }}
             className="w-full py-3 text-sm font-semibold text-[#67537c] transition hover:text-violet-700"
           >
-            Cancel
+            취소
           </button>
         </section>
 
         <footer className="mt-auto pt-12 text-center">
           <div className="rounded-[1.5rem] bg-white/65 p-4 text-left shadow-sm shadow-violet-200/30 backdrop-blur">
             <p className="text-xs font-medium leading-6 text-[#67537c]">
-              After linking is complete, future sign-ins can continue directly with
-              Kakao.
+              한 번 연결해두면 다음부터는 카카오로 바로 로그인할 수 있어요.
             </p>
           </div>
 
