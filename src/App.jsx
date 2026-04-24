@@ -43,6 +43,7 @@ import SellerSettlementPage from "./pages/seller/SellerSettlementPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import WithdrawalPage from "./pages/withdrawal/WithdrawalPage";
+import NotFoundPage from "./pages/common/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -106,6 +107,7 @@ const router = createBrowserRouter([
       { path: "seller/settlements", element: <SellerSettlementPage /> },
       { path: "auctions", element: <AuctionListPage /> },
       { path: "auctions/:auctionId", element: <AuctionDetailPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);
