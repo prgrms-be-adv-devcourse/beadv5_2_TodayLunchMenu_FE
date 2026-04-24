@@ -18,6 +18,8 @@ import {
 import { useAuctionSocket } from "../../features/auction/useAuctionSocket";
 import { useCountdown } from "../../features/auction/useCountdown";
 
+const SHOW_BID_STATUSES = new Set(["ACTIVE", "OUTBID", "WINNING", "PAYMENT_COMPLETED"]);
+
 function useAnimatedNumber(value) {
   const [display, setDisplay] = useState(value);
   const prev = useRef(value);
@@ -167,13 +169,11 @@ export default function AuctionDetailPage() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  const myId = user?.memberId;
+
   const handleBidEvent = useCallback(
     (payload) => {
       if (!payload || !payload.auctionId || payload.auctionId !== auctionId) {
-        return;
-      }
-
-      if (payload.status !== "ACTIVE") {
         return;
       }
 
@@ -204,17 +204,14 @@ export default function AuctionDetailPage() {
     [auctionId, prependBid, setAuction]
   );
 
-  useAuctionSocket(auctionId, handleBidEvent);
+  const handleUserMessage = useCallback((message) => {
+    setToast({ type: "error", message });
+  }, []);
 
-  const myId = user?.memberId;
+  useAuctionSocket(auctionId, handleBidEvent, myId, handleUserMessage);
 
   const validBids = useMemo(() => {
-    const seen = new Set();
-    return bids.filter((bid) => {
-      if (seen.has(bid.amount)) return false;
-      seen.add(bid.amount);
-      return true;
-    });
+    return bids.filter((bid) => SHOW_BID_STATUSES.has(bid.status));
   }, [bids]);
 
   const quicks = useMemo(() => {
@@ -293,6 +290,10 @@ export default function AuctionDetailPage() {
       setToast({ type: "error", message: "입찰가는 9억 9천만원을 초과할 수 없습니다." });
       return;
     }
+    if (amount % 100 !== 0) {
+      setToast({ type: "error", message: "입찰가는 100원 단위로 입력해 주세요." });
+      return;
+    }
     if (amount < nextMin) {
       setToast({ type: "error", message: `${formatKRW(nextMin)}원부터 입찰할 수 있어요.` });
       return;
@@ -301,7 +302,7 @@ export default function AuctionDetailPage() {
     try {
       setSubmitting(true);
       await placeBid(auctionId, amount);
-      setToast({ type: "success", message: "입찰 완료! 지금 최고가예요." });
+      setToast({ type: "success", message: "입찰 요청이 접수됐습니다. 처리 중..." });
       reload();
     } catch (nextError) {
       if (nextError?.status === 401) {

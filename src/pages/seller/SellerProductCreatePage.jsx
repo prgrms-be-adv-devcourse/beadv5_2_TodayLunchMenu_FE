@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -14,6 +14,32 @@ import {
   getCategoriesApi,
   getChildCategoriesApi,
 } from "../../features/product/productApi";
+
+const toLocalDatetimeValue = (ms) => {
+  const d = new Date(ms);
+  d.setSeconds(0, 0);
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+};
+
+const START_PRESETS = [
+  { label: "지금", offset: 0 },
+  { label: "+30분", offset: 30 },
+  { label: "+1시간", offset: 60 },
+  { label: "+3시간", offset: 180 },
+  { label: "+6시간", offset: 360 },
+  { label: "+1일", offset: 1440 },
+];
+
+const DURATION_PRESETS = [
+  { label: "30분", value: 30 },
+  { label: "1시간", value: 60 },
+  { label: "3시간", value: 180 },
+  { label: "6시간", value: 360 },
+  { label: "12시간", value: 720 },
+  { label: "1일", value: 1440 },
+  { label: "3일", value: 4320 },
+  { label: "7일", value: 10080 },
+];
 
 const MIN_PRICE = 1000;
 const MIN_STOCK = 1;
@@ -110,6 +136,13 @@ export default function SellerProductCreatePage() {
     durationMinutes: "",
   });
   const [auctionErrors, setAuctionErrors] = useState({});
+
+  const computedEndAt = useMemo(() => {
+    if (!auctionForm.startedAt || !auctionForm.durationMinutes) return null;
+    const start = new Date(auctionForm.startedAt);
+    if (isNaN(start.getTime())) return null;
+    return new Date(start.getTime() + Number(auctionForm.durationMinutes) * 60_000);
+  }, [auctionForm.startedAt, auctionForm.durationMinutes]);
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiDraft, setAiDraft] = useState(null);
@@ -626,7 +659,8 @@ export default function SellerProductCreatePage() {
           form.type === "AUCTION" ? (
             <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
               <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-amber-700">경매 설정</h2>
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-5">
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField label="시작가" htmlFor="startPrice" required error={auctionErrors.startPrice} helpText="1,000원 이상">
                     <div className="relative">
@@ -661,29 +695,90 @@ export default function SellerProductCreatePage() {
                     </div>
                   </FormField>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField label="경매 시작 시간" htmlFor="startedAt" required error={auctionErrors.startedAt}>
-                    <Input
-                      id="startedAt"
-                      type="datetime-local"
-                      value={auctionForm.startedAt}
-                      onChange={handleAuctionChange("startedAt")}
-                      error={!!auctionErrors.startedAt}
-                    />
-                  </FormField>
-                  <FormField label="경매 기간 (분)" htmlFor="durationMinutes" required error={auctionErrors.durationMinutes} helpText="최소 1분">
-                    <Input
-                      id="durationMinutes"
-                      type="number"
-                      min="1"
-                      step="1"
-                      placeholder="60"
-                      value={auctionForm.durationMinutes}
-                      onChange={handleAuctionChange("durationMinutes")}
-                      error={!!auctionErrors.durationMinutes}
-                    />
-                  </FormField>
-                </div>
+
+                <FormField label="경매 시작 시간" htmlFor="startedAt" required error={auctionErrors.startedAt}>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {START_PRESETS.map(({ label, offset }) => (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => {
+                          setAuctionForm((prev) => ({ ...prev, startedAt: toLocalDatetimeValue(Date.now() + offset * 60_000) }));
+                          setAuctionErrors((prev) => ({ ...prev, startedAt: "" }));
+                        }}
+                        className="rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700 transition hover:bg-amber-100"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  <Input
+                    id="startedAt"
+                    type="datetime-local"
+                    value={auctionForm.startedAt}
+                    onChange={handleAuctionChange("startedAt")}
+                    error={!!auctionErrors.startedAt}
+                  />
+                </FormField>
+
+                <FormField label="경매 기간" htmlFor="durationMinutes" required error={auctionErrors.durationMinutes}>
+                  <div className="grid grid-cols-4 gap-2 mb-3">
+                    {DURATION_PRESETS.map(({ label, value }) => {
+                      const active = Number(auctionForm.durationMinutes) === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => {
+                            setAuctionForm((prev) => ({ ...prev, durationMinutes: value }));
+                            setAuctionErrors((prev) => ({ ...prev, durationMinutes: "" }));
+                          }}
+                          className={[
+                            "h-10 rounded-xl text-sm font-bold transition",
+                            active
+                              ? "bg-amber-500 text-white shadow"
+                              : "bg-amber-50 text-amber-700 hover:bg-amber-100",
+                          ].join(" ")}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="shrink-0 text-xs font-medium text-gray-500">직접 입력</span>
+                    <div className="relative flex-1">
+                      <Input
+                        id="durationMinutes"
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="분 단위로 입력"
+                        value={auctionForm.durationMinutes}
+                        onChange={handleAuctionChange("durationMinutes")}
+                        error={!!auctionErrors.durationMinutes}
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">분</span>
+                    </div>
+                  </div>
+                </FormField>
+
+                {computedEndAt && (
+                  <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm">
+                    <span className="font-medium text-amber-600">예상 종료</span>
+                    <span className="font-extrabold text-amber-900">
+                      {computedEndAt.toLocaleString("ko-KR", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        weekday: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                )}
+
               </div>
             </section>
           ) : null
