@@ -4,12 +4,9 @@ const unwrapResponse = (response) => response?.data?.data ?? null;
 
 const API_BASE = import.meta.env.VITE_SERVER_URL ?? "";
 
-function getKakaoAuthorizeUrl() {
-  return `${API_BASE}/api/auth/oauth/kakao/authorize`;
-}
-
-function getKakaoLinkAuthorizeUrl() {
-  return `${API_BASE}/api/auth/oauth/kakao/link/authorize`;
+async function fetchKakaoAuthorizeUrlApi() {
+  const response = await apiClient("/api/auth/oauth/kakao/authorize");
+  return unwrapResponse(response);
 }
 
 async function fetchKakaoLinkAuthorizeUrlApi() {
@@ -106,10 +103,9 @@ async function linkKakaoAccountApi({ linkToken }) {
 
 export {
   confirmEmailVerificationApi,
+  fetchKakaoAuthorizeUrlApi,
   fetchKakaoLinkAuthorizeUrlApi,
   fetchKakaoOAuthResultApi,
-  getKakaoAuthorizeUrl,
-  getKakaoLinkAuthorizeUrl,
   getMyInfoApi,
   linkKakaoAccountApi,
   loginApi,

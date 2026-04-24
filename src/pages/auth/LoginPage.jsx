@@ -6,7 +6,7 @@ import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
 import {
-  getKakaoAuthorizeUrl,
+  fetchKakaoAuthorizeUrlApi,
   linkKakaoAccountApi,
   sendEmailVerificationApi,
 } from "../../features/auth/authApi";
@@ -278,8 +278,11 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                window.location.href = getKakaoAuthorizeUrl();
+              onClick={async () => {
+                const result = await fetchKakaoAuthorizeUrlApi();
+                if (result?.authorizeUrl) {
+                  window.location.href = result.authorizeUrl;
+                }
               }}
               className="flex items-center justify-center rounded-xl border border-purple-100 bg-white p-4 font-semibold transition hover:bg-purple-50"
             >
