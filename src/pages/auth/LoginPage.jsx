@@ -272,9 +272,23 @@ export default function LoginPage() {
             size="lg"
             className="w-full gap-3 border border-[#ead000] bg-[#FEE500] text-[#191919] shadow-[0_6px_18px_rgba(0,0,0,0.08)] hover:bg-[#FADA00] hover:brightness-100"
             onClick={async () => {
-              const result = await fetchKakaoAuthorizeUrlApi();
-              if (result?.authorizeUrl) {
+              try {
+                setErrors((prev) => ({ ...prev, common: "" }));
+
+                const result = await fetchKakaoAuthorizeUrlApi();
+                if (!result?.authorizeUrl) {
+                  throw new Error("카카오 로그인 URL을 불러오지 못했습니다.");
+                }
+
                 window.location.href = result.authorizeUrl;
+              } catch (error) {
+                setErrors((prev) => ({
+                  ...prev,
+                  common:
+                    error instanceof ApiError
+                      ? error.message
+                      : error?.message || "카카오 로그인을 시작하지 못했습니다.",
+                }));
               }
             }}
           >
