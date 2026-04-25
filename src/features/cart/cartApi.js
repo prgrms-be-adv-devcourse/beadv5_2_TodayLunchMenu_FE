@@ -70,7 +70,7 @@ async function deleteCartItemsApi(cartIds) {
   const response = await apiClient("/api/carts/items", {
     method: "DELETE",
     body: {
-      cartItemIds: cartIds,
+      cartIds: cartIds,
     },
   });
 
