@@ -9,6 +9,7 @@ import CountdownPill from "../../components/auction/CountdownPill";
 import { recommendAuctionBidPriceApi } from "../../features/auction/auctionAiApi";
 import { useAuth } from "../../features/auth/useAuth";
 import { formatKRW, statusLabel } from "../../features/auction/format";
+import { getProductDetailApi } from "../../features/product/productApi";
 import {
   placeBid,
   useAuction,
@@ -16,6 +17,8 @@ import {
 } from "../../features/auction/useAuctions";
 import { useAuctionSocket } from "../../features/auction/useAuctionSocket";
 import { useCountdown } from "../../features/auction/useCountdown";
+
+const SHOW_BID_STATUSES = new Set(["ACTIVE", "OUTBID", "WINNING", "PAYMENT_COMPLETED"]);
 
 function useAnimatedNumber(value) {
   const [display, setDisplay] = useState(value);
@@ -113,6 +116,8 @@ export default function AuctionDetailPage() {
   const { auction, setAuction, loading, error, reload } = useAuction(auctionId);
   const { bids, prependBid } = useAuctionBids(auctionId, { size: 30 });
   const { ended } = useCountdown(auction?.endsAt);
+  const [productImage, setProductImage] = useState(null);
+  const [productName, setProductName] = useState(null);
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
@@ -127,10 +132,26 @@ export default function AuctionDetailPage() {
   const animatedPrice = useAnimatedNumber(currentPrice);
 
   useEffect(() => {
+    if (!auction?.productId) return;
+    let cancelled = false;
+    getProductDetailApi(auction.productId)
+      .then((product) => {
+        if (!cancelled) {
+          setProductImage(product.image ?? null);
+          setProductName(product.name ?? null);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [auction?.productId]);
+
+  useEffect(() => {
     if (auction?.status !== "WAITING") return undefined;
-    const timer = setInterval(reload, 10_000);
+    const startedAtPassed = auction.startedAt && auction.startedAt <= Date.now();
+    const interval = startedAtPassed ? 2_000 : 10_000;
+    const timer = setInterval(reload, interval);
     return () => clearInterval(timer);
-  }, [auction?.status, reload]);
+  }, [auction?.status, auction?.startedAt, reload]);
 
   useEffect(() => {
     if (!auction) {
@@ -148,6 +169,8 @@ export default function AuctionDetailPage() {
     const timer = setTimeout(() => setToast(null), 2400);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  const myId = user?.memberId;
 
   const handleBidEvent = useCallback(
     (payload) => {
@@ -182,9 +205,16 @@ export default function AuctionDetailPage() {
     [auctionId, prependBid, setAuction]
   );
 
-  useAuctionSocket(auctionId, handleBidEvent);
+  const handleUserMessage = useCallback((message) => {
+    setToast({ type: "error", message });
+  }, []);
 
-  const myId = user?.memberId;
+  useAuctionSocket(auctionId, handleBidEvent, myId, handleUserMessage);
+
+  const validBids = useMemo(() => {
+    return bids.filter((bid) => SHOW_BID_STATUSES.has(bid.status));
+  }, [bids]);
+
   const quicks = useMemo(() => {
     if (!auction || bidUnit <= 0) return [];
     const base = nextMin;
@@ -279,8 +309,16 @@ export default function AuctionDetailPage() {
     if (ended) return;
 
     const amount = Number(bidInput);
-    if (!Number.isFinite(amount) || amount <= 0) {
+    if (!Number.isFinite(amount) || !Number.isInteger(amount) || amount <= 0) {
       setToast({ type: "error", message: "올바른 금액을 입력해 주세요." });
+      return;
+    }
+    if (amount > 999_999_999) {
+      setToast({ type: "error", message: "입찰가는 9억 9천만원을 초과할 수 없습니다." });
+      return;
+    }
+    if (amount % 100 !== 0) {
+      setToast({ type: "error", message: "입찰가는 100원 단위로 입력해 주세요." });
       return;
     }
     if (amount < nextMin) {
@@ -291,7 +329,7 @@ export default function AuctionDetailPage() {
     try {
       setSubmitting(true);
       await placeBid(auctionId, amount);
-      setToast({ type: "success", message: "입찰 완료! 지금 최고가예요." });
+      setToast({ type: "success", message: "입찰 요청이 접수됐습니다. 처리 중..." });
       reload();
     } catch (nextError) {
       if (nextError?.status === 401) {
@@ -335,7 +373,6 @@ export default function AuctionDetailPage() {
 
   const isSeller = myId && auction.sellerId && myId === auction.sellerId;
   const isWaiting = auction.status === "WAITING";
-  const initial = auction.id?.slice(0, 1).toUpperCase() || "A";
   const topBid = bids[0];
 
   return (
@@ -350,13 +387,15 @@ export default function AuctionDetailPage() {
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div>
           <section className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[32px] bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 ring-1 ring-purple-100">
-            <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
+            <span className="absolute left-4 top-4 z-10 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold tracking-wider text-violet-700 backdrop-blur">
               Lot {auction.id?.slice(0, 6).toUpperCase()}
             </span>
             <CountdownPill endsAt={auction.endsAt} status={auction.status} />
-            <span className="select-none text-[180px] font-black leading-none tracking-tight text-violet-700">
-              {initial}
-            </span>
+            <img
+              src={productImage || "/default-product.svg"}
+              alt={auction.productTitle || "경매 상품"}
+              className="h-full w-full object-cover"
+            />
           </section>
 
           <section className="mt-6 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
@@ -364,7 +403,7 @@ export default function AuctionDetailPage() {
               경매 · {statusLabel(auction.status)}
             </p>
             <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
-              상품 ID · {auction.productId?.slice(0, 8)}
+              {auction.productTitle ?? productName ?? auction.productId?.slice(0, 8)}
             </h1>
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 border-t border-purple-100 pt-5 text-sm text-gray-500">
               <span>
@@ -391,16 +430,16 @@ export default function AuctionDetailPage() {
           <section className="mt-4 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
             <div className="mb-4 flex items-baseline justify-between">
               <h4 className="text-base font-extrabold tracking-tight">입찰 내역</h4>
-              <span className="text-xs font-medium text-gray-500">총 {bids.length}건</span>
+              <span className="text-xs font-medium text-gray-500">총 {validBids.length}건</span>
             </div>
 
-            {bids.length === 0 ? (
+            {validBids.length === 0 ? (
               <p className="py-10 text-center text-sm text-gray-500">
                 아직 입찰이 없어요.
               </p>
             ) : (
               <ul className="max-h-[360px] space-y-1 overflow-y-auto">
-                {bids.map((bid, index) => (
+                {validBids.map((bid, index) => (
                   <BidRow
                     key={bid.id}
                     bid={bid}
@@ -484,6 +523,9 @@ export default function AuctionDetailPage() {
                   type="number"
                   inputMode="numeric"
                   value={bidInput}
+                  min={nextMin}
+                  max={999_999_999}
+                  step={bidUnit || 1}
                   onChange={(e) => setBidInput(e.target.value)}
                   className="h-14 w-full rounded-xl border border-purple-100 bg-white pl-4 pr-12 text-xl font-extrabold tabular-nums tracking-tight text-gray-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-300"
                 />

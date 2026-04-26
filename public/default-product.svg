@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ede9fe"/>
+      <stop offset="50%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+  </defs>
+  <!-- Box body -->
+  <rect x="120" y="175" width="160" height="130" rx="12" fill="#c4b5fd" opacity="0.5"/>
+  <!-- Box lid -->
+  <path d="M110 175 Q200 145 290 175 L290 195 Q200 165 110 195 Z" fill="#7c3aed" opacity="0.6"/>
+  <!-- Box handle -->
+  <path d="M170 175 Q170 145 200 145 Q230 145 230 175" stroke="#7c3aed" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <!-- Ribbon vertical -->
+  <rect x="192" y="175" width="16" height="130" rx="4" fill="#7c3aed" opacity="0.25"/>
+  <!-- Ribbon horizontal -->
+  <rect x="120" y="228" width="160" height="16" rx="4" fill="#7c3aed" opacity="0.25"/>
+</svg>

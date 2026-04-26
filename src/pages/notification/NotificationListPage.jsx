@@ -9,6 +9,7 @@ import {
   formatElapsedTime,
   getNotificationActionClassName,
   getNotificationTypeMeta,
+  getVisibleNotificationSubtitle,
   resolveNotificationActionPath,
 } from "../../features/notification/notificationPresentation";
 import {
@@ -50,7 +51,7 @@ function NotificationActionButtons({ notification, onAction }) {
             읽음 처리
           </button>
         ) : (
-          <span className="inline-flex px-1 text-xs font-semibold text-gray-400">읽음 완료</span>
+          <span className="inline-flex px-1 text-xs font-semibold text-gray-400">읽음 처리됨</span>
         )}
       </div>
     </div>
@@ -219,7 +220,7 @@ export default function NotificationListPage() {
         <div className="absolute -bottom-16 left-8 h-28 w-28 rounded-full bg-fuchsia-300/20 blur-2xl" />
         <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">Notifications</p>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">알림</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-white">알림 보관함</h1>
             <p className="mt-2 max-w-xl text-sm text-white/75">
               주문, 결제, 정산과 관련된 알림을 한곳에서 확인할 수 있어요.
@@ -286,11 +287,7 @@ export default function NotificationListPage() {
                 {items.map((notification) => {
                   const meta = getNotificationTypeMeta(notification.type);
                   const elapsedTime = formatElapsedTime(notification);
-                  const shouldHideSubtitle =
-                    Boolean(notification.referenceId) &&
-                    typeof notification.subtitle === "string" &&
-                    notification.subtitle.includes(String(notification.referenceId));
-                  const visibleSubtitle = shouldHideSubtitle ? "" : notification.subtitle;
+                  const visibleSubtitle = getVisibleNotificationSubtitle(notification);
 
                   return (
                     <article

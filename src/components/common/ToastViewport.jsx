@@ -101,7 +101,7 @@ function ToastCard({ toast, onDismiss, navigate }) {
                 type="button"
                 onClick={() => onDismiss(toast.id)}
                 className="rounded-full p-1 text-slate-400 transition hover:bg-violet-50 hover:text-violet-700"
-                aria-label="Dismiss notification"
+                aria-label="알림 닫기"
               >
                 x
               </button>
@@ -125,12 +125,12 @@ function ToastCard({ toast, onDismiss, navigate }) {
                 />
               ))
             ) : (
-              <button
-                type="button"
-                onClick={() => onDismiss(toast.id)}
-                className="rounded-full bg-violet-100 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition hover:bg-violet-200"
-              >
-                Dismiss
+                <button
+                  type="button"
+                  onClick={() => onDismiss(toast.id)}
+                  className="rounded-full bg-violet-100 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition hover:bg-violet-200"
+                >
+                닫기
               </button>
             )}
           </div>

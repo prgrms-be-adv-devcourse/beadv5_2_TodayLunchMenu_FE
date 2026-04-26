@@ -4,6 +4,7 @@ import { ApiError } from "../../api/client";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
+import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
 import { getSellerProductsApi } from "../../features/product/productApi";
 
@@ -96,6 +97,7 @@ export default function SellerProductListPage() {
 
   return (
     <>
+      <SellerNav currentPage="products" />
       <PageContainer>
         {/* 헤더 */}
         <div className="mb-5 flex items-center justify-between">

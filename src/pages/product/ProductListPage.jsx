@@ -22,22 +22,32 @@ export default function ProductListPage() {
   const [statusFilter, setStatusFilter] = useState("전체");
   const [sort, setSort] = useState("latest");
   const { addToCart } = useCart({ autoLoad: false });
-  const { products, loading, error } = useProducts({ page: 0, size: 50, sort: "createdAt,desc" });
+  const { products, loading, fetching, error } = useProducts({
+    page: 0,
+    size: 50,
+    sort: "createdAt,desc",
+  });
 
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    let result = products.filter((product) => product.type !== "AUCTION");
 
     if (statusFilter === "판매중") {
-      result = result.filter((product) => product.status !== "SOLD_OUT" && product.stockCount > 0);
+      result = result.filter(
+        (product) => product.status !== "SOLD_OUT" && product.stockCount > 0,
+      );
     }
 
     if (statusFilter === "품절") {
-      result = result.filter((product) => product.status === "SOLD_OUT" || product.stockCount <= 0);
+      result = result.filter(
+        (product) => product.status === "SOLD_OUT" || product.stockCount <= 0,
+      );
     }
 
     if (keyword.trim()) {
       const lowerKeyword = keyword.toLowerCase();
-      result = result.filter((product) => product.name.toLowerCase().includes(lowerKeyword));
+      result = result.filter((product) =>
+        product.name.toLowerCase().includes(lowerKeyword),
+      );
     }
 
     switch (sort) {
@@ -53,7 +63,9 @@ export default function ProductListPage() {
       case "latest":
       default:
         result.sort(
-          (a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          (a, b) =>
+            new Date(b.createdAt || 0).getTime() -
+            new Date(a.createdAt || 0).getTime(),
         );
         break;
     }
@@ -85,7 +97,11 @@ export default function ProductListPage() {
     <PageContainer>
       <PageHeader
         title="상품 목록"
-        action={<span className="text-sm font-medium text-gray-500">총 {filteredProducts.length}개</span>}
+        action={
+          <span className="text-sm font-medium text-gray-500">
+            총 {filteredProducts.length}개
+          </span>
+        }
       />
 
       <section className="mb-6 rounded-[28px] bg-white/70 p-4 shadow-sm ring-1 ring-purple-100 backdrop-blur">
@@ -150,29 +166,49 @@ export default function ProductListPage() {
 
       {loading ? (
         <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-          <p className="text-lg font-bold text-gray-900">상품을 불러오는 중입니다.</p>
+          <p className="text-lg font-bold text-gray-900">
+            상품을 불러오는 중입니다.
+          </p>
         </section>
       ) : error ? (
         <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
-          <p className="mb-2 text-lg font-bold text-red-700">상품 목록을 불러오지 못했습니다.</p>
-          <p className="text-sm text-red-500">{error.message || "잠시 후 다시 시도해 주세요."}</p>
-        </section>
-      ) : filteredProducts.length === 0 ? (
-        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
-          <p className="mb-2 text-lg font-bold text-gray-900">조건에 맞는 상품이 없습니다.</p>
-          <p className="mb-6 text-sm text-gray-500">검색어 또는 필터 조건을 다시 조정해 보세요.</p>
-          <Button onClick={handleReset}>필터 초기화</Button>
+          <p className="mb-2 text-lg font-bold text-red-700">
+            상품 목록을 불러오지 못했습니다.
+          </p>
+          <p className="text-sm text-red-500">
+            {error.message || "잠시 후 다시 시도해 주세요."}
+          </p>
         </section>
       ) : (
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={handleAddToCart}
-            />
-          ))}
-        </section>
+        <div
+          className={
+            fetching
+              ? "pointer-events-none opacity-50 transition-opacity"
+              : "transition-opacity"
+          }
+        >
+          {filteredProducts.length === 0 ? (
+            <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+              <p className="mb-2 text-lg font-bold text-gray-900">
+                조건에 맞는 상품이 없습니다.
+              </p>
+              <p className="mb-6 text-sm text-gray-500">
+                검색어 또는 필터 조건을 다시 조정해 보세요.
+              </p>
+              <Button onClick={handleReset}>필터 초기화</Button>
+            </section>
+          ) : (
+            <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </section>
+          )}
+        </div>
       )}
     </PageContainer>
   );

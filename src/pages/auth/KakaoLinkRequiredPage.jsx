@@ -4,10 +4,9 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import {
   clearPendingKakaoLink,
+  getPendingKakaoLink,
   setPendingKakaoLink,
 } from "../../features/auth/kakaoLinkStorage";
-
-const FALLBACK_EMAIL = "kakao-account@todaylunch.local";
 
 function DecorativeFoodIcon({ label }) {
   return (
@@ -20,16 +19,17 @@ function DecorativeFoodIcon({ label }) {
 export default function KakaoLinkRequiredPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const storedPendingLink = getPendingKakaoLink();
 
   const pendingLink = useMemo(
     () => ({
-      linkToken: searchParams.get("linkToken") || "",
+      linkToken: searchParams.get("linkToken") || storedPendingLink?.linkToken || "",
       provider: searchParams.get("provider") || "KAKAO",
-      email: searchParams.get("email") || FALLBACK_EMAIL,
-      nickname: searchParams.get("nickname") || "",
-      providerUserId: searchParams.get("providerUserId") || "",
+      email: searchParams.get("email") || storedPendingLink?.email || "",
+      nickname: searchParams.get("nickname") || storedPendingLink?.nickname || "",
+      providerUserId: searchParams.get("providerUserId") || storedPendingLink?.providerUserId || "",
     }),
-    [searchParams]
+    [searchParams, storedPendingLink]
   );
 
   useEffect(() => {
@@ -38,7 +38,12 @@ export default function KakaoLinkRequiredPage() {
     }
   }, [pendingLink]);
 
-  const storedEmail = pendingLink.email;
+  const loginTarget = pendingLink.email
+    ? `/login?email=${encodeURIComponent(pendingLink.email)}`
+    : "/login";
+  const signupTarget = pendingLink.email
+    ? `/signup?email=${encodeURIComponent(pendingLink.email)}`
+    : "/signup";
 
   return (
     <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(163,145,255,0.24),_transparent_38%),linear-gradient(180deg,_#fdf7ff_0%,_#f8efff_48%,_#fffaf5_100%)] text-[#38274c]">
@@ -46,20 +51,20 @@ export default function KakaoLinkRequiredPage() {
         <div className="mx-auto flex h-16 w-full max-w-md items-center justify-between px-6">
           <button
             type="button"
-            aria-label="Go back"
+            aria-label="뒤로 가기"
             onClick={() => navigate(-1)}
             className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold text-violet-700 transition hover:bg-violet-100 active:scale-95"
           >
             {"<"}
           </button>
 
-          <h1 className="text-xl font-black tracking-tight">TodayLunch</h1>
+          <h1 className="text-xl font-black tracking-tight">GoodsMall</h1>
 
           <Link
             to="/login"
             className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-violet-700 transition hover:bg-violet-100"
           >
-            ?
+            홈
           </Link>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-200 to-transparent" />
@@ -94,56 +99,47 @@ export default function KakaoLinkRequiredPage() {
         <section className="space-y-6">
           <div className="space-y-3">
             <p className="text-xs font-black uppercase tracking-[0.28em] text-violet-600">
-              Kakao Account Linking
+              카카오 계정 연동
             </p>
             <h2 className="text-3xl font-black leading-tight tracking-tight">
-              Kakao account linking
+              카카오 계정 연동이
               <br />
-              is required
+              필요해요
             </h2>
             <p className="text-sm font-medium leading-7 text-[#67537c]">
-              Kakao authentication completed, but this Kakao identity is not linked to a
-              TodayLunch member account yet.
+              카카오 인증은 완료되었지만 아직 카카오 계정이 GoodsMall 회원 계정과 연결되어 있지
+              않아요.
             </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-violet-200/80 bg-white/70 p-4 shadow-sm shadow-violet-200/40 backdrop-blur">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-sm font-black text-violet-700">
-                @
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-violet-600">
-                  Kakao Account
-                </p>
-                <p className="text-sm font-semibold text-[#38274c]">{storedEmail}</p>
-              </div>
-            </div>
-
-            {pendingLink.nickname ? (
-              <p className="mt-3 text-xs font-medium text-[#67537c]">
-                Kakao nickname: {pendingLink.nickname}
+          {pendingLink.nickname ? (
+            <div className="rounded-[1.5rem] border border-violet-200/80 bg-white/70 p-4 shadow-sm shadow-violet-200/40 backdrop-blur">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-violet-600">
+                카카오 계정
               </p>
-            ) : null}
-          </div>
+              <p className="mt-2 text-xs font-medium text-[#67537c]">
+                카카오 닉네임: {pendingLink.nickname}
+              </p>
+            </div>
+          ) : null}
         </section>
 
         <section className="mt-10 space-y-4">
           <Button
             size="lg"
             className="w-full gap-2 bg-gradient-to-r from-violet-700 via-violet-600 to-fuchsia-500 shadow-[0_18px_30px_rgba(93,63,211,0.25)]"
-            onClick={() => navigate(`/login?email=${encodeURIComponent(storedEmail)}`)}
+            onClick={() => navigate(loginTarget)}
           >
-            Link to existing account
+            기존 계정과 연결하기
             <span aria-hidden="true">-&gt;</span>
           </Button>
 
           <button
             type="button"
-            onClick={() => navigate(`/signup?email=${encodeURIComponent(storedEmail)}`)}
+            onClick={() => navigate(signupTarget)}
             className="flex h-14 w-full items-center justify-center rounded-full bg-violet-100 px-6 text-base font-bold text-violet-900 transition hover:bg-violet-200 active:scale-[0.98]"
           >
-            Sign up and link
+            회원가입 후 연결하기
           </button>
 
           <button
@@ -154,15 +150,14 @@ export default function KakaoLinkRequiredPage() {
             }}
             className="w-full py-3 text-sm font-semibold text-[#67537c] transition hover:text-violet-700"
           >
-            Cancel
+            취소
           </button>
         </section>
 
         <footer className="mt-auto pt-12 text-center">
           <div className="rounded-[1.5rem] bg-white/65 p-4 text-left shadow-sm shadow-violet-200/30 backdrop-blur">
             <p className="text-xs font-medium leading-6 text-[#67537c]">
-              After linking is complete, future sign-ins can continue directly with
-              Kakao.
+              한 번 연결해두면 다음부터는 카카오로 바로 로그인할 수 있어요.
             </p>
           </div>
 

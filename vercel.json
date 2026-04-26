@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/[...path].js": {
-      "maxDuration": 30
+      "maxDuration": 300
     }
   },
   "regions": ["icn1"],

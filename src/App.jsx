@@ -2,9 +2,11 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import Layout from "./components/layout/Layout";
 import EmailVerificationPage from "./pages/auth/EmailVerificationPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import KakaoLinkRequiredPage from "./pages/auth/KakaoLinkRequiredPage";
 import KakaoOAuthCallbackPage from "./pages/auth/KakaoOAuthCallbackPage";
 import LoginPage from "./pages/auth/LoginPage";
+import PasswordResetPage from "./pages/auth/PasswordResetPage";
 import SignupPage from "./pages/auth/SignupPage";
 import SignupPendingVerificationPage from "./pages/auth/SignupPendingVerificationPage";
 import CartPage from "./pages/cart/CartPage";
@@ -12,11 +14,15 @@ import DepositConfirmPage from "./pages/deposit/DepositConfirmPage";
 import DepositFailPage from "./pages/deposit/DepositFailPage";
 import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
+import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
+import AdminEmbeddingPage from "./pages/admin/AdminEmbeddingPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
 import AdminMemberReportListPage from "./pages/admin/AdminMemberReportListPage";
 import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestrictionListPage";
 import MemberEditPage from "./pages/member/MemberEditPage";
+import MemberPasswordPage from "./pages/member/MemberPasswordPage";
 import ExternalAccountConnectionsPage from "./pages/member/ExternalAccountConnectionsPage";
+import HomePage from "./pages/home/HomePage";
 import MemberProfilePage from "./pages/member/MemberProfilePage";
 import MemberReportCreatePage from "./pages/member/MemberReportCreatePage";
 import MemberReportHistoryPage from "./pages/member/MemberReportHistoryPage";
@@ -32,24 +38,30 @@ import PaymentPage from "./pages/payment/PaymentPage";
 import PaymentSuccessPage from "./pages/payment/PaymentSuccessPage";
 import ProductDetailPage from "./pages/product/ProductDetailPage";
 import ProductListPage from "./pages/product/ProductListPage";
+import SellerCategoryPage from "./pages/seller/SellerCategoryPage";
 import SellerRegisterPage from "./pages/seller/SellerRegisterPage";
 import SellerAccountVerificationPage from "./pages/seller/SellerAccountVerificationPage";
 import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
 import SellerProductEditPage from "./pages/seller/SellerProductEditPage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
 import SellerSettlementPage from "./pages/seller/SellerSettlementPage";
+import SellerRefundManagementPage from "./pages/seller/SellerRefundManagementPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import WithdrawalPage from "./pages/withdrawal/WithdrawalPage";
+import NotFoundPage from "./pages/common/NotFoundPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
+      { index: true, element: <HomePage /> },
       { path: "products", element: <ProductListPage /> },
       { path: "products/:productId", element: <ProductDetailPage /> },
       { path: "login", element: <LoginPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
+      { path: "password-reset", element: <PasswordResetPage /> },
       { path: "signup", element: <SignupPage /> },
       {
         path: "signup/pending-verification",
@@ -74,6 +86,7 @@ const router = createBrowserRouter([
       { path: "orders/:orderId", element: <OrderDetailPage /> },
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
+      { path: "me/password", element: <MemberPasswordPage /> },
       {
         path: "me/external-accounts",
         element: <ExternalAccountConnectionsPage />,
@@ -82,6 +95,7 @@ const router = createBrowserRouter([
       { path: "member-reports/new", element: <MemberReportCreatePage /> },
       { path: "member-reports/me", element: <MemberReportHistoryPage /> },
       { path: "notifications", element: <NotificationListPage /> },
+      { path: "admin/categories", element: <AdminCategoryPage /> },
       { path: "admin/member-reports", element: <AdminMemberReportListPage /> },
       {
         path: "admin/member-reports/:reportId",
@@ -91,6 +105,8 @@ const router = createBrowserRouter([
         path: "admin/member-restrictions",
         element: <AdminMemberRestrictionListPage />,
       },
+      { path: "admin/embeddings", element: <AdminEmbeddingPage /> },
+      { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {
         path: "seller/account-verification",
@@ -100,8 +116,10 @@ const router = createBrowserRouter([
       { path: "seller/products/new", element: <SellerProductCreatePage /> },
       { path: "seller/products/:productId/edit", element: <SellerProductEditPage /> },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
+      { path: "seller/refunds", element: <SellerRefundManagementPage /> },
       { path: "auctions", element: <AuctionListPage /> },
       { path: "auctions/:auctionId", element: <AuctionDetailPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);

@@ -376,11 +376,6 @@ export default function ExternalAccountConnectionsPage() {
     }
   };
 
-  const secondaryProviders = [
-    { name: "Google", description: "연결된 계정 없음" },
-    { name: "Apple", description: "연결된 계정 없음" },
-  ];
-
   if (authLoading || loading) {
     return (
       <PageContainer>
@@ -490,25 +485,6 @@ export default function ExternalAccountConnectionsPage() {
             </div>
           ) : null}
         </ProviderCard>
-      </section>
-
-      <section className="mt-6 grid gap-4 md:grid-cols-2">
-        {secondaryProviders.map((provider) => (
-          <ProviderCard
-            key={provider.name}
-            name={provider.name}
-            description={provider.description}
-            connected={false}
-            actionLabel="준비 중"
-            onAction={() => {}}
-            actionDisabled
-          >
-            <p className="text-sm font-medium leading-6 text-slate-500">
-              추후 provider별 OAuth가 추가되면 같은 패턴으로 연결 상태와 해제 기능을
-              확장할 수 있어요.
-            </p>
-          </ProviderCard>
-        ))}
       </section>
 
       <section className="mt-8 rounded-[28px] border border-violet-100 bg-violet-50/80 p-6">

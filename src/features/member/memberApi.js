@@ -12,8 +12,6 @@ export async function getMemberByIdApi(memberId) {
 }
 
 export async function updateCurrentMemberApi({
-  email,
-  password,
   nickname,
   phone = null,
   address = null,
@@ -22,12 +20,25 @@ export async function updateCurrentMemberApi({
   const response = await apiClient('/api/members/me', {
     method: 'PATCH',
     body: {
-      email,
-      password,
       nickname,
       phone,
       address,
       profileImageKey,
+    },
+  });
+
+  return unwrapResponse(response);
+}
+
+export async function changeCurrentMemberPasswordApi({
+  currentPassword,
+  newPassword,
+}) {
+  const response = await apiClient('/api/members/me/password', {
+    method: 'PATCH',
+    body: {
+      currentPassword,
+      newPassword,
     },
   });
 

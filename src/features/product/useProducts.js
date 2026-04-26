@@ -12,6 +12,7 @@ function useProducts(params = {}) {
     last: true,
   });
   const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ function useProducts(params = {}) {
 
     async function loadProducts() {
       try {
-        setLoading(true);
+        setFetching(true);
         setError(null);
 
         const data = await getProductsApi(params);
@@ -30,15 +31,17 @@ function useProducts(params = {}) {
 
         setProducts(data.items);
         setPageInfo(data.pageInfo);
+        setLoading(false);
       } catch (nextError) {
         if (cancelled) {
           return;
         }
 
         setError(nextError);
+        setLoading(false);
       } finally {
         if (!cancelled) {
-          setLoading(false);
+          setFetching(false);
         }
       }
     }
@@ -54,6 +57,7 @@ function useProducts(params = {}) {
     products,
     pageInfo,
     loading,
+    fetching,
     error,
   };
 }

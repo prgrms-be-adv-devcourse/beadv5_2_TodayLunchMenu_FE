@@ -21,7 +21,7 @@ const resolveBrokerUrl = () => {
   }
 };
 
-function useAuctionSocket(auctionId, onBidPlaced) {
+function useAuctionSocket(auctionId, onBidPlaced, userId, onUserMessage) {
   useEffect(() => {
     if (!auctionId) {
       return undefined;
@@ -42,10 +42,11 @@ function useAuctionSocket(auctionId, onBidPlaced) {
       heartbeatOutgoing: 10000,
     });
 
-    let subscription = null;
+    let auctionSub = null;
+    let userSub = null;
 
     client.onConnect = () => {
-      subscription = client.subscribe(`/topic/auctions/${auctionId}`, (message) => {
+      auctionSub = client.subscribe(`/topic/auctions/${auctionId}`, (message) => {
         try {
           const payload = JSON.parse(message.body);
           onBidPlaced?.(payload);
@@ -53,19 +54,27 @@ function useAuctionSocket(auctionId, onBidPlaced) {
           // ignore malformed payloads
         }
       });
+
+      if (userId) {
+        userSub = client.subscribe(`/topic/users/${userId}`, (message) => {
+          try {
+            const parsed = JSON.parse(message.body);
+            onUserMessage?.(typeof parsed === "string" ? parsed : message.body);
+          } catch {
+            onUserMessage?.(message.body);
+          }
+        });
+      }
     };
 
     client.activate();
 
     return () => {
-      try {
-        subscription?.unsubscribe();
-      } catch {
-        // noop
-      }
+      try { auctionSub?.unsubscribe(); } catch { /* noop */ }
+      try { userSub?.unsubscribe(); } catch { /* noop */ }
       client.deactivate();
     };
-  }, [auctionId, onBidPlaced]);
+  }, [auctionId, onBidPlaced, userId, onUserMessage]);
 }
 
 export { useAuctionSocket };

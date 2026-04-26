@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   getAuctionApi,
@@ -17,6 +17,7 @@ function useAuctions({ status, page = 0, size = 9 } = {}) {
     hasNext: false,
   });
   const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ function useAuctions({ status, page = 0, size = 9 } = {}) {
 
     async function loadAuctions() {
       try {
-        setLoading(true);
+        setFetching(true);
         setError(null);
 
         const params = { page, size };
@@ -40,15 +41,17 @@ function useAuctions({ status, page = 0, size = 9 } = {}) {
 
         setAuctions(data.items);
         setPageInfo(data.pageInfo);
+        setLoading(false);
       } catch (nextError) {
         if (cancelled) {
           return;
         }
 
         setError(nextError);
+        setLoading(false);
       } finally {
         if (!cancelled) {
-          setLoading(false);
+          setFetching(false);
         }
       }
     }
@@ -60,13 +63,14 @@ function useAuctions({ status, page = 0, size = 9 } = {}) {
     };
   }, [status, page, size]);
 
-  return { auctions, pageInfo, loading, error };
+  return { auctions, pageInfo, loading, fetching, error };
 }
 
 function useAuction(auctionId) {
   const [auction, setAuction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const hasLoadedRef = useRef(false);
 
   const loadAuction = useCallback(async () => {
     if (!auctionId) {
@@ -76,11 +80,14 @@ function useAuction(auctionId) {
     }
 
     try {
-      setLoading(true);
+      if (!hasLoadedRef.current) {
+        setLoading(true);
+      }
       setError(null);
 
       const data = await getAuctionApi(auctionId);
       setAuction(data);
+      hasLoadedRef.current = true;
     } catch (nextError) {
       setError(nextError);
     } finally {

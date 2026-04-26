@@ -1,5 +1,30 @@
 ﻿import { apiClient } from "../../api/client";
 
+const MAX_PRODUCT_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_PRODUCT_IMAGE_COUNT = 5;
+const MAX_PRODUCT_IMAGE_TOTAL_SIZE = 30 * 1024 * 1024;
+
+const ensureValidImageSize = (file) => {
+  if (!file) {
+    return;
+  }
+
+  if (file.size > MAX_PRODUCT_IMAGE_FILE_SIZE) {
+    throw new Error("이미지 파일은 각각 5MB 이하여야 합니다.");
+  }
+};
+
+const ensureValidProductImagePayload = (files) => {
+  if (files.length > MAX_PRODUCT_IMAGE_COUNT) {
+    throw new Error(`상품 이미지는 최대 ${MAX_PRODUCT_IMAGE_COUNT}장까지 등록할 수 있습니다.`);
+  }
+
+  const totalImageSize = files.reduce((sum, file) => sum + (file?.size ?? 0), 0);
+  if (totalImageSize > MAX_PRODUCT_IMAGE_TOTAL_SIZE) {
+    throw new Error("이미지 요청 전체 크기는 최대 30MB까지 허용됩니다.");
+  }
+};
+
 const toNumber = (value) => {
   if (typeof value === "number") {
     return value;
@@ -31,6 +56,7 @@ const toUiProduct = (product) => {
     price: toNumber(product.price),
     stockCount: product.count ?? 0,
     status: product.status,
+    type: product.type ?? "GENERAL",
     createdAt: product.createdAt,
     categoryId: product.categoryId ?? null,
     category: product.categoryName || "미분류",
@@ -47,11 +73,35 @@ const toUiCategory = (category) => ({
   depth: category.depth ?? 0,
   sortOrder: category.sortOrder ?? 0,
   parentId: category.parentId ?? null,
+  sellerId: category.sellerId ?? null,
+  createdAt: category.createdAt ?? null,
 });
 
 async function getProductsApi(params = {}) {
+  const { sort: _sort, ...safeParams } = params;
   const response = await apiClient("/api/products", {
-    params,
+    params: safeParams,
+  });
+
+  const page = response.data ?? {};
+
+  return {
+    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    pageInfo: {
+      page: page.number ?? 0,
+      size: page.size ?? 0,
+      totalElements: page.totalElements ?? 0,
+      totalPages: page.totalPages ?? 0,
+      first: page.first ?? true,
+      last: page.last ?? true,
+    },
+  };
+}
+
+async function getPopularProductsApi(params = {}) {
+  const { sort: _sort, ...safeParams } = params;
+  const response = await apiClient("/api/products/popular", {
+    params: safeParams,
   });
 
   const page = response.data ?? {};
@@ -163,8 +213,12 @@ async function createProductApi({
     })
   );
 
-  images.forEach((image) => {
-    formData.append("images", image.file ?? image);
+  const imageFiles = images.map((image) => image.file ?? image);
+  imageFiles.forEach(ensureValidImageSize);
+  ensureValidProductImagePayload(imageFiles);
+
+  imageFiles.forEach((file) => {
+    formData.append("images", file);
   });
 
   if (images.length > 0) {
@@ -180,6 +234,8 @@ async function createProductApi({
 }
 
 async function uploadProductImageApi(productId, file, { sortOrder = 0, isThumbnail = false } = {}) {
+  ensureValidImageSize(file);
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("sortOrder", String(sortOrder));
@@ -194,6 +250,44 @@ async function uploadProductImageApi(productId, file, { sortOrder = 0, isThumbna
 
 async function deleteProductImageApi(productId, imageId) {
   await apiClient(`/api/products/${productId}/images/${imageId}`, {
+    method: "DELETE",
+  });
+}
+
+async function createCategoryAdminApi({ name, description, sortOrder, parentId }) {
+  const response = await apiClient("/api/categories/admin", {
+    method: "POST",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0, parentId: parentId || null },
+  });
+  return toUiCategory(response.data);
+}
+
+async function createCategorySellerApi({ name, description, sortOrder, parentId }) {
+  const response = await apiClient("/api/categories", {
+    method: "POST",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0, parentId },
+  });
+  return toUiCategory(response.data);
+}
+
+async function updateCategoryAdminApi(categoryId, { name, description, sortOrder }) {
+  const response = await apiClient(`/api/categories/admin/${categoryId}`, {
+    method: "PUT",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0 },
+  });
+  return toUiCategory(response.data);
+}
+
+async function updateCategorySellerApi(categoryId, { name, description, sortOrder }) {
+  const response = await apiClient(`/api/categories/${categoryId}`, {
+    method: "PUT",
+    body: { name, description: description || null, sortOrder: Number(sortOrder) || 0 },
+  });
+  return toUiCategory(response.data);
+}
+
+async function deleteCategoryApi(categoryId) {
+  await apiClient(`/api/categories/${categoryId}`, {
     method: "DELETE",
   });
 }
@@ -216,6 +310,12 @@ export {
   getProductDetailApi,
   getProductsByIdsApi,
   getProductsApi,
+  getPopularProductsApi,
   getSellerProductsApi,
+  createCategoryAdminApi,
+  createCategorySellerApi,
+  updateCategoryAdminApi,
+  updateCategorySellerApi,
+  deleteCategoryApi,
 };
 

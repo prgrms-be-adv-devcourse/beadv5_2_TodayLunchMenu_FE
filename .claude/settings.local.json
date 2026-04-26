@@ -29,11 +29,12 @@
       "Bash(xargs grep *)",
       "Bash(grep -i \"\\\\.java$\")",
       "Bash(xargs cat *)",
-      "Read(//Users/park/Desktop/workspace/beadv5_2_TodayLunchMenu_BE/**)",
-      "Bash(jar tf *)",
-      "Bash(jar xf *)",
-      "Read(//private/tmp/**)",
-      "Bash(xargs ls *)"
+      "Bash(gh pr *)",
+      "Bash(git push *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(npx vite *)"
     ]
   }
 }

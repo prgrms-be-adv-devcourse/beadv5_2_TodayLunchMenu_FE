@@ -1,37 +1,37 @@
 const TYPE_META = {
   MEMBER_SIGNED_UP: {
     icon: "UP",
-    label: "Account",
+    label: "계정",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
   AUTO_PURCHASE_CONFIRMED: {
     icon: "OK",
-    label: "Order",
+    label: "주문",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
   ORDER_PAYMENT_SUCCEEDED: {
     icon: "OK",
-    label: "Payment",
+    label: "결제",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
   ORDER_PAYMENT_FAILED: {
     icon: "!",
-    label: "Payment",
+    label: "결제",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
   SELLER_SETTLEMENT_PAYOUT_SUCCEEDED: {
     icon: "OK",
-    label: "Settlement",
+    label: "정산",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
   SELLER_SETTLEMENT_PAYOUT_FAILED: {
     icon: "!",
-    label: "Settlement",
+    label: "정산",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
@@ -45,9 +45,12 @@ const ACTION_VARIANT_CLASS = {
 const ROUTE_KEY_PATHS = {
   LOGIN: "/login",
   MY_PROFILE: "/me",
+  MY_OAUTH_ACCOUNTS: "/me/external-accounts",
   ORDER_DETAIL: ({ referenceId }) => (referenceId ? `/orders/${referenceId}` : "/orders"),
   DELIVERY_DETAIL: ({ referenceId }) => (referenceId ? `/orders/${referenceId}` : "/orders"),
   WALLET_TOPUP: "/deposits",
+  SELLER_DASHBOARD: "/seller/products",
+  SELLER_PRODUCTS: "/seller/products",
   SETTLEMENT_DETAIL: "/seller/products",
   SELLER_TRANSACTION_HISTORY: "/seller/products",
   SUPPORT_CONTACT: null,
@@ -56,7 +59,7 @@ const ROUTE_KEY_PATHS = {
 function getNotificationTypeMeta(type) {
   return TYPE_META[type] || {
     icon: "N",
-    label: "Update",
+    label: "알림",
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   };
@@ -85,6 +88,21 @@ function resolveNotificationActionPath(action, notification) {
     : routeResolver;
 }
 
+function getVisibleNotificationSubtitle(notification) {
+  const subtitle = notification?.subtitle;
+  const referenceId = notification?.referenceId;
+
+  if (typeof subtitle !== "string") {
+    return "";
+  }
+
+  if (referenceId && subtitle.includes(String(referenceId))) {
+    return "";
+  }
+
+  return subtitle;
+}
+
 function formatElapsedTime(notification) {
   if (notification?.elapsedTime) {
     return notification.elapsedTime;
@@ -100,18 +118,19 @@ function formatElapsedTime(notification) {
   const diff = Date.now() - date.getTime();
   const minutes = Math.max(1, Math.floor(diff / (1000 * 60)));
 
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) return `${minutes}분 전`;
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return `${hours}시간 전`;
 
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return `${days}일 전`;
 }
 
 export {
   formatElapsedTime,
   getNotificationActionClassName,
+  getVisibleNotificationSubtitle,
   getNotificationTypeMeta,
   resolveNotificationActionPath,
 };

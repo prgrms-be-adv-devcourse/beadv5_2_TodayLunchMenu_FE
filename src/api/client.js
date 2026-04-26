@@ -129,8 +129,11 @@ const apiClient = async (
 
   if (!response.ok) {
     const errorCode = data?.error?.code || data?.errorCode || data?.code || "REQUEST_FAILED";
+    const fallbackMessage = response.status === 401
+      ? "인증이 필요합니다. 다시 로그인해주세요."
+      : "요청에 실패했습니다.";
     const errorMessage =
-      data?.error?.message || data?.message || "요청에 실패했습니다.";
+      data?.error?.message || data?.message || fallbackMessage;
 
     throw new ApiError({
       status: response.status,

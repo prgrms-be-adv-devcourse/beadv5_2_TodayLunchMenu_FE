@@ -4,12 +4,9 @@ const unwrapResponse = (response) => response?.data?.data ?? null;
 
 const API_BASE = import.meta.env.VITE_SERVER_URL ?? "";
 
-function getKakaoAuthorizeUrl() {
-  return `${API_BASE}/api/auth/oauth/kakao/authorize`;
-}
-
-function getKakaoLinkAuthorizeUrl() {
-  return `${API_BASE}/api/auth/oauth/kakao/link/authorize`;
+async function fetchKakaoAuthorizeUrlApi() {
+  const response = await apiClient("/api/auth/oauth/kakao/authorize");
+  return unwrapResponse(response);
 }
 
 async function fetchKakaoLinkAuthorizeUrlApi() {
@@ -77,6 +74,24 @@ async function confirmEmailVerificationApi({ token }) {
   return unwrapResponse(response);
 }
 
+async function requestPasswordResetApi({ email }) {
+  const response = await apiClient("/api/auth/password-resets", {
+    method: "POST",
+    body: { email },
+  });
+
+  return unwrapResponse(response);
+}
+
+async function confirmPasswordResetApi({ token, newPassword }) {
+  const response = await apiClient("/api/auth/password-resets/confirm", {
+    method: "POST",
+    body: { token, newPassword },
+  });
+
+  return unwrapResponse(response);
+}
+
 async function getMyInfoApi() {
   const response = await apiClient("/api/members/me");
 
@@ -105,15 +120,16 @@ async function linkKakaoAccountApi({ linkToken }) {
 }
 
 export {
+  confirmPasswordResetApi,
   confirmEmailVerificationApi,
+  fetchKakaoAuthorizeUrlApi,
   fetchKakaoLinkAuthorizeUrlApi,
   fetchKakaoOAuthResultApi,
-  getKakaoAuthorizeUrl,
-  getKakaoLinkAuthorizeUrl,
   getMyInfoApi,
   linkKakaoAccountApi,
   loginApi,
   logoutApi,
+  requestPasswordResetApi,
   sendEmailVerificationApi,
   signupApi,
 };
