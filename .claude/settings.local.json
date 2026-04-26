@@ -27,7 +27,13 @@
       "Read(//c/Users/home/IdeaProjects/**)",
       "Bash(dir \"C:\\\\Users\\\\home\\\\IdeaProjects\")",
       "Bash(xargs grep *)",
-      "Bash(grep -i \"\\\\.java$\")"
+      "Bash(grep -i \"\\\\.java$\")",
+      "Bash(xargs cat *)",
+      "Read(//Users/park/Desktop/workspace/beadv5_2_TodayLunchMenu_BE/**)",
+      "Bash(jar tf *)",
+      "Bash(jar xf *)",
+      "Read(//private/tmp/**)",
+      "Bash(xargs ls *)"
     ]
   }
 }

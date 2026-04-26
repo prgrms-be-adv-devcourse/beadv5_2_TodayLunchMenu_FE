@@ -1,9 +1,10 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
-import { getOrderDetailApi } from "../../features/order/orderApi";
+import { cancelOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
 import PageContainer from "../../components/common/PageContainer";
 import Button from "../../components/common/Button";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(Number(value ?? 0));
@@ -50,6 +51,9 @@ export default function OrderDetailPage() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const [cancelError, setCancelError] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -104,6 +108,25 @@ export default function OrderDetailPage() {
       mounted = false;
     };
   }, [navigate, orderId]);
+
+  const isCancelable = order?.status === "CREATED" || order?.status === "CONFIRMED";
+
+  async function handleCancel() {
+    try {
+      setCanceling(true);
+      setCancelError("");
+      await cancelOrderApi(orderId, { reason: "구매자 취소" });
+      setCancelModalOpen(false);
+      const refreshed = await getOrderDetailApi(orderId);
+      setOrder(refreshed);
+    } catch (err) {
+      setCancelError(
+        err instanceof ApiError ? err.message : "취소 처리 중 오류가 발생했습니다."
+      );
+    } finally {
+      setCanceling(false);
+    }
+  }
 
   const normalizedOrder = useMemo(() => {
     if (!order) {
@@ -306,14 +329,21 @@ export default function OrderDetailPage() {
               </Link>
 
               <Link to="/orders">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="w-full"
-                >
+                <Button size="lg" variant="secondary" className="w-full">
                   주문 목록 보기
                 </Button>
               </Link>
+
+              {isCancelable && (
+                <Button
+                  size="lg"
+                  variant="danger"
+                  className="w-full"
+                  onClick={() => { setCancelError(""); setCancelModalOpen(true); }}
+                >
+                  주문 취소
+                </Button>
+              )}
             </div>
           </section>
         </div>
@@ -323,6 +353,19 @@ export default function OrderDetailPage() {
         </div>
       </PageContainer>
 
+      <ConfirmModal
+        open={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        title="주문을 취소하시겠어요?"
+        description="취소 후에는 되돌릴 수 없습니다. 결제 금액은 환불 처리됩니다."
+        confirmText={canceling ? "취소 중..." : "주문 취소"}
+        confirmVariant="danger"
+        onConfirm={handleCancel}
+      >
+        {cancelError && (
+          <p className="mt-2 text-sm font-medium text-red-600">{cancelError}</p>
+        )}
+      </ConfirmModal>
     </>
   );
 }

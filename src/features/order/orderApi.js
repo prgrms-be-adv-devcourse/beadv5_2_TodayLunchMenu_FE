@@ -120,4 +120,22 @@ async function getOrderDetailApi(orderId) {
   return toUiOrderDetail(payload);
 }
 
-export { createOrderApi, getOrderDetailApi, getOrdersApi };
+async function cancelOrderApi(orderId, { reason, detailReason }) {
+  const response = await apiClient(`/api/orders/${orderId}/cancel`, {
+    method: "POST",
+    body: {
+      reason,
+      detailReason: detailReason ?? null,
+      requesterType: "BUYER",
+    },
+  });
+
+  const payload = response.data?.data ?? response.data;
+  return {
+    orderId: payload?.orderId,
+    refundedAmount: payload?.refundedAmount ?? 0,
+    canceledAt: payload?.canceledAt ?? null,
+  };
+}
+
+export { cancelOrderApi, createOrderApi, getOrderDetailApi, getOrdersApi };
