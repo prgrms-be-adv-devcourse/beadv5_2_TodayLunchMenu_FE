@@ -12,6 +12,7 @@ import {
   updateCurrentMemberApi,
   uploadProfileImageToS3,
 } from '../../features/member/memberApi';
+import { pushToast } from '../../features/notification/notificationToastStore';
 
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -23,8 +24,6 @@ export default function MemberEditPage() {
     email: '',
     phone: '',
     address: '',
-    password: '',
-    confirmPassword: '',
   });
   const [profileImage, setProfileImage] = useState(null);
   const [errors, setErrors] = useState({});
@@ -40,8 +39,6 @@ export default function MemberEditPage() {
       email: user.email ?? '',
       phone: user.phone ?? '',
       address: user.address ?? '',
-      password: '',
-      confirmPassword: '',
     });
   }, [user]);
 
@@ -61,24 +58,6 @@ export default function MemberEditPage() {
 
     if (!form.nickname.trim()) {
       nextErrors.nickname = '닉네임을 입력해 주세요.';
-    }
-
-    if (!form.email.trim()) {
-      nextErrors.email = '이메일을 입력해 주세요.';
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      nextErrors.email = '올바른 이메일 형식이 아닙니다.';
-    }
-
-    if (!form.password) {
-      nextErrors.password = '비밀번호를 입력해 주세요.';
-    } else if (form.password.length < 8) {
-      nextErrors.password = '비밀번호는 8자 이상이어야 합니다.';
-    }
-
-    if (!form.confirmPassword) {
-      nextErrors.confirmPassword = '비밀번호 확인을 입력해 주세요.';
-    } else if (form.password !== form.confirmPassword) {
-      nextErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
     }
 
     if (profileImage && !ACCEPTED_IMAGE_TYPES.includes(profileImage.type)) {
@@ -121,8 +100,6 @@ export default function MemberEditPage() {
       const profileImageKey = await uploadProfileImageIfNeeded();
 
       await updateCurrentMemberApi({
-        email: form.email.trim(),
-        password: form.password,
         nickname: form.nickname.trim(),
         phone: form.phone.trim() || null,
         address: form.address.trim() || null,
@@ -130,12 +107,18 @@ export default function MemberEditPage() {
       });
 
       await refreshUser();
+      pushToast({
+        title: '프로필 저장 완료',
+        message: '변경한 내용이 반영되었습니다.',
+        tone: 'success',
+        timeoutMs: 2500,
+      });
       navigate('/me');
     } catch (error) {
       if (error instanceof ApiError) {
-        setErrors((prev) => ({ ...prev, common: error.message || '회원 정보 수정에 실패했습니다.' }));
+        setErrors((prev) => ({ ...prev, common: error.message || '프로필 저장에 실패했습니다.' }));
       } else {
-        setErrors((prev) => ({ ...prev, common: '회원 정보 수정에 실패했습니다. 잠시 후 다시 시도해 주세요.' }));
+        setErrors((prev) => ({ ...prev, common: '프로필 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.' }));
       }
     } finally {
       setIsSubmitting(false);
@@ -157,11 +140,17 @@ export default function MemberEditPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">Profile Settings</p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">내 정보 수정</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">Profile Edit</p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">프로필 편집</h1>
+            <Link
+              to="/me/password"
+              className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-violet-100 px-5 text-sm font-semibold text-violet-800 transition hover:bg-violet-200"
+            >
+              비밀번호 변경으로 이동
+            </Link>
           </div>
           <Link to="/me">
-            <Button variant="secondary">취소</Button>
+            <Button variant="secondary">뒤로가기</Button>
           </Link>
         </div>
 
@@ -179,7 +168,7 @@ export default function MemberEditPage() {
               </div>
             )}
             <div className="flex-1">
-              <FormField label="Profile Image" htmlFor="profileImage" error={errors.profileImage}>
+              <FormField label="프로필 이미지" htmlFor="profileImage" error={errors.profileImage}>
                 <input
                   id="profileImage"
                   type="file"
@@ -197,28 +186,24 @@ export default function MemberEditPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <FormField label="Nickname" htmlFor="nickname" required error={errors.nickname}>
+            <FormField label="닉네임" htmlFor="nickname" required error={errors.nickname}>
               <Input id="nickname" value={form.nickname} onChange={handleChange('nickname')} error={!!errors.nickname} />
             </FormField>
 
-            <FormField label="Email" htmlFor="email" required error={errors.email}>
-              <Input id="email" type="email" value={form.email} onChange={handleChange('email')} error={!!errors.email} />
+            <FormField
+              label="이메일"
+              htmlFor="email"
+              helpText="이메일 주소는 현재 이 화면에서 변경할 수 없습니다."
+            >
+              <Input id="email" type="email" value={form.email} disabled readOnly />
             </FormField>
 
-            <FormField label="Phone" htmlFor="phone" error={errors.phone}>
+            <FormField label="전화번호" htmlFor="phone" error={errors.phone}>
               <Input id="phone" value={form.phone} onChange={handleChange('phone')} error={!!errors.phone} />
             </FormField>
 
-            <FormField label="Address" htmlFor="address" error={errors.address}>
+            <FormField label="주소" htmlFor="address" error={errors.address}>
               <Input id="address" value={form.address} onChange={handleChange('address')} error={!!errors.address} />
-            </FormField>
-
-            <FormField label="Password" htmlFor="password" required error={errors.password}>
-              <Input id="password" type="password" value={form.password} onChange={handleChange('password')} error={!!errors.password} />
-            </FormField>
-
-            <FormField label="Confirm Password" htmlFor="confirmPassword" required error={errors.confirmPassword}>
-              <Input id="confirmPassword" type="password" value={form.confirmPassword} onChange={handleChange('confirmPassword')} error={!!errors.confirmPassword} />
             </FormField>
           </div>
 
