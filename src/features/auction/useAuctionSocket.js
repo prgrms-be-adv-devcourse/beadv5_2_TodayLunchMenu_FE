@@ -18,9 +18,8 @@ const resolveBrokerUrl = () => {
     }
   }
 
-  // VITE_SERVER_URL 미설정 시 현재 origin으로 폴백 (Vite 프록시 통과)
-  const scheme = window.location.protocol === "https:" ? "wss:" : "ws:";
-  return `${scheme}//${window.location.host}/api/auctions/ws`;
+  // VITE_SERVER_URL 미설정 시 백엔드 직접 연결
+  return "ws://3.36.235.7/api/auctions/ws";
 };
 
 function useAuctionSocket(auctionId, onBidPlaced, userId, onUserMessage) {
