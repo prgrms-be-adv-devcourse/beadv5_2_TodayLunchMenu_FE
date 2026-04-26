@@ -2,9 +2,11 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import Layout from "./components/layout/Layout";
 import EmailVerificationPage from "./pages/auth/EmailVerificationPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import KakaoLinkRequiredPage from "./pages/auth/KakaoLinkRequiredPage";
 import KakaoOAuthCallbackPage from "./pages/auth/KakaoOAuthCallbackPage";
 import LoginPage from "./pages/auth/LoginPage";
+import PasswordResetPage from "./pages/auth/PasswordResetPage";
 import SignupPage from "./pages/auth/SignupPage";
 import SignupPendingVerificationPage from "./pages/auth/SignupPendingVerificationPage";
 import CartPage from "./pages/cart/CartPage";
@@ -17,7 +19,9 @@ import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPa
 import AdminMemberReportListPage from "./pages/admin/AdminMemberReportListPage";
 import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestrictionListPage";
 import MemberEditPage from "./pages/member/MemberEditPage";
+import MemberPasswordPage from "./pages/member/MemberPasswordPage";
 import ExternalAccountConnectionsPage from "./pages/member/ExternalAccountConnectionsPage";
+import HomePage from "./pages/home/HomePage";
 import MemberProfilePage from "./pages/member/MemberProfilePage";
 import MemberReportCreatePage from "./pages/member/MemberReportCreatePage";
 import MemberReportHistoryPage from "./pages/member/MemberReportHistoryPage";
@@ -50,9 +54,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
+      { index: true, element: <HomePage /> },
       { path: "products", element: <ProductListPage /> },
       { path: "products/:productId", element: <ProductDetailPage /> },
       { path: "login", element: <LoginPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
+      { path: "password-reset", element: <PasswordResetPage /> },
       { path: "signup", element: <SignupPage /> },
       {
         path: "signup/pending-verification",
@@ -77,6 +84,7 @@ const router = createBrowserRouter([
       { path: "orders/:orderId", element: <OrderDetailPage /> },
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
+      { path: "me/password", element: <MemberPasswordPage /> },
       {
         path: "me/external-accounts",
         element: <ExternalAccountConnectionsPage />,

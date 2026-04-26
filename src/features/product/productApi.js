@@ -53,8 +53,30 @@ const toUiCategory = (category) => ({
 });
 
 async function getProductsApi(params = {}) {
+  const { sort: _sort, ...safeParams } = params;
   const response = await apiClient("/api/products", {
-    params,
+    params: safeParams,
+  });
+
+  const page = response.data ?? {};
+
+  return {
+    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    pageInfo: {
+      page: page.number ?? 0,
+      size: page.size ?? 0,
+      totalElements: page.totalElements ?? 0,
+      totalPages: page.totalPages ?? 0,
+      first: page.first ?? true,
+      last: page.last ?? true,
+    },
+  };
+}
+
+async function getPopularProductsApi(params = {}) {
+  const { sort: _sort, ...safeParams } = params;
+  const response = await apiClient("/api/products/popular", {
+    params: safeParams,
   });
 
   const page = response.data ?? {};
@@ -257,6 +279,7 @@ export {
   getProductDetailApi,
   getProductsByIdsApi,
   getProductsApi,
+  getPopularProductsApi,
   getSellerProductsApi,
   createCategoryAdminApi,
   createCategorySellerApi,
