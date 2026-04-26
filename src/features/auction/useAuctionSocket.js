@@ -18,8 +18,13 @@ const resolveBrokerUrl = () => {
     }
   }
 
-  // VITE_SERVER_URL 미설정 시 백엔드 직접 연결
-  return "ws://3.36.235.7/api/auctions/ws";
+  // 로컬 개발환경
+  if (window.location.hostname === "localhost") {
+    return "ws://localhost:8080/api/auctions/ws";
+  }
+
+  // 프로덕션 직접 연결
+  return "wss://3.36.235.7.nip.io/api/auctions/ws";
 };
 
 function useAuctionSocket(auctionId, onBidPlaced, userId, onUserMessage) {
