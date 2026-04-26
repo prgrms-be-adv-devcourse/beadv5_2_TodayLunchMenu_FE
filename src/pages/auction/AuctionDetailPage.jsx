@@ -421,7 +421,7 @@ export default function AuctionDetailPage() {
               <span>
                 총 입찰
                 <b className="ml-1 font-extrabold tabular-nums text-gray-900">
-                  {bids.length}회
+                  {validBids.length}회
                 </b>
               </span>
             </div>

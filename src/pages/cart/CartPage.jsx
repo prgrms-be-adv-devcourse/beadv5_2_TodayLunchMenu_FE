@@ -191,7 +191,7 @@ export default function CartPage() {
                           <button
                             type="button"
                             onClick={() => handleIncrease(item)}
-                            disabled={soldOut || isPending}
+                            disabled={soldOut || isPending || item.quantity >= item.stockCount}
                             className="flex h-7 w-7 items-center justify-center rounded-full text-violet-700 transition hover:bg-white disabled:opacity-40"
                           >
                             +

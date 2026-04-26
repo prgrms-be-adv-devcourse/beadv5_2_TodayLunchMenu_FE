@@ -151,7 +151,12 @@ function useAuctionBids(auctionId, { size = 20 } = {}) {
         return prev;
       }
 
-      return [bid, ...prev].slice(0, size);
+      const updated = prev.map((b, i) =>
+        i === 0 && (b.status === "ACTIVE" || b.status === "WINNING")
+          ? { ...b, status: "OUTBID" }
+          : b
+      );
+      return [bid, ...updated].slice(0, size);
     });
   }, [size]);
 
