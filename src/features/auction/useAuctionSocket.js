@@ -8,17 +8,19 @@ const resolveBrokerUrl = () => {
   }
 
   const base = import.meta.env.VITE_SERVER_URL;
-  if (!base) {
-    return null;
+  if (base) {
+    try {
+      const url = new URL(base);
+      const scheme = url.protocol === "https:" ? "wss:" : "ws:";
+      return `${scheme}//${url.host}/api/auctions/ws`;
+    } catch {
+      return null;
+    }
   }
 
-  try {
-    const url = new URL(base);
-    const scheme = url.protocol === "https:" ? "wss:" : "ws:";
-    return `${scheme}//${url.host}/api/auctions/ws`;
-  } catch {
-    return null;
-  }
+  // VITE_SERVER_URL 미설정 시 현재 origin으로 폴백 (Vite 프록시 통과)
+  const scheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${scheme}//${window.location.host}/api/auctions/ws`;
 };
 
 function useAuctionSocket(auctionId, onBidPlaced, userId, onUserMessage) {

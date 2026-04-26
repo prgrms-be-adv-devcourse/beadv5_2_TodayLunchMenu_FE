@@ -174,7 +174,7 @@ export default function AuctionDetailPage() {
 
   const handleBidEvent = useCallback(
     (payload) => {
-      if (!payload || !payload.auctionId || payload.auctionId !== auctionId) {
+      if (!payload || !payload.auctionId || String(payload.auctionId) !== String(auctionId)) {
         return;
       }
 
