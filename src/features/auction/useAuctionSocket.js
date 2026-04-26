@@ -2,28 +2,24 @@ import { useEffect } from "react";
 import { Client } from "@stomp/stompjs";
 
 const resolveBrokerUrl = () => {
-  const explicit = import.meta.env.VITE_WS_URL;
-  if (explicit) {
-    return explicit;
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
   }
 
-  const base = import.meta.env.VITE_SERVER_URL;
-  if (base) {
+  if (import.meta.env.VITE_SERVER_URL) {
     try {
-      const url = new URL(base);
+      const url = new URL(import.meta.env.VITE_SERVER_URL);
       const scheme = url.protocol === "https:" ? "wss:" : "ws:";
       return `${scheme}//${url.host}/api/auctions/ws`;
     } catch {
-      return null;
+      // fall through to default
     }
   }
 
-  // 로컬 개발환경
   if (window.location.hostname === "localhost") {
     return "ws://localhost:8080/api/auctions/ws";
   }
 
-  // 프로덕션 직접 연결
   return "wss://3.36.235.7.nip.io/api/auctions/ws";
 };
 
