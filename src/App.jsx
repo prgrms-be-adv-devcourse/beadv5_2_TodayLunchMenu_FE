@@ -15,6 +15,7 @@ import DepositFailPage from "./pages/deposit/DepositFailPage";
 import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
 import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
+import AdminEmbeddingPage from "./pages/admin/AdminEmbeddingPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
 import AdminMemberReportListPage from "./pages/admin/AdminMemberReportListPage";
 import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestrictionListPage";
@@ -103,6 +104,7 @@ const router = createBrowserRouter([
         path: "admin/member-restrictions",
         element: <AdminMemberRestrictionListPage />,
       },
+      { path: "admin/embeddings", element: <AdminEmbeddingPage /> },
       { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {

@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import { ApiError } from '../../api/client';
 import {
@@ -7,6 +7,8 @@ import {
   deactivateAdminMemberRestriction,
   getAdminMemberRestrictions,
 } from '../../features/report/reportApi';
+import AdminNav from '../../components/admin/AdminNav';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 const restrictionTypeLabels = {
   LOGIN_BAN: 'Login Lock',
@@ -264,88 +266,32 @@ export default function AdminMemberRestrictionListPage() {
   );
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface">
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between bg-surface/70 px-6 py-3 shadow-xl shadow-violet-900/5 backdrop-blur-xl">
-        <div className="text-xl font-black tracking-tight text-violet-700">Vivid Artifact</div>
-        <div className="hidden items-center gap-8 md:flex">
-          <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Dashboard</a>
-          <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/member-reports">Reports</Link>
-          <span className="relative font-bold text-violet-700 after:absolute after:-bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-violet-600">Sanctions</span>
-          <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/categories">Categories</Link>
-          <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Users</a>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
-            <input
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              className="w-64 rounded-full border-none bg-[#efdbff] py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-violet-400"
-              placeholder="Search members..."
-              type="text"
-            />
-          </div>
-          <div className="h-8 w-8 rounded-full bg-violet-200 ring-2 ring-violet-200/60" />
-        </div>
-      </nav>
+    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+      <AdminNav currentPage="sanctions" />
+      <AdminSidebar currentPage="sanctions" />
 
-      <aside className="fixed left-0 top-0 hidden h-screen w-64 flex-col gap-2 bg-[#f3e2ff] p-4 pt-20 lg:flex">
-        <div className="mb-4 px-4 py-6">
-          <div className="mb-2 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 font-bold text-white">A</div>
-            <div>
-              <div className="text-sm font-bold text-violet-700">Admin Panel</div>
-              <div className="text-[10px] uppercase tracking-[0.18em] text-slate-400">Artifact Control</div>
+      <div className="flex min-h-screen">
+        <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
+          <header className="mb-8">
+            <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-[#38274c]">제재 관리</h1>
+            <p className="text-sm text-slate-500">회원 제재를 관리합니다.</p>
+          </header>
+
+          {bannerMessage ? (
+            <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+              {bannerMessage}
             </div>
-          </div>
-        </div>
-        <div className="space-y-1">
-          <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
-            <span className="text-violet-600">◫</span> Overview
-          </a>
-          <Link to="/admin/member-reports" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
-            <span className="text-violet-600">⚑</span> All Reports
-          </Link>
-          <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
-            <span className="text-violet-600">☰</span> Pending Review
-          </a>
-          <span className="flex cursor-pointer items-center gap-3 rounded-lg bg-violet-100 px-4 py-3 text-sm font-medium text-violet-700 transition-transform hover:translate-x-1">
-            <span className="text-violet-600">⚖</span> Sanction History
-          </span>
-          <Link to="/admin/categories" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
-            <span>🗂</span> 카테고리 관리
-          </Link>
-          <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition-transform hover:translate-x-1 hover:bg-slate-100">
-            <span className="text-violet-600">⏱</span> System Logs
-          </a>
-        </div>
-        <div className="mt-auto space-y-1 border-t border-violet-100 pt-4">
-          <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-100">Settings</a>
-          <a className="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-rose-600 hover:bg-rose-50">Logout</a>
-        </div>
-      </aside>
+          ) : null}
 
-      <main className="px-6 pb-12 pt-24 lg:ml-64">
-        <header className="mb-8">
-          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface">Sanction Management</h1>
-          <p className="text-sm text-slate-500">Monitor and manage member restrictions across the platform ecosystem.</p>
-        </header>
+          {errorMessage ? (
+            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+              {errorMessage}
+            </div>
+          ) : null}
 
-        {bannerMessage ? (
-          <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-            {bannerMessage}
-          </div>
-        ) : null}
-
-        {errorMessage ? (
-          <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
-            {errorMessage}
-          </div>
-        ) : null}
-
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
-          <div className="space-y-6 xl:col-span-2">
-            <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+            <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
+            <div className="space-y-6 xl:col-span-2">
+              <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
               <div className="relative min-w-[240px] flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
                 <input
@@ -558,7 +504,8 @@ export default function AdminMemberRestrictionListPage() {
             </div>
           </div>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

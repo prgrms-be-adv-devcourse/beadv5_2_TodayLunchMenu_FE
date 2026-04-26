@@ -8,6 +8,8 @@ import {
   getCategoriesApi,
   updateCategoryAdminApi,
 } from '../../features/product/productApi';
+import AdminNav from '../../components/admin/AdminNav';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 function buildTree(categories) {
   const map = new Map();
@@ -251,40 +253,10 @@ export default function AdminCategoryPage() {
 
   return (
     <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-violet-100 bg-[#fdf3ff]/80 px-6 py-3 backdrop-blur-xl shadow-sm">
-        <div className="flex items-center gap-8">
-          <span className="text-xl font-black tracking-tight text-violet-700">Vivid Artifact</span>
-          <div className="hidden items-center gap-6 md:flex">
-            <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Dashboard</a>
-            <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/member-reports">Reports</Link>
-            <Link className="font-bold text-slate-500 transition-colors hover:text-violet-500" to="/admin/member-restrictions">Sanctions</Link>
-            <span className="relative font-bold text-violet-700 after:absolute after:-bottom-1 after:left-1/2 after:h-1 after:w-1 after:-translate-x-1/2 after:rounded-full after:bg-violet-600">Categories</span>
-            <a className="font-bold text-slate-500 transition-colors hover:text-violet-500" href="#">Users</a>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="h-8 w-8 rounded-full bg-violet-200 ring-2 ring-violet-200/60" />
-        </div>
-      </nav>
+      <AdminNav currentPage="categories" />
+      <AdminSidebar currentPage="categories" />
 
       <div className="flex min-h-screen">
-        <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-violet-100 bg-[#f3e2ff] p-4 pt-20 lg:flex lg:flex-col">
-          <div className="mb-4 px-4 py-6">
-            <h2 className="text-lg font-bold text-violet-700">Admin Panel</h2>
-            <p className="text-xs text-slate-500">Artifact Control</p>
-          </div>
-          <nav className="flex-1 space-y-1">
-            <a className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:translate-x-1 hover:bg-white/70" href="#">Overview</a>
-            <Link to="/admin/member-reports" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:translate-x-1 hover:bg-white/70">
-              <span className="text-violet-600">⚑</span> All Reports
-            </Link>
-            <Link to="/admin/member-restrictions" className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-slate-600 transition hover:translate-x-1 hover:bg-white/70">Sanction History</Link>
-            <span className="flex items-center gap-3 rounded-lg bg-violet-100 px-4 py-3 text-sm font-medium text-violet-700">
-              <span>🗂</span> 카테고리 관리
-            </span>
-          </nav>
-        </aside>
-
         <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
           <header className="mb-8 flex items-end justify-between">
             <div>
