@@ -7,6 +7,7 @@ import PartialSettlementTable from "../../components/seller/settlement/PartialSe
 import PendingEscrowTable from "../../components/seller/settlement/PendingEscrowTable";
 import SellerSettlementSummary from "../../components/seller/settlement/SellerSettlementSummary";
 import PageContainer from "../../components/common/PageContainer";
+import SellerNav from "../../components/seller/SellerNav";
 import {
   getPendingSellerIncomesApi,
   getSellerOrderEscrowTransactionsApi,
@@ -327,6 +328,7 @@ export default function SellerSettlementPage() {
 
   return (
     <>
+      <SellerNav currentPage="settlements" />
       <PageContainer>
         <section className="space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
