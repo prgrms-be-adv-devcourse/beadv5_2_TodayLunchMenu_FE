@@ -49,7 +49,7 @@ export default function SellerProductForm({
             label="상품 이미지"
             htmlFor="images"
             error={errors.images}
-            helpText={`최대 ${imageConstraints.maxFiles}개, ${imageConstraints.acceptedTypesLabel}, 파일당 최대 ${imageConstraints.maxFileSizeLabel}`}
+            helpText={`최대 ${imageConstraints.maxFiles}개, ${imageConstraints.acceptedTypesLabel}, 파일당 최대 ${imageConstraints.maxFileSizeLabel}${imageConstraints.totalRequestSizeLabel ? `, 전체 최대 ${imageConstraints.totalRequestSizeLabel}` : ""}`}
           >
             <input
               id="images"

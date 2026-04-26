@@ -4,6 +4,7 @@ import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
+import Modal from "../../components/common/Modal";
 import PageContainer from "../../components/common/PageContainer";
 import AiProductDraftAssistant from "../../components/seller/AiProductDraftAssistant";
 import SellerProductForm from "../../components/seller/SellerProductForm";
@@ -43,8 +44,9 @@ const DURATION_PRESETS = [
 
 const MIN_PRICE = 1000;
 const MIN_STOCK = 1;
-const MAX_IMAGE_FILES = 10;
-const MAX_IMAGE_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_IMAGE_FILES = 5;
+const MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_TOTAL_SIZE = 30 * 1024 * 1024;
 const AI_MAX_IMAGE_FILES = 5;
 const AI_MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_IMAGE_TYPES = [
@@ -55,7 +57,8 @@ const ACCEPTED_IMAGE_TYPES = [
 ];
 const IMAGE_CONSTRAINTS = {
   maxFiles: MAX_IMAGE_FILES,
-  maxFileSizeLabel: "10MB",
+  maxFileSizeLabel: "5MB",
+  totalRequestSizeLabel: "30MB",
   acceptedTypesLabel: "JPG, PNG, WEBP, GIF",
   accept: "image/jpeg,image/png,image/webp,image/gif",
 };
@@ -148,6 +151,19 @@ export default function SellerProductCreatePage() {
   const [aiDraft, setAiDraft] = useState(null);
   const [aiDraftError, setAiDraftError] = useState("");
   const [isCreatingAiDraft, setIsCreatingAiDraft] = useState(false);
+  const [imageLimitModal, setImageLimitModal] = useState({
+    open: false,
+    title: "",
+    description: "",
+  });
+
+  const openImageLimitModal = (title, description) => {
+    setImageLimitModal({
+      open: true,
+      title,
+      description,
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -252,8 +268,12 @@ export default function SellerProductCreatePage() {
     if (oversizedFile) {
       setErrors((prev) => ({
         ...prev,
-        images: "이미지 파일은 각각 10MB 이하여야 합니다.",
+        images: "이미지 파일은 각각 5MB 이하여야 합니다.",
       }));
+      openImageLimitModal(
+        "이미지 용량 초과",
+        "이미지 파일은 파일당 최대 5MB까지 업로드할 수 있습니다. 파일 크기를 줄인 뒤 다시 시도해 주세요."
+      );
       return;
     }
 
@@ -265,10 +285,30 @@ export default function SellerProductCreatePage() {
           ...currentErrors,
           images: `이미지는 최대 ${MAX_IMAGE_FILES}개까지 업로드할 수 있습니다.`,
         }));
+        openImageLimitModal(
+          "이미지 개수 제한",
+          `상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`
+        );
         return prev;
       }
 
       const nextFiles = files.slice(0, remainingSlots);
+      const nextTotalImageSize =
+        prev.images.reduce((sum, image) => sum + image.file.size, 0) +
+        nextFiles.reduce((sum, file) => sum + file.size, 0);
+
+      if (nextTotalImageSize > MAX_IMAGE_TOTAL_SIZE) {
+        setErrors((currentErrors) => ({
+          ...currentErrors,
+          images: `이미지 전체 용량은 최대 ${IMAGE_CONSTRAINTS.totalRequestSizeLabel}까지 허용됩니다.`,
+        }));
+        openImageLimitModal(
+          "이미지 전체 용량 초과",
+          `요청 전체 크기는 최대 ${IMAGE_CONSTRAINTS.totalRequestSizeLabel}까지 허용됩니다. 이미지 수를 줄이거나 파일 크기를 낮춘 뒤 다시 시도해 주세요.`
+        );
+        return prev;
+      }
+
       const nextImages = [...prev.images, ...nextFiles.map(toImageItem)];
 
       if (files.length > remainingSlots) {
@@ -276,6 +316,10 @@ export default function SellerProductCreatePage() {
           ...currentErrors,
           images: `이미지는 최대 ${MAX_IMAGE_FILES}개까지 업로드할 수 있습니다.`,
         }));
+        openImageLimitModal(
+          "이미지 개수 제한",
+          `상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`
+        );
       } else {
         setErrors((currentErrors) => ({ ...currentErrors, images: "" }));
       }
@@ -810,6 +854,18 @@ export default function SellerProductCreatePage() {
             disabled={isSubmitting}
           >
             취소
+          </Button>
+        }
+      />
+
+      <Modal
+        open={imageLimitModal.open}
+        onClose={() => setImageLimitModal((prev) => ({ ...prev, open: false }))}
+        title={imageLimitModal.title}
+        description={imageLimitModal.description}
+        footer={
+          <Button type="button" onClick={() => setImageLimitModal((prev) => ({ ...prev, open: false }))}>
+            확인
           </Button>
         }
       />

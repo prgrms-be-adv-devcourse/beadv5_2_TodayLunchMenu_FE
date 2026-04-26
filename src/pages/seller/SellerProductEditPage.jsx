@@ -4,6 +4,7 @@ import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
+import Modal from "../../components/common/Modal";
 import PageContainer from "../../components/common/PageContainer";
 import {
   deleteProductImageApi,
@@ -17,6 +18,8 @@ import {
 const MIN_PRICE = 1000;
 const MIN_STOCK = 0;
 const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/gif";
+const MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_FILES = 5;
 
 const STATUS_META = {
   ACTIVE:   { label: "판매중", className: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
@@ -41,6 +44,19 @@ export default function SellerProductEditPage() {
   const [uploadingCount, setUploadingCount] = useState(0);
   const [deletingIds, setDeletingIds] = useState(new Set());
   const [imageError, setImageError] = useState("");
+  const [imageLimitModal, setImageLimitModal] = useState({
+    open: false,
+    title: "",
+    description: "",
+  });
+
+  const openImageLimitModal = (title, description) => {
+    setImageLimitModal({
+      open: true,
+      title,
+      description,
+    });
+  };
 
   const [form, setForm] = useState({
     title: "",
@@ -124,18 +140,48 @@ export default function SellerProductEditPage() {
 
     setImageError("");
 
+    if (images.length >= MAX_IMAGE_FILES) {
+      setImageError(`상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`);
+      openImageLimitModal(
+        "이미지 개수 제한",
+        `상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`
+      );
+      return;
+    }
+
+    const remainingSlots = MAX_IMAGE_FILES - images.length;
+    const nextFiles = files.slice(0, remainingSlots);
+
+    const oversizedFile = nextFiles.find((file) => file.size > MAX_IMAGE_FILE_SIZE);
+    if (oversizedFile) {
+      setImageError("이미지 파일은 각각 5MB 이하여야 합니다.");
+      openImageLimitModal(
+        "이미지 용량 초과",
+        "이미지 파일은 파일당 최대 5MB까지 업로드할 수 있습니다. 파일 크기를 줄인 뒤 다시 시도해 주세요."
+      );
+      return;
+    }
+
+    if (files.length > remainingSlots) {
+      setImageError(`상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`);
+      openImageLimitModal(
+        "이미지 개수 제한",
+        `최대 ${MAX_IMAGE_FILES}장까지만 등록할 수 있어 선택한 이미지 중 일부만 업로드됩니다.`
+      );
+    }
+
     const isFirstImage = images.length === 0;
 
-    setUploadingCount((n) => n + files.length);
+    setUploadingCount((n) => n + nextFiles.length);
     const results = await Promise.allSettled(
-      files.map((file, idx) =>
+      nextFiles.map((file, idx) =>
         uploadProductImageApi(productId, file, {
           sortOrder: images.length + idx,
           isThumbnail: isFirstImage && idx === 0,
         })
       )
     );
-    setUploadingCount((n) => n - files.length);
+    setUploadingCount((n) => n - nextFiles.length);
 
     const succeeded = results
       .filter((r) => r.status === "fulfilled")
@@ -313,6 +359,8 @@ export default function SellerProductEditPage() {
           <span className="text-xs text-gray-400">{images.length}장</span>
         </div>
 
+        <p className="mb-3 text-xs text-gray-500">최대 5장까지 등록할 수 있으며, JPG, PNG, WEBP, GIF 파일만 가능합니다. 파일당 최대 5MB까지 업로드할 수 있습니다.</p>
+
         {imageError && (
           <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600">{imageError}</p>
         )}
@@ -377,7 +425,7 @@ export default function SellerProductEditPage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploadingCount > 0}
+            disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
             className="flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 transition hover:border-violet-300 hover:text-violet-500 disabled:opacity-40"
           >
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -560,6 +608,18 @@ export default function SellerProductEditPage() {
           </Button>
         </div>
       </form>
+
+      <Modal
+        open={imageLimitModal.open}
+        onClose={() => setImageLimitModal((prev) => ({ ...prev, open: false }))}
+        title={imageLimitModal.title}
+        description={imageLimitModal.description}
+        footer={
+          <Button type="button" onClick={() => setImageLimitModal((prev) => ({ ...prev, open: false }))}>
+            확인
+          </Button>
+        }
+      />
     </PageContainer>
   );
 }

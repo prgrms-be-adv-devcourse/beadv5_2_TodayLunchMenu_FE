@@ -1,5 +1,30 @@
 ﻿import { apiClient } from "../../api/client";
 
+const MAX_PRODUCT_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_PRODUCT_IMAGE_COUNT = 5;
+const MAX_PRODUCT_IMAGE_TOTAL_SIZE = 30 * 1024 * 1024;
+
+const ensureValidImageSize = (file) => {
+  if (!file) {
+    return;
+  }
+
+  if (file.size > MAX_PRODUCT_IMAGE_FILE_SIZE) {
+    throw new Error("이미지 파일은 각각 5MB 이하여야 합니다.");
+  }
+};
+
+const ensureValidProductImagePayload = (files) => {
+  if (files.length > MAX_PRODUCT_IMAGE_COUNT) {
+    throw new Error(`상품 이미지는 최대 ${MAX_PRODUCT_IMAGE_COUNT}장까지 등록할 수 있습니다.`);
+  }
+
+  const totalImageSize = files.reduce((sum, file) => sum + (file?.size ?? 0), 0);
+  if (totalImageSize > MAX_PRODUCT_IMAGE_TOTAL_SIZE) {
+    throw new Error("이미지 요청 전체 크기는 최대 30MB까지 허용됩니다.");
+  }
+};
+
 const toNumber = (value) => {
   if (typeof value === "number") {
     return value;
@@ -188,8 +213,12 @@ async function createProductApi({
     })
   );
 
-  images.forEach((image) => {
-    formData.append("images", image.file ?? image);
+  const imageFiles = images.map((image) => image.file ?? image);
+  imageFiles.forEach(ensureValidImageSize);
+  ensureValidProductImagePayload(imageFiles);
+
+  imageFiles.forEach((file) => {
+    formData.append("images", file);
   });
 
   if (images.length > 0) {
@@ -205,6 +234,8 @@ async function createProductApi({
 }
 
 async function uploadProductImageApi(productId, file, { sortOrder = 0, isThumbnail = false } = {}) {
+  ensureValidImageSize(file);
+
   const formData = new FormData();
   formData.append("file", file);
   formData.append("sortOrder", String(sortOrder));
