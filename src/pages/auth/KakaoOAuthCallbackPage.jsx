@@ -13,9 +13,11 @@ import { setAuthState, setAuthTokens } from "../../features/auth/authStore";
 
 export default function KakaoOAuthCallbackPage() {
   const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const resultKey = searchParams.get("resultKey");
   const flow = searchParams.get("flow") || "login";
+
   const isLinkFlow = flow === "link";
   const consumedResultKeyRef = useRef(null);
   const [message, setMessage] = useState(
