@@ -57,12 +57,12 @@ export default function ForgotPasswordPage() {
   return (
     <PageContainer>
       <div className="mx-auto max-w-md">
-        <div className="mb-6 rounded-2xl border border-violet-200 bg-violet-50/80 px-4 py-4 text-sm font-medium leading-7 text-violet-700">
+        <div className="mb-6 border border-blue-200 bg-blue-50/80 px-4 py-4 text-sm font-medium leading-7 text-blue-700">
           가입한 이메일 주소를 입력하면 비밀번호 재설정 링크를 보내드립니다.
         </div>
 
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">
             Password Reset
           </p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-[32px] bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-violet-100"
+          className="space-y-6 bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-gray-200"
         >
           <FormField
             label="이메일 주소"
@@ -98,13 +98,13 @@ export default function ForgotPasswordPage() {
           </FormField>
 
           {errors.common ? (
-            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               {errors.common}
             </div>
           ) : null}
 
           {submitted ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-700">
+            <div className="border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-700">
               <p className="font-semibold">메일 발송이 접수되었습니다.</p>
               <p className="mt-1">{message}</p>
             </div>

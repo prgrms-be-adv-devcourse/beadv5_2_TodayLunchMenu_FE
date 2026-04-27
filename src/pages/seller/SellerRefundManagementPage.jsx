@@ -3,7 +3,6 @@ import { Navigate } from "react-router-dom";
 
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
-import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import ToastViewport from "../../components/common/ToastViewport";
@@ -52,7 +51,7 @@ function RefundCard({ refund, onConfirmClick }) {
   );
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+    <div className="bg-white border border-gray-200 p-6 mb-4">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
@@ -69,7 +68,7 @@ function RefundCard({ refund, onConfirmClick }) {
       </div>
 
       {/* Items */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-4">
+      <div className="bg-gray-50 p-4 mb-4">
         <h4 className="font-semibold text-sm mb-3">반품 상품</h4>
         <div className="space-y-2">
           {refund.items && refund.items.length > 0 ? (
@@ -115,14 +114,14 @@ function RefundCard({ refund, onConfirmClick }) {
       {refund.status === "DELIVERED" || refund.status === "PENDING" ? (
         <Button
           onClick={() => onConfirmClick(refund)}
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg transition-colors"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 transition-colors"
         >
           환불 수령 완료
         </Button>
       ) : (
         <Button
           disabled
-          className="w-full bg-gray-300 text-gray-600 font-semibold py-2 rounded-lg cursor-not-allowed"
+          className="w-full bg-gray-300 text-gray-600 font-semibold py-2 cursor-not-allowed"
         >
           {refund.status === "REFUNDED" ? "환불 완료" : "처리 중"}
         </Button>
@@ -234,7 +233,7 @@ export default function SellerRefundManagementPage() {
       <>
         <SellerNav currentPage="refunds" />
         <PageContainer>
-          <PageHeader title="환불 관리" />
+          <div className="mb-6"><h1 className="text-xl font-black text-gray-900">환불 관리</h1></div>
           <div className="flex flex-col items-center justify-center py-12">
             <div className="text-center">
               <p className="text-gray-500 text-lg mb-2">
@@ -254,11 +253,11 @@ export default function SellerRefundManagementPage() {
     <>
       <SellerNav currentPage="refunds" />
       <PageContainer>
-        <PageHeader title="환불 관리" />
+        <div className="mb-6"><h1 className="text-xl font-black text-gray-900">환불 관리</h1></div>
 
         {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
+          <div className="bg-red-50 border border-red-200 p-4 mb-6 text-red-700">
             <p className="font-semibold mb-1">오류</p>
             <p className="text-sm">{error}</p>
             <Button
@@ -274,7 +273,7 @@ export default function SellerRefundManagementPage() {
         {loading && (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-gray-200 rounded-lg h-64 animate-pulse" />
+              <div key={i} className="bg-gray-200 h-64 animate-pulse" />
             ))}
           </div>
         )}

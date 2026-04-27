@@ -153,39 +153,39 @@ export default function CheckoutPage() {
     <>
       <PageContainer>
         {!hasCheckoutItems ? (
-          <section className="mb-6 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+          <section className="mb-6 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
             주문할 상품 정보가 없습니다. 장바구니에서 상품을 선택한 뒤 다시
             진행해 주세요.
           </section>
         ) : null}
 
         {submitError ? (
-          <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
             {submitError}
           </section>
         ) : null}
 
         <PageHeader title="주문서" />
 
-        <section className="mb-6 rounded-[28px] bg-gradient-to-br from-violet-700 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-500/20">
+        <section className="mb-6 bg-blue-700 p-5 text-white shadow-xl">
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-2xl bg-white/10 px-3 py-3">
-              <p className="text-xs font-bold text-violet-100">STEP 1</p>
+            <div className="bg-white/10 px-3 py-3">
+              <p className="text-xs font-bold text-blue-200">STEP 1</p>
               <p className="mt-1 text-sm font-extrabold">장바구니</p>
             </div>
-            <div className="rounded-2xl bg-white px-3 py-3 text-violet-700">
+            <div className="bg-white px-3 py-3 text-blue-700">
               <p className="text-xs font-bold">STEP 2</p>
               <p className="mt-1 text-sm font-extrabold">주문서</p>
             </div>
-            <div className="rounded-2xl bg-white/10 px-3 py-3">
-              <p className="text-xs font-bold text-violet-100">STEP 3</p>
+            <div className="bg-white/10 px-3 py-3">
+              <p className="text-xs font-bold text-blue-200">STEP 3</p>
               <p className="mt-1 text-sm font-extrabold">결제</p>
             </div>
           </div>
         </section>
 
         <div className="space-y-6 pb-32">
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
               결제수단 선택
             </h2>
@@ -195,10 +195,10 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={() => setSelectedPaymentMethod("DEPOSIT")}
                 className={[
-                  "w-full rounded-[24px] border p-4 text-left transition",
+                  "w-full border p-4 text-left transition",
                   selectedPaymentMethod === "DEPOSIT"
-                    ? "border-violet-300 bg-violet-50 ring-2 ring-violet-200"
-                    : "border-purple-100 bg-white hover:bg-purple-50/70",
+                    ? "border-blue-200 bg-blue-50 ring-2 ring-blue-200"
+                    : "border-gray-100 bg-white hover:bg-blue-50/70",
                 ].join(" ")}
               >
                 <div className="flex items-center justify-between gap-4">
@@ -214,8 +214,8 @@ export default function CheckoutPage() {
                     className={[
                       "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
                       selectedPaymentMethod === "DEPOSIT"
-                        ? "bg-violet-700 text-white"
-                        : "bg-purple-100 text-violet-700",
+                        ? "bg-blue-700 text-white"
+                        : "bg-gray-100 text-blue-700",
                     ].join(" ")}
                   >
                     {selectedPaymentMethod === "DEPOSIT" ? "선택됨" : "사용 가능"}
@@ -227,10 +227,10 @@ export default function CheckoutPage() {
                 type="button"
                 onClick={() => setSelectedPaymentMethod("CARD")}
                 className={[
-                  "w-full rounded-[24px] border p-4 text-left transition",
+                  "w-full border p-4 text-left transition",
                   selectedPaymentMethod === "CARD"
                     ? "border-amber-300 bg-amber-50 ring-2 ring-amber-200"
-                    : "border-purple-100 bg-white hover:bg-purple-50/70",
+                    : "border-gray-100 bg-white hover:bg-blue-50/70",
                 ].join(" ")}
               >
                 <div className="flex items-center justify-between gap-4">
@@ -256,7 +256,7 @@ export default function CheckoutPage() {
               </button>
 
               {selectedPaymentMethod === "CARD" ? (
-                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
                   카드 결제를 선택하면 다음 화면에서 주문 생성 후 결제창이
                   열립니다.
                 </div>
@@ -264,14 +264,14 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
               {isDepositPayment ? "예치금 결제" : "결제 안내"}
             </h2>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">선택된 결제수단</span>
-                <span className="font-extrabold text-violet-700">
+                <span className="font-extrabold text-blue-700">
                   {paymentMethodLabel}
                 </span>
               </div>
@@ -281,13 +281,13 @@ export default function CheckoutPage() {
                   {formatPrice(summary.total)}원
                 </span>
               </div>
-              <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+              <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
                 {paymentMethodDescription}
               </div>
             </div>
           </section>
 
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
               배송 정보
             </h2>
@@ -379,7 +379,7 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
               주문 상품
             </h2>
@@ -387,9 +387,9 @@ export default function CheckoutPage() {
               {checkoutItems.map((item) => (
                 <article
                   key={item.cartId || item.productId}
-                  className="flex gap-4 rounded-2xl bg-purple-50/60 p-4"
+                  className="flex gap-4 bg-blue-50/60 p-4"
                 >
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-purple-50">
+                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-blue-50">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -397,7 +397,7 @@ export default function CheckoutPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
                         {(item.name || "P").slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
                         수량 {item.quantity}개
                       </p>
                     </div>
-                    <p className="text-lg font-extrabold text-violet-700">
+                    <p className="text-lg font-extrabold text-blue-700">
                       {formatPrice(item.price * item.quantity)}원
                     </p>
                   </div>
@@ -423,7 +423,7 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
               결제 요약
             </h2>
@@ -442,12 +442,12 @@ export default function CheckoutPage() {
                     : `${formatPrice(summary.shippingFee)}원`}
                 </span>
               </div>
-              <div className="border-t border-purple-100 pt-4">
+              <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-end justify-between">
                   <span className="text-lg font-extrabold text-gray-900">
                     총 결제 금액
                   </span>
-                  <span className="text-2xl font-extrabold tracking-tight text-violet-700">
+                  <span className="text-2xl font-extrabold tracking-tight text-blue-700">
                     {formatPrice(summary.total)}원
                   </span>
                 </div>
@@ -461,7 +461,7 @@ export default function CheckoutPage() {
         <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>{paymentMethodLabel}</span>
-            <span className="text-lg font-extrabold text-violet-700">
+            <span className="text-lg font-extrabold text-blue-700">
               {formatPrice(summary.total)}원
             </span>
           </div>

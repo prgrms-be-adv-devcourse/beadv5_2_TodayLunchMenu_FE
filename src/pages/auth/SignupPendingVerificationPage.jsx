@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import { ApiError } from "../../api/client";
@@ -40,11 +40,11 @@ export default function SignupPendingVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] px-6 py-16 text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 px-6 py-16 text-gray-900">
       <div className="mx-auto flex min-h-[80vh] max-w-3xl items-center justify-center">
-        <section className="w-full rounded-[2rem] bg-white p-8 shadow-xl shadow-violet-200/40 md:p-12">
+        <section className="w-full bg-white p-8 shadow-xl md:p-12">
           <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-violet-100 text-4xl text-violet-700">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl text-blue-700">
               @
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
@@ -56,23 +56,23 @@ export default function SignupPendingVerificationPage() {
               메일함에서 인증 링크를 확인한 뒤 로그인해 주세요.
             </p>
 
-            <div className="mt-8 rounded-3xl bg-violet-50 px-6 py-5 text-left">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">
+            <div className="mt-8 bg-blue-50 px-6 py-5 text-left">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
                 Verification Email
               </p>
-              <p className="mt-2 break-all text-lg font-semibold text-violet-900">
+              <p className="mt-2 break-all text-lg font-semibold text-blue-900">
                 {email || "이메일 정보 없음"}
               </p>
             </div>
 
             {message ? (
-              <div className="mt-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+              <div className="mt-6 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
                 {message}
               </div>
             ) : null}
 
             {error ? (
-              <div className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+              <div className="mt-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
                 {error}
               </div>
             ) : null}
@@ -88,7 +88,7 @@ export default function SignupPendingVerificationPage() {
 
             <p className="mt-8 text-sm font-medium text-gray-500">
               이메일 주소를 잘못 입력했다면
-              <Link to="/signup" className="ml-1 font-bold text-violet-700 hover:underline">
+              <Link to="/signup" className="ml-1 font-bold text-blue-700 hover:underline">
                 다시 회원가입
               </Link>
               해 주세요.

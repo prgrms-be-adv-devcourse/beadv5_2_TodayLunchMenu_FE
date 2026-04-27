@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -65,7 +65,7 @@ export default function PaymentSuccessPage() {
           <button
             type="button"
             onClick={() => navigate("/products")}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-violet-600 shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50"
             aria-label="닫기"
           >
             ×
@@ -75,9 +75,9 @@ export default function PaymentSuccessPage() {
         </div>
 
         <div className="mb-8 flex flex-col items-center text-center">
-          <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-purple-100">
-            <div className="absolute inset-0 rounded-full bg-violet-500/20 animate-ping" />
-            <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-700 to-fuchsia-600 text-4xl text-white shadow-[0_10px_30px_-5px_rgba(93,63,211,0.4)]">
+          <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-100">
+            <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-ping" />
+            <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-blue-700 text-4xl text-white shadow-[0_10px_30px_-5px_rgba(29,78,216,0.4)]">
               ✓
             </div>
           </div>
@@ -86,14 +86,14 @@ export default function PaymentSuccessPage() {
         </div>
 
         <div className="mb-8 text-center">
-          <span className="inline-flex rounded-full bg-purple-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.24em] text-violet-700">
+          <span className="inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.24em] text-blue-700">
             #{payment.orderId}
           </span>
         </div>
 
-        <section className="mb-6 rounded-[32px] bg-white p-6 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
+        <section className="mb-6 bg-white p-6 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
           <div className="flex flex-col gap-6">
-            <div className="border-b border-purple-100 pb-6 text-center">
+            <div className="border-b border-gray-200 pb-6 text-center">
               <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-500">
                 Total Amount
               </p>
@@ -103,13 +103,13 @@ export default function PaymentSuccessPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-2xl bg-purple-50/80 p-4">
+              <div className="bg-blue-50/80 p-4">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
                   Payment Method
                 </p>
                 <p className="text-sm font-semibold text-gray-900">{payment.paymentMethod}</p>
               </div>
-              <div className="rounded-2xl bg-purple-50/80 p-4">
+              <div className="bg-blue-50/80 p-4">
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
                   Paid At
                 </p>
@@ -121,13 +121,13 @@ export default function PaymentSuccessPage() {
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
                 Order Summary
               </p>
-              <div className="flex items-center gap-4 rounded-2xl bg-purple-50/60 p-3">
-                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-purple-100">
+              <div className="flex items-center gap-4 bg-blue-50/60 p-3">
+                <div className="h-16 w-16 flex-shrink-0 overflow-hidden bg-blue-100">
                   <img className="h-full w-full object-cover" src={primaryItem.image} alt={primaryItem.name} />
                 </div>
                 <div>
                   <h3 className="text-sm font-extrabold text-gray-900">{primaryItem.name}</h3>
-                  <p className="mt-1 text-sm font-semibold text-violet-700">
+                  <p className="mt-1 text-sm font-semibold text-blue-700">
                     {formatPrice(primaryItem.price || payment.totalPrice)}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export default function PaymentSuccessPage() {
               <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">
                 Delivery Address
               </p>
-              <div className="space-y-1 rounded-2xl bg-purple-50/60 p-4">
+              <div className="space-y-1 bg-blue-50/60 p-4">
                 <p className="text-sm font-bold text-gray-900">{payment.shipping.receiver}</p>
                 <p className="text-xs font-medium text-gray-500">{payment.shipping.receiverPhone}</p>
                 <p className="text-xs font-medium text-gray-500">{payment.shipping.address}</p>
@@ -151,7 +151,7 @@ export default function PaymentSuccessPage() {
         <section className="space-y-3">
           <Button
             size="lg"
-            className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(93,63,211,0.5)]"
+            className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(29,78,216,0.5)]"
             onClick={() => navigate(`/orders/${payment.orderId}`)}
           >
             주문 상세 보기
@@ -166,7 +166,7 @@ export default function PaymentSuccessPage() {
           </Button>
           <button
             type="button"
-            className="w-full rounded-full py-3 text-sm font-extrabold text-violet-700 transition hover:bg-violet-50"
+            className="w-full rounded-full py-3 text-sm font-extrabold text-blue-700 transition hover:bg-blue-50"
             onClick={() => navigate("/products")}
           >
             쇼핑 계속하기

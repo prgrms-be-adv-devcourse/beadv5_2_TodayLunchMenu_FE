@@ -319,7 +319,7 @@ export default function PaymentPage() {
   if (!hasPaymentItems) {
     return (
       <PageContainer>
-        <section className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+        <section className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
           결제할 주문 정보가 없습니다. 장바구니에서 다시 시작해 주세요.
         </section>
       </PageContainer>
@@ -330,7 +330,7 @@ export default function PaymentPage() {
     <>
       <PageContainer>
         {submitError ? (
-          <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
             {submitError}
           </section>
         ) : null}
@@ -339,7 +339,7 @@ export default function PaymentPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-violet-700 shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50"
           >
             <span aria-hidden="true">←</span>
             주문서로 돌아가기
@@ -347,16 +347,16 @@ export default function PaymentPage() {
           <button
             type="button"
             onClick={() => navigate("/orders")}
-            className="text-sm font-bold text-violet-500 transition hover:text-violet-700"
+            className="text-sm font-bold text-blue-500 transition hover:text-blue-700"
           >
             주문내역 보기
           </button>
         </section>
 
         <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-[28px] bg-white p-6 shadow-[0_40px_80px_-30px_rgba(56,39,76,0.18)] ring-1 ring-purple-100 md:col-span-2">
+          <div className="bg-white p-6 shadow-[0_40px_80px_-30px_rgba(56,39,76,0.18)] ring-1 ring-gray-200 md:col-span-2">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-500">
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-500">
                 Order Reference
               </p>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-gray-900">
@@ -364,8 +364,8 @@ export default function PaymentPage() {
               </h1>
             </div>
 
-            <div className="mt-8 flex items-center gap-4 rounded-2xl bg-purple-50/80 p-4">
-              <div className="h-20 w-20 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-purple-100">
+            <div className="mt-8 flex items-center gap-4 bg-blue-50/80 p-4">
+              <div className="h-20 w-20 overflow-hidden bg-white shadow-sm ring-1 ring-gray-200">
                 {primaryItem?.image ? (
                   <img
                     src={primaryItem.image}
@@ -385,15 +385,15 @@ export default function PaymentPage() {
                 <p className="mt-1 text-sm text-gray-500">
                   {primaryItem?.subtitle || `${primaryItem?.quantity || 0}개 주문`}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-violet-700">
+                <p className="mt-2 text-sm font-semibold text-blue-700">
                   총 {payment.items.length}개 상품
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-[28px] bg-gradient-to-br from-violet-700 to-fuchsia-600 p-6 text-white shadow-[0_40px_80px_-30px_rgba(93,63,211,0.45)]">
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-violet-100">
+          <div className="bg-blue-700 p-6 text-white">
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-100">
               Total Amount
             </p>
             <p className="mt-3 text-4xl font-black tracking-tight">
@@ -405,7 +405,7 @@ export default function PaymentPage() {
           </div>
         </section>
 
-        <section className="mb-6 rounded-[28px] bg-purple-50/85 p-6 ring-1 ring-purple-100">
+        <section className="mb-6 bg-blue-50/85 p-6 ring-1 ring-gray-200">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
               배송 요약
@@ -439,25 +439,25 @@ export default function PaymentPage() {
           </div>
         </section>
 
-        <section className="mb-6 rounded-[28px] border border-purple-100 bg-white p-6 shadow-[0_30px_60px_-40px_rgba(56,39,76,0.2)]">
+        <section className="mb-6 border border-gray-200 bg-white p-6 shadow-[0_30px_60px_-40px_rgba(56,39,76,0.2)]">
           <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
             결제 수단
           </h2>
 
           <div
             className={[
-              "mt-5 flex items-center rounded-[24px] border p-4",
+              "mt-5 flex items-center border p-4",
               isCardPayment
                 ? "border-amber-200 bg-amber-50/80"
-                : "border-violet-200 bg-violet-50/70",
+                : "border-blue-200 bg-blue-50/70",
             ].join(" ")}
           >
             <div
               className={[
-                "flex h-14 w-14 items-center justify-center rounded-2xl text-2xl text-white shadow-lg",
+                "flex h-14 w-14 items-center justify-center text-2xl text-white shadow-lg",
                 isCardPayment
-                  ? "bg-amber-500 shadow-amber-500/20"
-                  : "bg-violet-700 shadow-violet-500/25",
+                  ? "bg-amber-500"
+                  : "bg-blue-700",
               ].join(" ")}
             >
               {isCardPayment ? "카" : "원"}
@@ -475,7 +475,7 @@ export default function PaymentPage() {
             <div
               className={[
                 "text-sm font-black",
-                isCardPayment ? "text-amber-700" : "text-violet-700",
+                isCardPayment ? "text-amber-700" : "text-blue-700",
               ].join(" ")}
             >
               {isCardPayment ? "선택됨" : "확인됨"}
@@ -484,10 +484,10 @@ export default function PaymentPage() {
 
           {isCardPayment ? (
             <div className="mt-4 space-y-3">
-              <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+              <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
                 카드 결제는 주문 생성 후 토스 결제창으로 이동합니다.
               </div>
-              <div className="rounded-2xl border border-amber-200 bg-white px-4 py-4 text-sm text-gray-600">
+              <div className="border border-amber-200 bg-white px-4 py-4 text-sm text-gray-600">
                 승인 완료 후에는 성공 URL에서 결제 확정 API를 호출하고 최종
                 상태를 반영합니다.
               </div>
@@ -495,7 +495,7 @@ export default function PaymentPage() {
           ) : null}
         </section>
 
-        <section className="mb-6 rounded-[28px] bg-white p-6 ring-1 ring-purple-100">
+        <section className="mb-6 bg-white p-6 ring-1 ring-gray-200">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
               {isCardPayment ? "카드 결제 준비" : "예치금 확인"}
@@ -520,11 +520,11 @@ export default function PaymentPage() {
 
           {isCardPayment ? (
             <div className="mt-6 space-y-4">
-              <div className="rounded-2xl bg-amber-50 px-4 py-4 text-sm font-medium text-amber-700">
+              <div className="bg-amber-50 px-4 py-4 text-sm font-medium text-amber-700">
                 카드 결제는 예치금 잔액과 무관하게 주문 생성 후 PG 결제창에서
                 진행됩니다.
               </div>
-              <div className="space-y-3 rounded-2xl border border-purple-100 bg-purple-50/70 px-4 py-4 text-sm text-gray-600">
+              <div className="space-y-3 border border-gray-200 bg-blue-50/70 px-4 py-4 text-sm text-gray-600">
                 <div className="flex items-center justify-between">
                   <span>현재 단계</span>
                   <span className="font-semibold text-gray-900">
@@ -557,12 +557,12 @@ export default function PaymentPage() {
                   -{formatPrice(payment.totalPrice)}
                 </span>
               </div>
-              <div className="h-px bg-purple-100" />
+              <div className="h-px bg-gray-200" />
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-700">
                   결제 후 예상 잔액
                 </span>
-                <span className="text-xl font-black tracking-tight text-violet-700">
+                <span className="text-xl font-black tracking-tight text-blue-700">
                   {walletLoading || walletBalance === null
                     ? "-"
                     : formatPrice(
@@ -572,13 +572,13 @@ export default function PaymentPage() {
               </div>
 
               {walletError ? (
-                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
                   {walletError}
                 </div>
               ) : null}
 
               {!walletLoading && walletBalance !== null && !hasEnoughDeposit ? (
-                <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-500">
+                <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-500">
                   예치금이 {formatPrice(shortageAmount)} 부족합니다. 충전 후
                   다시 시도해 주세요.
                 </div>
@@ -600,11 +600,11 @@ export default function PaymentPage() {
               {formatPrice(payment.shippingFee)}
             </span>
           </div>
-          <div className="flex items-end justify-between border-t border-purple-100 pt-4">
+          <div className="flex items-end justify-between border-t border-gray-200 pt-4">
             <span className="text-lg font-extrabold text-gray-900">
               총 결제 금액
             </span>
-            <span className="text-3xl font-black tracking-tight text-violet-700">
+            <span className="text-3xl font-black tracking-tight text-blue-700">
               {formatPrice(payment.totalPrice)}
             </span>
           </div>
@@ -615,13 +615,13 @@ export default function PaymentPage() {
         <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <span>{paymentMethodLabel}</span>
-            <span className="text-lg font-extrabold text-violet-700">
+            <span className="text-lg font-extrabold text-blue-700">
               {formatPrice(payment.totalPrice)}
             </span>
           </div>
           <Button
             size="lg"
-            className="h-16 w-full rounded-full text-lg font-extrabold shadow-lg shadow-violet-500/20"
+            className="h-16 w-full rounded-full text-lg font-extrabold shadow-lg"
             disabled={
               isCardPayment
                 ? isSubmitting || isPreparingCardOrder || !preparedCardOrder

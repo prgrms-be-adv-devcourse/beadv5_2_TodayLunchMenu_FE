@@ -73,7 +73,7 @@ function AdminEmbeddingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <AdminNav currentPage="embeddings" />
       <AdminSidebar currentPage="embeddings" />
 
@@ -82,14 +82,14 @@ function AdminEmbeddingPage() {
           {/* Header */}
           <header className="mb-8 flex items-end justify-between">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-[#38274c]">상품 임베딩 관리</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">상품 임베딩 관리</h1>
               <p className="mt-2 text-sm text-slate-500">임베딩을 생성하고 관리합니다.</p>
             </div>
           </header>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <div className="mb-6 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               {error}
             </div>
           )}
@@ -97,9 +97,9 @@ function AdminEmbeddingPage() {
           {/* Content Grid */}
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             {/* Backfill Section */}
-            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
-              <div className="p-6 border-b border-violet-100">
-                <h2 className="text-xl font-extrabold text-[#38274c] mb-1">누락 임베딩 추가</h2>
+            <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-xl font-extrabold text-gray-900 mb-1">누락 임베딩 추가</h2>
                 <p className="text-sm text-slate-500">임베딩이 없는 상품들의 임베딩을 생성합니다.</p>
               </div>
 
@@ -107,18 +107,18 @@ function AdminEmbeddingPage() {
                 <button
                   onClick={handleBackfillMissing}
                   disabled={loading && pendingAction === 'backfill'}
-                  className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:scale-[1.02] hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                  className="w-full rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {loading && pendingAction === 'backfill' ? '처리 중...' : '누락 임베딩 추가'}
                 </button>
 
                 {result && lastCompletedAction === 'backfill' && (
-                  <div className="mt-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-4 ring-1 ring-emerald-200">
+                  <div className="mt-6 rounded bg-gradient-to-br from-emerald-50 to-teal-50 p-4 ring-1 ring-emerald-200">
                     <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-600 mb-4">완료됨</p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">처리됨</p>
-                        <p className="text-xl font-black text-[#38274c] mt-1">{result.processedCount ?? 0}</p>
+                        <p className="text-xl font-black text-gray-900 mt-1">{result.processedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">성공</p>
@@ -139,9 +139,9 @@ function AdminEmbeddingPage() {
             </section>
 
             {/* Reindex Section */}
-            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
-              <div className="p-6 border-b border-violet-100">
-                <h2 className="text-xl font-extrabold text-[#38274c] mb-1">전체 임베딩 재색인</h2>
+            <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-xl font-extrabold text-gray-900 mb-1">전체 임베딩 재색인</h2>
                 <p className="text-sm text-slate-500">모든 상품의 임베딩을 다시 생성합니다.</p>
               </div>
 
@@ -155,12 +155,12 @@ function AdminEmbeddingPage() {
                 </button>
 
                 {result && lastCompletedAction === 'reindex' && (
-                  <div className="mt-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-4 ring-1 ring-blue-200">
+                  <div className="mt-6 rounded bg-gradient-to-br from-blue-50 to-cyan-50 p-4 ring-1 ring-blue-200">
                     <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 mb-4">완료됨</p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">처리됨</p>
-                        <p className="text-xl font-black text-[#38274c] mt-1">{result.processedCount ?? 0}</p>
+                        <p className="text-xl font-black text-gray-900 mt-1">{result.processedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">성공</p>
@@ -186,21 +186,21 @@ function AdminEmbeddingPage() {
       {/* Confirm Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="relative max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-4 text-lg font-bold text-[#38274c]">작업 확인</h2>
+          <div className="relative max-w-sm bg-white p-6 shadow-xl">
+            <h2 className="mb-4 text-lg font-bold text-gray-900">작업 확인</h2>
             <p className="mb-6 text-sm text-slate-600">{getConfirmMessage()}</p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmModal(false)}
                 disabled={loading}
-                className="rounded-full border border-violet-200 px-5 py-2 text-sm font-bold text-violet-700 transition hover:bg-violet-50 disabled:opacity-60"
+                className="rounded-full border border-blue-200 px-5 py-2 text-sm font-bold text-blue-700 transition hover:bg-blue-50 disabled:opacity-60"
               >
                 취소
               </button>
               <button
                 onClick={executeAction}
                 disabled={loading}
-                className="rounded-full bg-violet-600 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:bg-violet-700 disabled:opacity-60"
+                className="rounded-full bg-blue-600 px-5 py-2 text-sm font-bold text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-60"
               >
                 {loading ? '진행 중...' : '확인'}
               </button>

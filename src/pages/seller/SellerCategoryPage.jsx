@@ -207,14 +207,14 @@ export default function SellerCategoryPage() {
       </div>
 
       {errorMessage && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {errorMessage}
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* 전체 카테고리 트리 (참조용) */}
-        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6">
+        <div className="border border-gray-100 bg-gray-50 p-6">
           <h2 className="mb-4 text-sm font-bold text-gray-500 uppercase tracking-wider">전체 카테고리 (참조)</h2>
           {loading ? (
             <p className="py-8 text-center text-sm text-gray-400">불러오는 중...</p>
@@ -236,7 +236,7 @@ export default function SellerCategoryPage() {
             <button
               type="button"
               onClick={openCreate}
-              className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700"
+              className="bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
             >
               + 하위 카테고리 추가
             </button>
@@ -245,7 +245,7 @@ export default function SellerCategoryPage() {
           {loading ? (
             <p className="py-8 text-center text-sm text-gray-400">불러오는 중...</p>
           ) : myCategories.length === 0 ? (
-            <div className="rounded-2xl border-2 border-dashed border-gray-200 p-10 text-center">
+            <div className="border-2 border-dashed border-gray-200 p-10 text-center">
               <p className="text-sm text-gray-400">등록한 카테고리가 없습니다.</p>
               <p className="mt-1 text-xs text-gray-300">상위 카테고리를 선택해 하위 카테고리를 추가해 보세요.</p>
             </div>
@@ -254,13 +254,13 @@ export default function SellerCategoryPage() {
               {myCategories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+                  className="border border-gray-100 bg-white p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-gray-800">{cat.name}</span>
-                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-bold text-violet-600">
+                        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600">
                           depth {cat.depth}
                         </span>
                       </div>
@@ -321,7 +321,7 @@ export default function SellerCategoryPage() {
 
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+          <div className="w-full max-w-md bg-white p-8 shadow-2xl">
             <h2 className="mb-6 text-xl font-bold text-gray-900">
               {modal.mode === 'create' ? '하위 카테고리 추가' : '카테고리 편집'}
             </h2>
@@ -334,7 +334,7 @@ export default function SellerCategoryPage() {
                   <select
                     value={form.parentId}
                     onChange={(e) => { setForm((p) => ({ ...p, parentId: e.target.value })); setFormErrors((p) => ({ ...p, parentId: '' })); }}
-                    className="h-11 w-full rounded-xl border border-gray-200 px-4 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                    className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
                   >
                     <option value="">상위 카테고리를 선택하세요</option>
                     {selectableParents.map((cat) => (
@@ -356,7 +356,7 @@ export default function SellerCategoryPage() {
                   onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); setFormErrors((p) => ({ ...p, name: '' })); }}
                   placeholder="카테고리명을 입력하세요"
                   maxLength={50}
-                  className="h-11 w-full rounded-xl border border-gray-200 px-4 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                  className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
                 />
                 {formErrors.name && <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>}
               </div>
@@ -369,7 +369,7 @@ export default function SellerCategoryPage() {
                   placeholder="카테고리 설명 (선택)"
                   maxLength={500}
                   rows={3}
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200 resize-none"
+                  className="w-full rounded border border-gray-200 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200 resize-none"
                 />
                 {formErrors.description && <p className="mt-1 text-xs text-red-500">{formErrors.description}</p>}
               </div>
@@ -380,12 +380,12 @@ export default function SellerCategoryPage() {
                   type="number"
                   value={form.sortOrder}
                   onChange={(e) => setForm((p) => ({ ...p, sortOrder: e.target.value }))}
-                  className="h-11 w-full rounded-xl border border-gray-200 px-4 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200"
+                  className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
                 />
               </div>
 
               {submitError && (
-                <p className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-red-600">{submitError}</p>
+                <p className="bg-red-50 px-4 py-2.5 text-sm text-red-600">{submitError}</p>
               )}
 
               <div className="flex gap-3 pt-2">
@@ -393,14 +393,14 @@ export default function SellerCategoryPage() {
                   type="button"
                   onClick={closeModal}
                   disabled={isSubmitting}
-                  className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
+                  className="flex-1 border border-gray-200 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 rounded-xl bg-violet-600 py-3 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                  className="flex-1 bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {isSubmitting ? '저장 중...' : '저장'}
                 </button>

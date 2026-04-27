@@ -213,37 +213,37 @@ export default function DepositPage() {
         <PageHeader title="예치금" />
 
         {error ? (
-          <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
             {error}
           </section>
         ) : null}
 
         {isSdkTestMode ? (
-          <section className="mb-6 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+          <section className="mb-6 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
             백엔드 연결 없이 토스 결제창만 테스트 중입니다. 성공 후 승인 완료 처리는 동작하지 않을 수 있습니다.
           </section>
         ) : null}
 
-        <section className="mb-6 overflow-hidden rounded-[32px] bg-gradient-to-br from-violet-700 to-fuchsia-600 p-6 text-white shadow-xl shadow-violet-500/20">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-100">
+        <section className="mb-6 overflow-hidden bg-blue-700 p-6 text-white shadow-xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">
             Available Balance
           </p>
           <h2 className="mt-3 text-4xl font-extrabold tracking-tight">
             {loading ? "불러오는 중..." : `${formatPrice(wallet?.balance ?? 0)}원`}
           </h2>
-          <p className="mt-2 text-sm text-violet-100">
+          <p className="mt-2 text-sm text-blue-100">
             주문 결제 시 예치금이 우선 차감됩니다.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-              <p className="text-xs font-medium text-violet-100">누적 충전</p>
+            <div className="bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs font-medium text-blue-100">누적 충전</p>
               <p className="mt-1 text-lg font-extrabold">
                 {formatPrice(summary.charged)}원
               </p>
             </div>
-            <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
-              <p className="text-xs font-medium text-violet-100">누적 사용</p>
+            <div className="bg-white/10 p-4 backdrop-blur">
+              <p className="text-xs font-medium text-blue-100">누적 사용</p>
               <p className="mt-1 text-lg font-extrabold">
                 {formatPrice(summary.used)}원
               </p>
@@ -258,7 +258,7 @@ export default function DepositPage() {
           </Link>
         </section>
 
-        <section className="mb-8 rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+        <section className="mb-8 bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
           <div className="mb-4">
             <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
               예치금 충전
@@ -282,7 +282,7 @@ export default function DepositPage() {
                   key={amount}
                   type="button"
                   onClick={() => handleQuickCharge(amount)}
-                  className="rounded-full bg-purple-100 px-4 py-2 text-sm font-semibold text-violet-800 transition hover:bg-purple-200"
+                  className="rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
                 >
                   +{formatPrice(amount)}원
                 </button>
@@ -300,7 +300,7 @@ export default function DepositPage() {
           </div>
         </section>
 
-        <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+        <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
               거래 내역
@@ -311,11 +311,11 @@ export default function DepositPage() {
           </div>
 
           {loading ? (
-            <div className="rounded-2xl bg-purple-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
+            <div className="bg-blue-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
               거래 내역을 불러오는 중입니다...
             </div>
           ) : transactions.length === 0 ? (
-            <div className="rounded-2xl bg-purple-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
+            <div className="bg-blue-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
               아직 거래 내역이 없습니다.
             </div>
           ) : (
@@ -326,7 +326,7 @@ export default function DepositPage() {
                 return (
                   <article
                     key={transaction.id}
-                    className="rounded-2xl bg-purple-50/70 px-4 py-4"
+                    className="bg-blue-50/70 px-4 py-4"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -342,7 +342,7 @@ export default function DepositPage() {
                         <p
                           className={[
                             "text-sm font-extrabold",
-                            positive ? "text-violet-700" : "text-gray-900",
+                            positive ? "text-blue-700" : "text-gray-900",
                           ].join(" ")}
                         >
                           {positive ? "+" : ""}

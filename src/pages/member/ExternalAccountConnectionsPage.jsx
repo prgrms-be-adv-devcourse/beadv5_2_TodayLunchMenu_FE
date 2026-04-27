@@ -45,10 +45,10 @@ function getSecurityLabel(connection) {
 function InfoRow({ label, value, accent = false }) {
   return (
     <div>
-      <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-violet-500/70">
+      <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-blue-500/70">
         {label}
       </p>
-      <p className={accent ? "font-semibold text-violet-700" : "font-semibold text-slate-900"}>
+      <p className={accent ? "font-semibold text-blue-700" : "font-semibold text-slate-900"}>
         {value}
       </p>
     </div>
@@ -68,18 +68,18 @@ function ProviderCard({
 }) {
   const toneClass =
     tone === "kakao"
-      ? "border-yellow-200/80 bg-gradient-to-br from-yellow-50 via-white to-violet-50"
-      : "border-violet-100 bg-white/80";
+      ? "border-yellow-200/80 bg-yellow-50"
+      : "border-gray-200 bg-white/80";
 
   return (
     <article
-      className={`rounded-[28px] border p-6 shadow-[0_24px_60px_-32px_rgba(76,29,149,0.35)] backdrop-blur ${toneClass}`}
+      className={`border p-6 shadow-sm backdrop-blur ${toneClass}`}
     >
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-center gap-4">
           <div
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg ${
-              tone === "kakao" ? "bg-[#FEE500]" : "bg-violet-100"
+            className={`flex h-14 w-14 items-center justify-center shadow-lg ${
+              tone === "kakao" ? "bg-[#FEE500]" : "bg-blue-100"
             }`}
           >
             {tone === "kakao" ? (
@@ -87,7 +87,7 @@ function ProviderCard({
                 <path d="M12 3C6.477 3 2 6.48 2 10.78c0 2.76 1.83 5.19 4.6 6.59l-.9 3.32c-.05.18.15.34.28.23l4.03-2.68c.63.09 1.29.14 1.99.14 5.523 0 10-3.48 10-7.78S17.523 3 12 3z" />
               </svg>
             ) : (
-              <span className="text-xl font-black text-violet-700">{name.slice(0, 1)}</span>
+              <span className="text-xl font-black text-blue-700">{name.slice(0, 1)}</span>
             )}
           </div>
 
@@ -96,7 +96,7 @@ function ProviderCard({
               <h2 className="text-xl font-black tracking-tight text-slate-950">{name}</h2>
               <span
                 className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
-                  connected ? "bg-violet-100 text-violet-700" : "bg-slate-100 text-slate-500"
+                  connected ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-500"
                 }`}
               >
                 {connected ? "연결됨" : "미연결"}
@@ -136,25 +136,25 @@ function UnlinkConfirmModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/35 p-4 backdrop-blur-sm sm:items-center">
       <div
-        className="w-full max-w-xl overflow-hidden rounded-[32px] border border-violet-100 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(249,237,255,0.98)_100%)] shadow-[0_40px_120px_-35px_rgba(76,29,149,0.45)]"
+        className="w-full max-w-xl overflow-hidden border border-gray-200 bg-white shadow-lg"
         role="dialog"
         aria-modal="true"
         aria-labelledby="unlink-modal-title"
       >
         <div className="relative overflow-hidden px-6 pb-6 pt-6 sm:px-8">
-          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-violet-200/50 blur-3xl" />
+          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-blue-200/50 blur-3xl" />
           <div className="absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-rose-200/50 blur-3xl" />
 
           <div className="relative">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FEE500] shadow-lg">
+                <div className="flex h-14 w-14 items-center justify-center bg-[#FEE500] shadow-lg">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="#3C1E1E" aria-hidden="true">
                     <path d="M12 3C6.477 3 2 6.48 2 10.78c0 2.76 1.83 5.19 4.6 6.59l-.9 3.32c-.05.18.15.34.28.23l4.03-2.68c.63.09 1.29.14 1.99.14 5.523 0 10-3.48 10-7.78S17.523 3 12 3z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-violet-500">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-blue-500">
                     Secure Connection
                   </p>
                   <h2
@@ -177,7 +177,7 @@ function UnlinkConfirmModal({
               </button>
             </div>
 
-            <div className="mt-6 rounded-[28px] border border-violet-100/80 bg-white/80 p-5 shadow-sm">
+            <div className="mt-6 border border-gray-200 bg-white/80 p-5 shadow-sm">
               <p className="text-sm font-medium leading-6 text-slate-600">
                 연동을 해제하면 다음부터는 카카오로 바로 로그인할 수 없어요. TodayLunch
                 계정 자체는 유지되며, 필요하면 나중에 다시 연결할 수 있습니다.
@@ -205,7 +205,7 @@ function UnlinkConfirmModal({
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border-l-4 border-violet-300 bg-violet-50/80 px-4 py-4">
+            <div className="mt-5 border-l-4 border-blue-300 bg-blue-50 px-4 py-4">
               <p className="text-sm font-medium leading-6 text-slate-600">
                 비밀번호가 설정되어 있지 않으면 마지막 외부 계정은 해제할 수 없어요.
               </p>
@@ -379,7 +379,7 @@ export default function ExternalAccountConnectionsPage() {
   if (authLoading || loading) {
     return (
       <PageContainer>
-        <div className="rounded-[28px] bg-white px-6 py-12 text-center text-sm font-medium text-slate-500 shadow-sm ring-1 ring-violet-100">
+        <div className="bg-white px-6 py-12 text-center text-sm font-medium text-slate-500 shadow-sm ring-1 ring-gray-200">
           외부 계정 연동 정보를 불러오는 중입니다...
         </div>
       </PageContainer>
@@ -389,7 +389,7 @@ export default function ExternalAccountConnectionsPage() {
   if (!isAuthenticated) {
     return (
       <PageContainer>
-        <div className="rounded-[28px] bg-white px-6 py-12 text-center shadow-sm ring-1 ring-violet-100">
+        <div className="bg-white px-6 py-12 text-center shadow-sm ring-1 ring-gray-200">
           <h1 className="text-2xl font-black tracking-tight text-slate-950">
             로그인 후 이용할 수 있어요
           </h1>
@@ -408,13 +408,13 @@ export default function ExternalAccountConnectionsPage() {
 
   return (
     <PageContainer>
-      <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-violet-50 via-[#fdf7ff] to-amber-50 px-6 py-8 shadow-[0_32px_90px_-40px_rgba(91,33,182,0.45)] sm:px-8">
-        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-violet-300/20 blur-3xl" />
+      <section className="relative overflow-hidden bg-blue-50 px-6 py-8 shadow-sm sm:px-8">
+        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-blue-300/20 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-amber-300/20 blur-3xl" />
 
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.24em] text-violet-600">
+            <p className="text-sm font-bold uppercase tracking-[0.24em] text-blue-600">
               Account Security
             </p>
             <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
@@ -428,7 +428,7 @@ export default function ExternalAccountConnectionsPage() {
 
           <Link
             to="/me"
-            className="inline-flex items-center justify-center rounded-full border border-violet-200 bg-white/80 px-5 py-3 text-sm font-bold text-violet-700 transition hover:bg-white"
+            className="inline-flex items-center justify-center rounded-full border border-blue-200 bg-white/80 px-5 py-3 text-sm font-bold text-blue-700 transition hover:bg-white"
           >
             마이페이지로 돌아가기
           </Link>
@@ -436,13 +436,13 @@ export default function ExternalAccountConnectionsPage() {
       </section>
 
       {noticeMessage ? (
-        <section className="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
+        <section className="mt-6 border border-emerald-100 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-700">
           {noticeMessage}
         </section>
       ) : null}
 
       {errorMessage ? (
-        <section className="mt-6 rounded-2xl border border-red-100 bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
+        <section className="mt-6 border border-red-100 bg-red-50 px-5 py-4 text-sm font-medium text-red-700">
           {errorMessage}
         </section>
       ) : null}
@@ -465,7 +465,7 @@ export default function ExternalAccountConnectionsPage() {
             handleStartKakaoLink();
           }}
         >
-          <div className="grid gap-5 border-t border-violet-100 pt-6 md:grid-cols-2">
+          <div className="grid gap-5 border-t border-gray-200 pt-6 md:grid-cols-2">
             <InfoRow
               label="이메일 주소"
               value={kakaoConnection?.providerEmail || "카카오 계정을 연결하면 표시됩니다."}
@@ -479,7 +479,7 @@ export default function ExternalAccountConnectionsPage() {
           </div>
 
           {kakaoConnection && !kakaoConnection.canUnlink ? (
-            <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm text-amber-700">
+            <div className="mt-5 border border-amber-100 bg-amber-50 px-4 py-4 text-sm text-amber-700">
               현재 계정은 마지막 로그인 수단 보호 규칙이 적용되어 있어 카카오 연동을 바로
               해제할 수 없습니다.
             </div>
@@ -487,9 +487,9 @@ export default function ExternalAccountConnectionsPage() {
         </ProviderCard>
       </section>
 
-      <section className="mt-8 rounded-[28px] border border-violet-100 bg-violet-50/80 p-6">
+      <section className="mt-8 border border-gray-200 bg-blue-50 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-start">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-lg font-bold text-violet-700 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center bg-white text-lg font-bold text-blue-700 shadow-sm">
             i
           </div>
           <div>

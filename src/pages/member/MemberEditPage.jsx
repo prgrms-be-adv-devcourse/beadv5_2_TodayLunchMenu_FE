@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
@@ -128,7 +128,7 @@ export default function MemberEditPage() {
   if (authLoading && !user) {
     return (
       <PageContainer>
-        <div className="rounded-2xl bg-white px-6 py-12 text-center text-sm font-medium text-gray-500 shadow-sm ring-1 ring-violet-100">
+        <div className="bg-white px-6 py-12 text-center text-sm font-medium text-gray-500 shadow-sm ring-1 ring-gray-200">
           회원 정보를 불러오는 중입니다...
         </div>
       </PageContainer>
@@ -140,11 +140,11 @@ export default function MemberEditPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">Profile Edit</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">Profile Edit</p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">프로필 편집</h1>
             <Link
               to="/me/password"
-              className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-violet-100 px-5 text-sm font-semibold text-violet-800 transition hover:bg-violet-200"
+              className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-blue-100 px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
             >
               비밀번호 변경으로 이동
             </Link>
@@ -154,16 +154,16 @@ export default function MemberEditPage() {
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-[32px] bg-white p-8 shadow-sm ring-1 ring-violet-100">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-sm ring-1 ring-gray-200">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             {user?.profileImageUrl ? (
               <img
                 src={user.profileImageUrl}
                 alt="현재 프로필 이미지"
-                className="h-24 w-24 rounded-full object-cover ring-4 ring-violet-100"
+                className="h-24 w-24 rounded-full object-cover ring-2 ring-blue-200"
               />
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-violet-600 text-2xl font-extrabold text-white">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-600 text-2xl font-extrabold text-white">
                 {(form.nickname || user?.nickname || 'U').slice(0, 1).toUpperCase()}
               </div>
             )}
@@ -174,7 +174,7 @@ export default function MemberEditPage() {
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
                   onChange={handleProfileImageChange}
-                  className="block w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-200"
+                  className="block w-full border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-200"
                 />
                 {profileImage ? (
                   <p className="mt-2 text-xs font-medium text-gray-500">새 파일: {profileImage.name}</p>
@@ -224,4 +224,3 @@ export default function MemberEditPage() {
     </PageContainer>
   );
 }
-

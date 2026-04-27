@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import { cancelOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
@@ -149,7 +149,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
           <p className="text-sm font-medium text-gray-500">
             주문 상세를 불러오는 중입니다...
           </p>
@@ -161,12 +161,12 @@ export default function OrderDetailPage() {
   if (error) {
     return (
       <PageContainer>
-        <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
+        <section className="bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
           <p className="mb-2 text-lg font-bold text-red-600">
             주문 상세를 불러오지 못했습니다
           </p>
           <p className="mb-6 text-sm text-red-500">{error}</p>
-          <Link to="/orders" className="text-sm font-bold text-violet-700 hover:underline">
+          <Link to="/orders" className="text-sm font-bold text-blue-700 hover:underline">
             주문 목록으로 돌아가기
           </Link>
         </section>
@@ -183,8 +183,8 @@ export default function OrderDetailPage() {
       <PageContainer>
         <section className="mb-10 flex flex-col items-center text-center">
           <div className="relative mb-6">
-            <div className="absolute inset-0 scale-150 rounded-full bg-violet-300/30 blur-3xl" />
-            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-violet-700 to-fuchsia-600 shadow-2xl shadow-violet-500/20">
+            <div className="absolute inset-0 scale-150 rounded-full bg-blue-200/30 blur-3xl" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-blue-700 shadow-2xl">
               <span className="text-5xl text-white">O</span>
             </div>
           </div>
@@ -193,14 +193,14 @@ export default function OrderDetailPage() {
             주문 상세
           </h1>
           <p className="max-w-lg text-base font-medium text-gray-500 md:text-lg">
-            주문번호 <span className="font-bold text-violet-700">{normalizedOrder.orderId}</span>
+            주문번호 <span className="font-bold text-blue-700">{normalizedOrder.orderId}</span>
             의 상세 정보를 확인할 수 있어요.
           </p>
         </section>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-          <section className="relative overflow-hidden rounded-[28px] bg-white/85 p-6 shadow-sm ring-1 ring-purple-100 md:col-span-7">
-            <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-violet-100/40" />
+          <section className="relative overflow-hidden bg-white/85 p-6 shadow-sm ring-1 ring-gray-200 md:col-span-7">
+            <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-blue-100/40" />
 
             <div className="space-y-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -223,8 +223,8 @@ export default function OrderDetailPage() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 rounded-2xl bg-purple-50/70 p-5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+              <div className="flex items-center gap-4 bg-blue-50/70 p-5">
+                <div className="flex h-12 w-12 items-center justify-center bg-blue-100 text-blue-700">
                   O
                 </div>
                 <div>
@@ -237,7 +237,7 @@ export default function OrderDetailPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-white p-5 ring-1 ring-purple-100">
+              <div className="bg-white p-5 ring-1 ring-gray-200">
                 <p className="mb-3 text-lg font-extrabold tracking-tight text-gray-900">
                   배송 정보
                 </p>
@@ -270,10 +270,10 @@ export default function OrderDetailPage() {
                 </div>
               </div>
 
-              <div className="border-t border-purple-100 pt-6">
+              <div className="border-t border-gray-200 pt-6">
                 <div className="flex justify-between text-sm">
                   <span className="font-medium text-gray-500">총 결제 금액</span>
-                  <span className="font-bold text-violet-700">
+                  <span className="font-bold text-blue-700">
                     {formatPrice(normalizedOrder.totalPrice)}원
                   </span>
                 </div>
@@ -293,9 +293,9 @@ export default function OrderDetailPage() {
                 return (
                   <article
                     key={item.productId}
-                    className="flex items-center gap-4 rounded-2xl bg-white/85 p-4 shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50/50"
+                    className="flex items-center gap-4 bg-white/85 p-4 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50/50"
                   >
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-white">
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-white">
                       {thumbnailSrc ? (
                         <img
                           src={thumbnailSrc}
@@ -303,7 +303,7 @@ export default function OrderDetailPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-violet-50 text-2xl font-black text-violet-700">
+                        <div className="flex h-full w-full items-center justify-center bg-blue-50 text-2xl font-black text-blue-700">
                           {(item.productName || "O").slice(0, 1).toUpperCase()}
                         </div>
                       )}
@@ -353,7 +353,7 @@ export default function OrderDetailPage() {
         </div>
 
         <div className="pointer-events-none mt-16 flex justify-center opacity-30">
-          <span className="text-7xl text-violet-200">O</span>
+          <span className="text-7xl text-blue-200">O</span>
         </div>
       </PageContainer>
 

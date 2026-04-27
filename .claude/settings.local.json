@@ -37,7 +37,13 @@
       "Bash(npx vite *)",
       "mcp__claude_ai_Notion__notion-search",
       "mcp__claude_ai_Notion__notion-fetch",
-      "mcp__claude_ai_Notion__notion-create-pages"
+      "mcp__claude_ai_Notion__notion-create-pages",
+      "Bash(git -C \"C:/Users/home/IdeaProjects/beadv5_2_TodayLunchMenu_FE\" status)",
+      "Bash(git -C \"C:/Users/home/IdeaProjects/beadv5_2_TodayLunchMenu_FE\" diff --stat)",
+      "Bash(git *)",
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(npm run *)"
     ]
   }
 }

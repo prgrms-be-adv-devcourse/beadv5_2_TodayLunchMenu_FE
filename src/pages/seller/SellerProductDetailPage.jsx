@@ -19,7 +19,7 @@ function formatDate(value) {
 function getStatusMeta(status) {
   switch (status) {
     case "ACTIVE":
-      return { label: "판매중", className: "bg-violet-100 text-violet-700" };
+      return { label: "판매중", className: "bg-blue-100 text-blue-700" };
     case "SOLD_OUT":
       return { label: "품절", className: "bg-pink-100 text-pink-700" };
     case "INACTIVE":
@@ -61,7 +61,7 @@ export default function SellerProductDetailPage() {
     <PageContainer>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-700">
             Seller Hub
           </p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
@@ -78,7 +78,7 @@ export default function SellerProductDetailPage() {
         </span>
       </div>
 
-      <section className="mb-6 overflow-hidden rounded-[32px] bg-purple-50">
+      <section className="mb-6 overflow-hidden bg-blue-50">
         {product.image ? (
           <img
             src={product.image}
@@ -86,20 +86,20 @@ export default function SellerProductDetailPage() {
             className="aspect-[4/3] h-full w-full object-cover"
           />
         ) : (
-          <div className="flex aspect-[4/3] items-center justify-center text-8xl font-black text-violet-700">
+          <div className="flex aspect-[4/3] items-center justify-center text-8xl font-black text-blue-700">
             {(product.name || "P").slice(0, 1).toUpperCase()}
           </div>
         )}
       </section>
 
       <section className="mb-6 space-y-2">
-        <p className="text-xs font-bold uppercase tracking-widest text-violet-500">
+        <p className="text-xs font-bold uppercase tracking-widest text-blue-500">
           {product.category}
         </p>
         <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
           {product.name}
         </h2>
-        <p className="text-xl font-extrabold text-violet-700">
+        <p className="text-xl font-extrabold text-blue-700">
           {formatPrice(product.price)}원
         </p>
         {product.description && (
@@ -107,17 +107,17 @@ export default function SellerProductDetailPage() {
         )}
       </section>
 
-      <section className="mb-6 rounded-[28px] bg-white p-5 shadow-sm ring-1 ring-purple-100">
-        <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-violet-700">
+      <section className="mb-6 bg-white p-5 shadow-sm ring-1 ring-gray-200">
+        <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-[0.2em] text-blue-700">
           판매 현황
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">상태</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-500">상태</p>
             <p className="mt-1 text-lg font-extrabold text-gray-900">{statusMeta.label}</p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">재고</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-500">재고</p>
             <p
               className={[
                 "mt-1 text-lg font-extrabold",
@@ -128,11 +128,11 @@ export default function SellerProductDetailPage() {
             </p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">등록일</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-500">등록일</p>
             <p className="mt-1 text-sm font-bold text-gray-900">{formatDate(product.createdAt)}</p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">상품 ID</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-500">상품 ID</p>
             <p className="mt-1 truncate text-xs font-mono text-gray-500">{product.id}</p>
           </div>
         </div>

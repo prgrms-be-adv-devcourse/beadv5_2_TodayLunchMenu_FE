@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import { ApiError } from "../../api/client";
@@ -106,11 +106,11 @@ export default function EmailVerificationPage() {
   }, [pendingVerificationTarget, token]);
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] px-6 py-16 text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 px-6 py-16 text-gray-900">
       <div className="mx-auto flex min-h-[80vh] max-w-3xl items-center justify-center">
-        <section className="w-full rounded-[2rem] bg-white p-8 shadow-xl shadow-violet-200/40 md:p-12">
+        <section className="w-full bg-white p-8 shadow-xl md:p-12">
           <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-violet-100 text-4xl text-violet-700">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl text-blue-700">
               {status === "success" ? "✓" : status === "loading" ? "…" : "!"}
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
@@ -137,7 +137,7 @@ export default function EmailVerificationPage() {
 
             <p className="mt-8 text-sm font-medium text-gray-500">
               문제가 계속되면
-              <Link to="/signup" className="ml-1 font-bold text-violet-700 hover:underline">
+              <Link to="/signup" className="ml-1 font-bold text-blue-700 hover:underline">
                 다시 회원가입
               </Link>
               을 시도해 주세요.

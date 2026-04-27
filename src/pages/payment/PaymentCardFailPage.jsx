@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -53,7 +53,7 @@ export default function PaymentCardFailPage() {
   return (
     <PageContainer>
       <section className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-lg flex-col justify-center px-4 py-10">
-        <div className="rounded-[32px] bg-white p-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-purple-100">
+        <div className="bg-white p-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-gray-200">
           <div className="mb-6 text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-rose-100 text-4xl text-rose-600">
               !
@@ -66,7 +66,7 @@ export default function PaymentCardFailPage() {
             </p>
           </div>
 
-          <div className="space-y-3 rounded-2xl bg-purple-50/70 p-4 text-sm">
+          <div className="space-y-3 bg-blue-50/70 p-4 text-sm">
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">실패 사유</span>
               <span className="font-semibold text-gray-900">{result.errorTitle}</span>

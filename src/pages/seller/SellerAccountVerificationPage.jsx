@@ -125,7 +125,7 @@ function getStatusBadgeClass(status) {
     case "CANCELLED":
       return "bg-red-100 text-red-700 ring-red-200";
     default:
-      return "bg-violet-100 text-violet-700 ring-violet-200";
+      return "bg-blue-100 text-blue-700 ring-gray-200";
   }
 }
 
@@ -424,29 +424,29 @@ export default function SellerAccountVerificationPage() {
     <PageContainer>
       <section className="mb-8">
         <div className="mb-2 flex items-end justify-between">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-700">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-700">
             Step 2 of 2
           </span>
           <span className="text-sm font-bold text-gray-500">계좌 인증</span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-purple-100">
-          <div className="h-full w-full rounded-full bg-gradient-to-r from-violet-700 to-fuchsia-500" />
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="h-full w-full rounded-full bg-blue-700" />
         </div>
       </section>
 
-      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-violet-700 via-violet-600 to-fuchsia-500 p-6 text-white shadow-xl shadow-violet-500/20">
+      <section className="relative overflow-hidden bg-blue-700 p-6 text-white shadow-xl">
         <div className="absolute -right-14 -top-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-16 -left-10 h-28 w-28 rounded-full bg-fuchsia-300/20 blur-2xl" />
+        <div className="absolute -bottom-16 -left-10 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
 
         <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-violet-100">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-blue-100">
               Verify Account
             </p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">
               계좌 인증을 완료해 주세요
             </h1>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-violet-100">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-blue-100">
               판매자 등록 마지막 단계입니다. 현재 인증 세션 상태와 남은 시간을
               확인한 뒤 mock 인증 코드를 제출하면 인증을 완료할 수 있습니다.
             </p>
@@ -463,15 +463,15 @@ export default function SellerAccountVerificationPage() {
         </div>
 
         <div className="relative mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-white/12 p-4 backdrop-blur">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-100">
+          <div className="bg-white/12 p-4 backdrop-blur">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-100">
               Time Remaining
             </p>
             <p className="mt-2 text-2xl font-extrabold">{remainingTime}</p>
           </div>
 
-          <div className="rounded-2xl bg-white/12 p-4 backdrop-blur">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-100">
+          <div className="bg-white/12 p-4 backdrop-blur">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-100">
               Attempts
             </p>
             <p className="mt-2 text-2xl font-extrabold">
@@ -482,19 +482,19 @@ export default function SellerAccountVerificationPage() {
       </section>
 
       {error ? (
-        <section className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+        <section className="mt-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
           {error}
         </section>
       ) : null}
 
       {notice ? (
-        <section className="mt-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+        <section className="mt-6 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
           {notice}
         </section>
       ) : null}
 
       {!hasSession && !loadingCurrent ? (
-        <section className="mt-6 rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
+        <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
           <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
             진행 중인 인증이 없습니다
           </h2>
@@ -509,10 +509,10 @@ export default function SellerAccountVerificationPage() {
         </section>
       ) : (
         <>
-          <section className="mt-6 rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
+          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-700">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-700">
                   Registered Account
                 </p>
                 <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-gray-900">
@@ -523,18 +523,18 @@ export default function SellerAccountVerificationPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl bg-violet-100 px-4 py-3 text-right">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-700">
+              <div className="bg-blue-100 px-4 py-3 text-right">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
                   Resend
                 </p>
-                <p className="mt-1 text-xl font-extrabold text-violet-900">
+                <p className="mt-1 text-xl font-extrabold text-blue-900">
                   {verification?.resendCount ?? 0}회
                 </p>
               </div>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-gray-500">
-              <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <div className="bg-gray-50 px-4 py-3">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
                   Status
                 </span>
@@ -542,7 +542,7 @@ export default function SellerAccountVerificationPage() {
                   {getStatusText(apiStatus)}
                 </span>
               </div>
-              <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <div className="bg-gray-50 px-4 py-3">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
                   Expires At
                 </span>
@@ -552,8 +552,8 @@ export default function SellerAccountVerificationPage() {
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border-l-4 border-violet-500 bg-violet-50/80 px-4 py-4">
-              <p className="text-sm leading-relaxed text-violet-900">
+            <div className="mt-5 border-l-4 border-blue-500 bg-blue-50/80 px-4 py-4">
+              <p className="text-sm leading-relaxed text-blue-900">
                 개발용 모의 인증 화면입니다. 현재 세션의 상태, 남은 시간, 시도 횟수,
                 재전송 횟수를 응답값 그대로 반영합니다. 자동 입력된 인증 코드를 그대로
                 제출하면 계좌 인증이 완료됩니다.
@@ -561,7 +561,7 @@ export default function SellerAccountVerificationPage() {
             </div>
           </section>
 
-          <section className="mt-6 rounded-[28px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
+          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
             <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
               Enter Verification Code
             </h2>
@@ -573,7 +573,7 @@ export default function SellerAccountVerificationPage() {
               {verificationDigits.map((digit, index) => (
                 <div
                   key={`verification-digit-${index}`}
-                  className="flex h-16 items-center justify-center rounded-2xl bg-violet-50 text-2xl font-black text-gray-900 shadow-inner ring-1 ring-violet-100"
+                  className="flex h-16 items-center justify-center bg-blue-50 text-2xl font-black text-gray-900 shadow-inner ring-1 ring-gray-200"
                 >
                   {digit.trim() || "-"}
                 </div>
@@ -600,7 +600,7 @@ export default function SellerAccountVerificationPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-gray-500">
-              <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <div className="bg-gray-50 px-4 py-3">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
                   Session
                 </span>
@@ -608,7 +608,7 @@ export default function SellerAccountVerificationPage() {
                   {verification?.sessionId || "-"}
                 </span>
               </div>
-              <div className="rounded-2xl bg-gray-50 px-4 py-3">
+              <div className="bg-gray-50 px-4 py-3">
                 <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
                   API Status
                 </span>

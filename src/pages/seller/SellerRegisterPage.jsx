@@ -89,13 +89,13 @@ export default function SellerRegisterPage() {
       <PageContainer>
         <section className="mb-8">
           <div className="mb-2 flex items-end justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-700">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-700">
               Step 1 of 2
             </span>
             <span className="text-sm font-bold text-gray-500">판매자 등록</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-purple-100">
-            <div className="h-full w-1/2 rounded-full bg-gradient-to-r from-violet-700 to-violet-600" />
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+            <div className="h-full w-1/2 rounded-full bg-blue-700" />
           </div>
         </section>
 
@@ -108,7 +108,7 @@ export default function SellerRegisterPage() {
         </p>
 
         <form className="space-y-8" onSubmit={handleSubmit}>
-          <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
             <div className="space-y-6">
               <FormField
                 label="은행명"
@@ -144,13 +144,13 @@ export default function SellerRegisterPage() {
           </section>
 
           {submitError ? (
-            <section className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <section className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               {submitError}
             </section>
           ) : null}
 
           <section className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 rounded-2xl bg-purple-50/80 p-4">
+            <div className="col-span-2 bg-blue-50/80 p-4">
               <h4 className="text-sm font-bold text-gray-900">다음 단계 자동 연결</h4>
               <p className="mt-1 text-xs leading-relaxed text-gray-500">
                 등록이 완료되면 계좌 인증 후속 페이지로 이동하고, mock 인증 코드는 자동으로
@@ -158,14 +158,14 @@ export default function SellerRegisterPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100">
+            <div className="bg-white p-4 shadow-sm ring-1 ring-gray-200">
               <h4 className="text-xs font-bold text-gray-900">자동 입력 코드</h4>
               <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
                 개발용 인증 코드는 다음 화면에서 자동으로 채워집니다.
               </p>
             </div>
 
-            <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100">
+            <div className="bg-white p-4 shadow-sm ring-1 ring-gray-200">
               <h4 className="text-xs font-bold text-gray-900">판매자 전환</h4>
               <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
                 계좌 인증 완료 후 판매 기능 화면으로 자연스럽게 이어집니다.

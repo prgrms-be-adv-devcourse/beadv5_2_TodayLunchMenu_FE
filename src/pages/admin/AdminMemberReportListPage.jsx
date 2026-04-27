@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ApiError } from '../../api/client';
@@ -119,7 +119,7 @@ export default function AdminMemberReportListPage() {
   const processedCount = reports.filter((report) => report.status !== 'PENDING').length;
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <AdminNav currentPage="reports" />
       <AdminSidebar currentPage="reports" />
 
@@ -127,28 +127,28 @@ export default function AdminMemberReportListPage() {
         <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
           <header className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-[#38274c]">Reports Dashboard</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">Reports Dashboard</h1>
               <p className="mt-2 text-sm text-slate-500">Monitor and manage all system-wide member reports.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
+              <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-gray-200">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600">!</div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Pending Review</p>
-                  <p className="text-2xl font-black text-[#38274c]">{pendingCount}</p>
+                  <p className="text-2xl font-black text-gray-900">{pendingCount}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-violet-600">✓</div>
+              <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-gray-200">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">✓</div>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Processed</p>
-                  <p className="text-2xl font-black text-[#38274c]">{processedCount}</p>
+                  <p className="text-2xl font-black text-gray-900">{processedCount}</p>
                 </div>
               </div>
             </div>
           </header>
 
-          <section className="mb-8 flex flex-col gap-4 rounded-[28px] bg-[#f3e2ff] p-6 shadow-sm ring-1 ring-violet-100 xl:flex-row xl:items-end xl:justify-between">
+          <section className="mb-8 flex flex-col gap-4 bg-blue-50 p-6 shadow-sm ring-1 ring-gray-200 xl:flex-row xl:items-end xl:justify-between">
             <div className="grid flex-1 gap-4 md:grid-cols-[1.2fr_0.6fr_0.6fr]">
               <div>
                 <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Search</label>
@@ -156,7 +156,7 @@ export default function AdminMemberReportListPage() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search by ID, user or reason..."
-                  className="h-12 w-full rounded-2xl border-none bg-white px-4 text-sm shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-300"
+                  className="h-12 w-full rounded border-none bg-white px-4 text-sm shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
                 />
               </div>
               <div>
@@ -164,7 +164,7 @@ export default function AdminMemberReportListPage() {
                 <select
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
-                  className="h-12 w-full rounded-2xl border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-300"
+                  className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
                 >
                   {statusOptions.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
@@ -176,7 +176,7 @@ export default function AdminMemberReportListPage() {
                 <select
                   value={typeFilter}
                   onChange={(event) => setTypeFilter(event.target.value)}
-                  className="h-12 w-full rounded-2xl border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-300"
+                  className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
                 >
                   {reportTypes.map((type) => (
                     <option key={type} value={type}>{type === 'ALL' ? 'All Types' : getDisplayType(type)}</option>
@@ -187,15 +187,15 @@ export default function AdminMemberReportListPage() {
           </section>
 
           {errorMessage ? (
-            <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <div className="mb-6 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               {errorMessage}
             </div>
           ) : null}
 
-          <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
+          <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-violet-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                <thead className="bg-blue-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                   <tr>
                     <th className="px-6 py-4">Report ID</th>
                     <th className="px-6 py-4">Reporter</th>
@@ -207,7 +207,7 @@ export default function AdminMemberReportListPage() {
                     <th className="px-6 py-4">Assignee</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-violet-100 text-sm">
+                <tbody className="divide-y divide-blue-100 text-sm">
                   {loading ? (
                     <tr>
                       <td colSpan="8" className="px-6 py-16 text-center font-medium text-slate-500">
@@ -224,24 +224,24 @@ export default function AdminMemberReportListPage() {
                     filteredReports.map((report) => (
                       <tr
                         key={report.reportId}
-                        className="cursor-pointer transition hover:bg-violet-50/70"
+                        className="cursor-pointer transition hover:bg-blue-50/70"
                         onClick={() => navigate(`/admin/member-reports/${report.reportId}`)}
                       >
-                        <td className="px-6 py-5 font-bold text-violet-700">{report.reportId}</td>
+                        <td className="px-6 py-5 font-bold text-blue-700">{report.reportId}</td>
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-violet-200" />
-                            <span className="font-medium text-[#38274c]">{report.reporterId}</span>
+                            <div className="h-8 w-8 rounded-full bg-blue-200" />
+                            <span className="font-medium text-gray-900">{report.reporterId}</span>
                           </div>
                         </td>
                         <td className="px-6 py-5 text-slate-500">{report.reportedMemberId}</td>
                         <td className="px-6 py-5">
-                          <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-bold text-slate-600">
+                          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-slate-600">
                             {getDisplayType(report.reportType)}
                           </span>
                         </td>
                         <td className="px-6 py-5">
-                          <p className="max-w-[260px] truncate text-sm text-[#38274c]">{report.reason}</p>
+                          <p className="max-w-[260px] truncate text-sm text-gray-900">{report.reason}</p>
                         </td>
                         <td className="px-6 py-5">
                           <span
@@ -261,12 +261,12 @@ export default function AdminMemberReportListPage() {
                 </tbody>
               </table>
             </div>
-            <div className="flex items-center justify-between bg-violet-50/70 px-6 py-4 text-xs font-medium text-slate-500">
+            <div className="flex items-center justify-between bg-blue-50/70 px-6 py-4 text-xs font-medium text-slate-500">
               <p>Showing {filteredReports.length} of {reports.length} reports</p>
               <div className="flex gap-2">
-                <button type="button" className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-violet-100">Prev</button>
-                <button type="button" className="rounded-lg bg-violet-600 px-3 py-2 font-bold text-white">1</button>
-                <button type="button" className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-violet-100">Next</button>
+                <button type="button" className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200">Prev</button>
+                <button type="button" className="rounded-lg bg-blue-600 px-3 py-2 font-bold text-white">1</button>
+                <button type="button" className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200">Next</button>
               </div>
             </div>
           </section>
