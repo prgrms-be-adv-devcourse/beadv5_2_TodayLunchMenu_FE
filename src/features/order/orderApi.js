@@ -41,9 +41,6 @@ function toUiOrderDetail(order) {
   const items = Array.isArray(order?.items)
     ? order.items.map(toUiOrderItem)
     : [];
-  const itemStatuses = items.map((item) => item.status).filter(Boolean);
-  const firstStatus = itemStatuses[0] ?? "UNKNOWN";
-  const hasMixedStatuses = itemStatuses.some((status) => status !== firstStatus);
   const totalFromItems = items.reduce(
     (sum, item) => sum + Number(item.totalPrice ?? 0),
     0
@@ -59,9 +56,8 @@ function toUiOrderDetail(order) {
     receiver: order?.receiver ?? "",
     receiverPhone: order?.receiverPhone ?? "",
     itemCount: order?.itemCount ?? items.length,
+    status: order?.status ?? "UNKNOWN",
     items,
-    status: hasMixedStatuses ? "MIXED" : firstStatus,
-    hasMixedStatuses,
   };
 }
 

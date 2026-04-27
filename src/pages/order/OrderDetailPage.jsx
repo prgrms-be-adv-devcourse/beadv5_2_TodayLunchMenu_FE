@@ -109,19 +109,23 @@ export default function OrderDetailPage() {
     };
   }, [navigate, orderId]);
 
-  const isCancelable = order?.status === "CREATED" || order?.status === "CONFIRMED";
+  const isCancelable = ["CREATED", "CONFIRMED"].includes(order?.status);
+  const isReturnable = ["SHIPPING", "PARTIAL_SHIPPING", "DELIVERED"].includes(order?.status);
+  const isReturn = isReturnable && !isCancelable;
 
   async function handleCancel() {
     try {
       setCanceling(true);
       setCancelError("");
-      await cancelOrderApi(orderId, { reason: "구매자 취소" });
+      await cancelOrderApi(orderId, { reason: isReturn ? "구매자 반품 요청" : "구매자 취소" });
       setCancelModalOpen(false);
       const refreshed = await getOrderDetailApi(orderId);
       setOrder(refreshed);
     } catch (err) {
       setCancelError(
-        err instanceof ApiError ? err.message : "취소 처리 중 오류가 발생했습니다."
+        err instanceof ApiError
+          ? err.message
+          : isReturn ? "반품 신청 중 오류가 발생했습니다." : "취소 처리 중 오류가 발생했습니다."
       );
     } finally {
       setCanceling(false);
@@ -334,14 +338,14 @@ export default function OrderDetailPage() {
                 </Button>
               </Link>
 
-              {isCancelable && (
+              {(isCancelable || isReturnable) && (
                 <Button
                   size="lg"
                   variant="danger"
                   className="w-full"
                   onClick={() => { setCancelError(""); setCancelModalOpen(true); }}
                 >
-                  주문 취소
+                  {isReturn ? "반품 신청" : "주문 취소"}
                 </Button>
               )}
             </div>
@@ -356,9 +360,13 @@ export default function OrderDetailPage() {
       <ConfirmModal
         open={cancelModalOpen}
         onClose={() => setCancelModalOpen(false)}
-        title="주문을 취소하시겠어요?"
-        description="취소 후에는 되돌릴 수 없습니다. 결제 금액은 환불 처리됩니다."
-        confirmText={canceling ? "취소 중..." : "주문 취소"}
+        title={isReturn ? "반품을 신청하시겠어요?" : "주문을 취소하시겠어요?"}
+        description={
+          isReturn
+            ? "반품 신청 후 수거가 완료되면 환불 처리됩니다."
+            : "취소 후에는 되돌릴 수 없습니다. 결제 금액은 환불 처리됩니다."
+        }
+        confirmText={canceling ? (isReturn ? "신청 중..." : "취소 중...") : (isReturn ? "반품 신청" : "주문 취소")}
         confirmVariant="danger"
         onConfirm={handleCancel}
       >
