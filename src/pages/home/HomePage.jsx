@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import AuctionCard from "../../components/auction/AuctionCard";
@@ -34,7 +34,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { addToCart } = useCart({ autoLoad: false });
 
-  const [categories, setCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const [popularProducts, setPopularProducts] = useState([]);
@@ -50,8 +50,8 @@ export default function HomePage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await getCategoriesApi({ depth: 1 });
-        if (!cancelled) setCategories(data);
+        const data = await getCategoriesApi();
+        if (!cancelled) setAllCategories(data);
       } catch {
         // ignore
       } finally {
@@ -130,12 +130,48 @@ export default function HomePage() {
     }
   }
 
+  // 루트 카테고리 (parentId 없는 것)
+  const rootCategories = useMemo(
+    () => allCategories.filter((c) => !c.parentId),
+    [allCategories],
+  );
+
+  // 카테고리 ID → 루트 카테고리 ID 매핑
+  const categoryToRoot = useMemo(() => {
+    const map = {};
+    function findRoot(cat) {
+      if (!cat.parentId) return cat.id;
+      const parent = allCategories.find((c) => c.id === cat.parentId);
+      return parent ? findRoot(parent) : cat.id;
+    }
+    allCategories.forEach((c) => { map[c.id] = findRoot(c); });
+    return map;
+  }, [allCategories]);
+
+  // 실제 상품이 있는 루트 카테고리 ID만 추출
+  const activeRootIds = useMemo(() => {
+    const ids = new Set();
+    [...latestProducts, ...popularProducts].forEach((p) => {
+      if (p.categoryId) {
+        const rootId = categoryToRoot[p.categoryId];
+        if (rootId) ids.add(rootId);
+      }
+    });
+    return ids;
+  }, [latestProducts, popularProducts, categoryToRoot]);
+
+  // 상품이 있는 루트 카테고리만
+  const activeCategories = useMemo(
+    () => rootCategories.filter((c) => activeRootIds.has(c.id)),
+    [rootCategories, activeRootIds],
+  );
+
   const mostUrgentAuction =
     ongoingAuctions
       .filter((a) => a.endsAt && a.status === "ONGOING")
       .sort((a, b) => a.endsAt - b.endsAt)[0] ?? null;
 
-  const selectedCategory = categories.find((c) => c.id === selectedCategoryId) ?? null;
+  const selectedCategory = activeCategories.find((c) => c.id === selectedCategoryId) ?? null;
 
   return (
     <div className="text-left">
@@ -143,7 +179,7 @@ export default function HomePage() {
 
       <div className="mt-8 space-y-10">
         {/* Category Tiles */}
-        {!loadingCategories && <CategoryTiles categories={categories} />}
+        {!loadingCategories && <CategoryTiles categories={activeCategories} />}
 
         {/* Live Auctions */}
         <section>
@@ -202,7 +238,7 @@ export default function HomePage() {
             >
               전체
             </button>
-            {categories.map((category) => (
+            {activeCategories.map((category) => (
               <button
                 key={category.id}
                 type="button"
