@@ -6,6 +6,7 @@ import BigCountdown from "../../components/auction/BigCountdown";
 import { recommendAuctionBidPriceApi } from "../../features/auction/auctionAiApi";
 import { useAuth } from "../../features/auth/useAuth";
 import { formatKRW, statusLabel } from "../../features/auction/format";
+import { getMemberByIdApi } from "../../features/member/memberApi";
 import { getProductDetailApi } from "../../features/product/productApi";
 import {
   placeBid,
@@ -57,10 +58,10 @@ function relativeTime(timestamp) {
   return new Date(timestamp).toLocaleString("ko-KR");
 }
 
-function BidRow({ bid, isTop, isYou }) {
+function BidRow({ bid, isTop, isYou, bidderName }) {
   const name = isYou
     ? "나"
-    : `${(bid.bidderId || "익명").toString().slice(0, 4)}***`;
+    : bidderName || `${(bid.bidderId || "익명").toString().slice(0, 4)}***`;
 
   return (
     <li
@@ -148,6 +149,30 @@ export default function AuctionDetailPage() {
   const [aiBidError, setAiBidError] = useState("");
   const [aiBidLoading, setAiBidLoading] = useState(false);
   const [aiRecommendationContext, setAiRecommendationContext] = useState(null);
+
+  const [bidderNameMap, setBidderNameMap] = useState({});
+
+  useEffect(() => {
+    if (!validBids.length) return;
+    const unknownIds = [
+      ...new Set(
+        validBids
+          .map((b) => b.bidderId)
+          .filter((id) => id && !bidderNameMap[id] && myId && String(id) !== String(myId)),
+      ),
+    ];
+    if (!unknownIds.length) return;
+
+    Promise.all(
+      unknownIds.map((id) =>
+        getMemberByIdApi(id)
+          .then((member) => [id, member?.nickname || member?.name || null])
+          .catch(() => [id, null]),
+      ),
+    ).then((entries) => {
+      setBidderNameMap((prev) => ({ ...prev, ...Object.fromEntries(entries) }));
+    });
+  }, [validBids]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const currentPrice = auction?.currentPrice ?? 0;
   const bidUnit = auction?.bidUnit ?? 0;
@@ -492,6 +517,7 @@ export default function AuctionDetailPage() {
                     bid={bid}
                     isTop={index === 0}
                     isYou={myId && bid.bidderId === myId}
+                    bidderName={bid.bidderName || bidderNameMap[bid.bidderId] || null}
                   />
                 ))}
               </ul>

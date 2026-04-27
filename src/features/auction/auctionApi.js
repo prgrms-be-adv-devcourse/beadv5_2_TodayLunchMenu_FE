@@ -43,6 +43,7 @@ const toUiBid = (bid) => ({
   id: bid.bidId,
   auctionId: bid.auctionId,
   bidderId: bid.bidderId,
+  bidderName: bid.bidderName || bid.nickname || null,
   amount: toNumber(bid.bidPrice, 0),
   status: bid.status,
   createdAt: toTimestamp(bid.createdAt),
