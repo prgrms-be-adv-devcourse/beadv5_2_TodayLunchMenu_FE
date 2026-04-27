@@ -315,9 +315,14 @@ export default function CheckoutPage() {
               >
                 <Input
                   id="receiverPhone"
-                  placeholder="010-1234-5678"
+                  placeholder="01012345678"
                   value={form.receiverPhone}
-                  onChange={handleChange("receiverPhone")}
+                  onChange={(e) => {
+                    const onlyNums = e.target.value.replace(/\D/g, "");
+                    setForm((prev) => ({ ...prev, receiverPhone: onlyNums }));
+                    setErrors((prev) => ({ ...prev, receiverPhone: "" }));
+                    setSubmitError("");
+                  }}
                   error={!!errors.receiverPhone}
                 />
               </FormField>

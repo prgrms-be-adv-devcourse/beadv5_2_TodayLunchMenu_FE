@@ -41,9 +41,6 @@ function toUiOrderDetail(order) {
   const items = Array.isArray(order?.items)
     ? order.items.map(toUiOrderItem)
     : [];
-  const itemStatuses = items.map((item) => item.status).filter(Boolean);
-  const firstStatus = itemStatuses[0] ?? "UNKNOWN";
-  const hasMixedStatuses = itemStatuses.some((status) => status !== firstStatus);
   const totalFromItems = items.reduce(
     (sum, item) => sum + Number(item.totalPrice ?? 0),
     0
@@ -59,9 +56,8 @@ function toUiOrderDetail(order) {
     receiver: order?.receiver ?? "",
     receiverPhone: order?.receiverPhone ?? "",
     itemCount: order?.itemCount ?? items.length,
+    status: order?.status ?? "UNKNOWN",
     items,
-    status: hasMixedStatuses ? "MIXED" : firstStatus,
-    hasMixedStatuses,
   };
 }
 
@@ -120,4 +116,22 @@ async function getOrderDetailApi(orderId) {
   return toUiOrderDetail(payload);
 }
 
-export { createOrderApi, getOrderDetailApi, getOrdersApi };
+async function cancelOrderApi(orderId, { reason, detailReason }) {
+  const response = await apiClient(`/api/orders/${orderId}/cancel`, {
+    method: "POST",
+    body: {
+      reason,
+      detailReason: detailReason ?? null,
+      requesterType: "BUYER",
+    },
+  });
+
+  const payload = response.data?.data ?? response.data;
+  return {
+    orderId: payload?.orderId,
+    refundedAmount: payload?.refundedAmount ?? 0,
+    canceledAt: payload?.canceledAt ?? null,
+  };
+}
+
+export { cancelOrderApi, createOrderApi, getOrderDetailApi, getOrdersApi };
