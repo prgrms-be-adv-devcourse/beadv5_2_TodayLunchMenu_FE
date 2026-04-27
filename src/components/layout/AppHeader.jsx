@@ -174,7 +174,7 @@ export default function AppHeader() {
               </Link>
               <Link
                 to="/signup"
-                className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
               >
                 회원가입
               </Link>

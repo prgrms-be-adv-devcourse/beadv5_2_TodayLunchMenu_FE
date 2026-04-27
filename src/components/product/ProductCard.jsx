@@ -47,7 +47,7 @@ export default function ProductCard({ product, onAddToCart }) {
             "mt-2 w-full border py-1.5 text-[11px] font-semibold transition",
             soldOut
               ? "cursor-not-allowed border-gray-200 text-gray-400"
-              : "border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white",
+              : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white",
           ].join(" ")}
         >
           {soldOut ? "품절" : "장바구니 담기"}

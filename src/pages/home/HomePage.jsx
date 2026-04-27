@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import PageContainer from "../../components/common/PageContainer";
 import AuctionCard from "../../components/auction/AuctionCard";
 import ProductCard from "../../components/product/ProductCard";
+import HeroBanner from "../../components/home/HeroBanner";
+import CategoryTiles from "../../components/home/CategoryTiles";
 import { useCart } from "../../features/cart/useCart";
 import { getAuctionsApi } from "../../features/auction/auctionApi";
 import {
@@ -12,40 +13,21 @@ import {
   getProductsApi,
 } from "../../features/product/productApi";
 
-function SectionHeader({ eyebrow, title, description, action }) {
+function SectionHeader({ title, to }) {
   return (
-    <div className="mb-6 flex items-end justify-between gap-4">
-      <div className="space-y-2">
-        <p className="text-xs font-black uppercase tracking-[0.3em] text-orange-500">
-          {eyebrow}
-        </p>
-        <div>
-          <h2 className="text-2xl font-black tracking-tight text-gray-950 sm:text-3xl">
-            {title}
-          </h2>
-          {description ? (
-            <p className="mt-2 max-w-2xl text-sm text-gray-600 sm:text-base">
-              {description}
-            </p>
-          ) : null}
-        </div>
-      </div>
-      {action}
+    <div className="mb-4 flex items-center justify-between">
+      <h2 className="text-base font-black text-gray-900 sm:text-lg">{title}</h2>
+      {to && (
+        <Link to={to} className="text-xs font-semibold text-blue-600 hover:text-blue-700">
+          전체 보기 →
+        </Link>
+      )}
     </div>
   );
 }
 
-function SectionStatus({ message, tone = "default" }) {
-  const toneClassName =
-    tone === "error"
-      ? "border-red-200 bg-red-50 text-red-700"
-      : "border-orange-100 bg-white/80 text-gray-600";
-
-  return (
-    <div className={`rounded-[28px] border px-5 py-8 text-sm ${toneClassName}`}>
-      {message}
-    </div>
-  );
+function EmptyState({ message }) {
+  return <div className="py-10 text-center text-sm text-gray-400">{message}</div>;
 }
 
 export default function HomePage() {
@@ -64,161 +46,75 @@ export default function HomePage() {
   const [loadingLatestProducts, setLoadingLatestProducts] = useState(true);
   const [loadingAuctions, setLoadingAuctions] = useState(true);
 
-  const [categoriesError, setCategoriesError] = useState(null);
-  const [popularProductsError, setPopularProductsError] = useState(null);
-  const [latestProductsError, setLatestProductsError] = useState(null);
-  const [auctionsError, setAuctionsError] = useState(null);
-
   useEffect(() => {
     let cancelled = false;
-
-    async function loadCategories() {
+    async function load() {
       try {
-        setLoadingCategories(true);
-        setCategoriesError(null);
-
-        const nextCategories = await getCategoriesApi({ depth: 1 });
-
-        if (cancelled) {
-          return;
-        }
-
-        setCategories(nextCategories);
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setCategoriesError(error);
+        const data = await getCategoriesApi({ depth: 1 });
+        if (!cancelled) setCategories(data);
+      } catch {
+        // ignore
       } finally {
-        if (!cancelled) {
-          setLoadingCategories(false);
-        }
+        if (!cancelled) setLoadingCategories(false);
       }
     }
-
-    loadCategories();
-
-    return () => {
-      cancelled = true;
-    };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadPopularProducts() {
+    async function load() {
       try {
-        setLoadingPopularProducts(true);
-        setPopularProductsError(null);
-
-        const response = await getPopularProductsApi({
-          page: 0,
-          size: 8,
-        });
-
-        if (cancelled) {
-          return;
-        }
-
-        setPopularProducts(response.items.filter((product) => product.type !== "AUCTION"));
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setPopularProductsError(error);
+        const response = await getPopularProductsApi({ page: 0, size: 10 });
+        if (!cancelled)
+          setPopularProducts(response.items.filter((p) => p.type !== "AUCTION"));
+      } catch {
+        // ignore
       } finally {
-        if (!cancelled) {
-          setLoadingPopularProducts(false);
-        }
+        if (!cancelled) setLoadingPopularProducts(false);
       }
     }
-
-    loadPopularProducts();
-
-    return () => {
-      cancelled = true;
-    };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadLatestProducts() {
+    async function load() {
       try {
-        setLoadingLatestProducts(true);
-        setLatestProductsError(null);
-
         const response = await getProductsApi({
           page: 0,
           size: 12,
           sort: "createdAt,desc",
           ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}),
         });
-
-        if (cancelled) {
-          return;
-        }
-
-        setLatestProducts(response.items.filter((product) => product.type !== "AUCTION"));
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setLatestProductsError(error);
+        if (!cancelled)
+          setLatestProducts(response.items.filter((p) => p.type !== "AUCTION"));
+      } catch {
+        // ignore
       } finally {
-        if (!cancelled) {
-          setLoadingLatestProducts(false);
-        }
+        if (!cancelled) setLoadingLatestProducts(false);
       }
     }
-
-    loadLatestProducts();
-
-    return () => {
-      cancelled = true;
-    };
+    load();
+    return () => { cancelled = true; };
   }, [selectedCategoryId]);
 
   useEffect(() => {
     let cancelled = false;
-
-    async function loadOngoingAuctions() {
+    async function load() {
       try {
-        setLoadingAuctions(true);
-        setAuctionsError(null);
-
-        const response = await getAuctionsApi({
-          status: "ONGOING",
-          page: 0,
-          size: 3,
-        });
-
-        if (cancelled) {
-          return;
-        }
-
-        setOngoingAuctions(response.items);
-      } catch (error) {
-        if (cancelled) {
-          return;
-        }
-
-        setAuctionsError(error);
+        const response = await getAuctionsApi({ status: "ONGOING", page: 0, size: 8 });
+        if (!cancelled) setOngoingAuctions(response.items);
+      } catch {
+        // ignore
       } finally {
-        if (!cancelled) {
-          setLoadingAuctions(false);
-        }
+        if (!cancelled) setLoadingAuctions(false);
       }
     }
-
-    loadOngoingAuctions();
-
-    return () => {
-      cancelled = true;
-    };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   async function handleAddToCart(product) {
@@ -230,172 +126,116 @@ export default function HomePage() {
         navigate("/login");
         return;
       }
-
       window.alert(error?.message || "장바구니에 담지 못했습니다.");
     }
   }
 
-  const selectedCategory =
-    categories.find((category) => category.id === selectedCategoryId) ?? null;
+  const mostUrgentAuction =
+    ongoingAuctions
+      .filter((a) => a.endsAt && a.status === "ONGOING")
+      .sort((a, b) => a.endsAt - b.endsAt)[0] ?? null;
+
+  const selectedCategory = categories.find((c) => c.id === selectedCategoryId) ?? null;
 
   return (
-    <PageContainer>
-      <section>
-        {loadingCategories ? (
-          <SectionStatus message="카테고리를 불러오는 중입니다." />
-        ) : categoriesError ? (
-          <SectionStatus
-            tone="error"
-            message={categoriesError.message || "카테고리를 불러오지 못했습니다."}
+    <div className="text-left">
+      <HeroBanner auction={!loadingAuctions ? mostUrgentAuction : null} />
+
+      <div className="mt-8 space-y-10">
+        {/* Category Tiles */}
+        {!loadingCategories && <CategoryTiles categories={categories} />}
+
+        {/* Live Auctions */}
+        <section>
+          <SectionHeader title="마감 임박 경매" to="/auctions" />
+          {loadingAuctions ? (
+            <EmptyState message="경매 목록을 불러오는 중입니다..." />
+          ) : ongoingAuctions.length === 0 ? (
+            <EmptyState message="현재 진행 중인 경매가 없습니다." />
+          ) : (
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {ongoingAuctions.map((auction) => (
+                <div key={auction.id} className="w-44 flex-none sm:w-52">
+                  <AuctionCard auction={auction} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Popular Products */}
+        <section>
+          <SectionHeader title="인기 상품" to="/products" />
+          {loadingPopularProducts ? (
+            <EmptyState message="인기 상품을 불러오는 중입니다..." />
+          ) : popularProducts.length === 0 ? (
+            <EmptyState message="인기 상품이 없습니다." />
+          ) : (
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {popularProducts.map((product) => (
+                <div key={product.id} className="w-40 flex-none sm:w-44">
+                  <ProductCard product={product} onAddToCart={handleAddToCart} />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Latest Products */}
+        <section>
+          <SectionHeader
+            title={selectedCategory ? `${selectedCategory.name} 새 상품` : "새로 등록된 상품"}
+            to="/products"
           />
-        ) : (
-          <div className="flex flex-wrap gap-3">
+
+          {/* Category Tab Filter */}
+          <div className="mb-4 flex overflow-x-auto border-b border-gray-200 scrollbar-hide">
             <button
               type="button"
               onClick={() => setSelectedCategoryId(null)}
               className={[
-                "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                "whitespace-nowrap border-b-2 px-4 pb-3 text-sm font-semibold transition",
                 selectedCategoryId === null
-                  ? "border-orange-500 bg-orange-500 text-white shadow-lg shadow-orange-500/20"
-                  : "border-orange-100 bg-white text-gray-700 hover:border-orange-200 hover:bg-orange-50",
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700",
               ].join(" ")}
             >
-              전체 보기
+              전체
             </button>
-
-            {categories.map((category) => {
-              const active = category.id === selectedCategoryId;
-
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setSelectedCategoryId(category.id)}
-                  className={[
-                    "rounded-full border px-4 py-2 text-sm font-semibold transition",
-                    active
-                      ? "border-orange-500 bg-orange-500 text-white shadow-lg shadow-orange-500/20"
-                      : "border-orange-100 bg-white text-gray-700 hover:border-orange-200 hover:bg-orange-50",
-                  ].join(" ")}
-                >
-                  {category.name}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-10">
-        <SectionHeader
-          eyebrow="Best Picks"
-          title="지금 인기 있는 상품"
-          description="조회가 많이 발생한 ACTIVE 상품을 기준으로 먼저 보여줍니다."
-          action={
-            <Link
-              to="/products"
-              className="text-sm font-bold text-orange-700 transition hover:text-orange-800"
-            >
-              상품 전체 보기
-            </Link>
-          }
-        />
-
-        {loadingPopularProducts ? (
-          <SectionStatus message="인기 상품을 불러오는 중입니다." />
-        ) : popularProductsError ? (
-          <SectionStatus
-            tone="error"
-            message={popularProductsError.message || "인기 상품을 불러오지 못했습니다."}
-          />
-        ) : popularProducts.length === 0 ? (
-          <SectionStatus message="표시할 인기 상품이 아직 없습니다." />
-        ) : (
-          <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {popularProducts.slice(0, 4).map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </section>
-        )}
-      </section>
-
-      <section className="mt-12">
-        <SectionHeader
-          eyebrow="New Arrival"
-          title={
-            selectedCategory
-              ? `${selectedCategory.name} 카테고리의 새 상품`
-              : "최근 등록된 새 상품"
-          }
-          description="카테고리를 고르면 해당 분류 기준으로 최신 상품을 다시 조회합니다."
-          action={
-            <Link
-              to="/products"
-              className="text-sm font-bold text-orange-700 transition hover:text-orange-800"
-            >
-              목록으로 이동
-            </Link>
-          }
-        />
-
-        {loadingLatestProducts ? (
-          <SectionStatus message="최신 상품을 불러오는 중입니다." />
-        ) : latestProductsError ? (
-          <SectionStatus
-            tone="error"
-            message={latestProductsError.message || "최신 상품을 불러오지 못했습니다."}
-          />
-        ) : latestProducts.length === 0 ? (
-          <SectionStatus message="선택한 조건에 맞는 상품이 없습니다." />
-        ) : (
-          <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {latestProducts.slice(0, 8).map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </section>
-        )}
-      </section>
-
-      <section className="mt-12">
-        <SectionHeader
-          eyebrow="Live Auction"
-          title="지금 바로 참여할 수 있는 경매"
-          description="진행 중인 경매만 따로 모아서 보여줍니다."
-          action={
-            <Link
-              to="/auctions"
-              className="text-sm font-bold text-orange-700 transition hover:text-orange-800"
-            >
-              경매장 전체 보기
-            </Link>
-          }
-        />
-
-        {loadingAuctions ? (
-          <SectionStatus message="진행 중 경매를 불러오는 중입니다." />
-        ) : auctionsError ? (
-          <SectionStatus
-            tone="error"
-            message={auctionsError.message || "진행 중 경매를 불러오지 못했습니다."}
-          />
-        ) : ongoingAuctions.length === 0 ? (
-          <SectionStatus message="현재 진행 중인 경매가 없습니다." />
-        ) : (
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-            {ongoingAuctions.map((auction) => (
-              <AuctionCard key={auction.id} auction={auction} />
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setSelectedCategoryId(category.id)}
+                className={[
+                  "whitespace-nowrap border-b-2 px-4 pb-3 text-sm font-semibold transition",
+                  category.id === selectedCategoryId
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700",
+                ].join(" ")}
+              >
+                {category.name}
+              </button>
             ))}
           </div>
-        )}
-      </section>
-    </PageContainer>
+
+          {loadingLatestProducts ? (
+            <EmptyState message="상품을 불러오는 중입니다..." />
+          ) : latestProducts.length === 0 ? (
+            <EmptyState message="해당 카테고리의 상품이 없습니다." />
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {latestProducts.slice(0, 8).map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

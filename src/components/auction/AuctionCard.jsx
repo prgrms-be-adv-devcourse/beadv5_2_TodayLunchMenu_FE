@@ -22,7 +22,7 @@ export default function AuctionCard({ auction, productImage }) {
     ? "border-blue-300 text-blue-600 hover:bg-blue-50"
     : ended
       ? "border-gray-300 text-gray-500 hover:bg-gray-50"
-      : "border-gray-700 text-gray-700 hover:bg-gray-700 hover:text-white";
+      : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white";
 
   return (
     <article className="group border border-gray-200 bg-white transition-shadow hover:shadow-md">
