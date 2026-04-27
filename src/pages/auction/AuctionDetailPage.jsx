@@ -116,8 +116,10 @@ export default function AuctionDetailPage() {
   const { auction, setAuction, loading, error, reload } = useAuction(auctionId);
   const { bids, prependBid } = useAuctionBids(auctionId, { size: 30 });
   const { ended } = useCountdown(auction?.endsAt);
-  const [productImage, setProductImage] = useState(null);
+  const [productImages, setProductImages] = useState([]);
+  const [productDescription, setProductDescription] = useState(null);
   const [productName, setProductName] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
@@ -137,7 +139,11 @@ export default function AuctionDetailPage() {
     getProductDetailApi(auction.productId)
       .then((product) => {
         if (!cancelled) {
-          setProductImage(product.image ?? null);
+          const sorted = [...(product.images ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
+          const thumbIdx = sorted.findIndex((img) => img.isThumbnail);
+          setProductImages(sorted);
+          setSelectedImageIndex(thumbIdx >= 0 ? thumbIdx : 0);
+          setProductDescription(product.description ?? null);
           setProductName(product.name ?? null);
         }
       })
@@ -392,11 +398,51 @@ export default function AuctionDetailPage() {
             </span>
             <CountdownPill endsAt={auction.endsAt} status={auction.status} />
             <img
-              src={productImage || "/default-product.svg"}
+              src={productImages[selectedImageIndex]?.url || "/default-product.svg"}
               alt={auction.productTitle || "경매 상품"}
               className="h-full w-full object-cover"
             />
+            {productImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setSelectedImageIndex((i) => (i - 1 + productImages.length) % productImages.length)}
+                  className="absolute left-3 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-lg font-extrabold text-violet-700 shadow backdrop-blur transition hover:bg-white"
+                  aria-label="이전 이미지"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedImageIndex((i) => (i + 1) % productImages.length)}
+                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-lg font-extrabold text-violet-700 shadow backdrop-blur transition hover:bg-white"
+                  aria-label="다음 이미지"
+                >
+                  ›
+                </button>
+              </>
+            )}
           </section>
+
+          {productImages.length > 1 && (
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+              {productImages.map((img, idx) => (
+                <button
+                  key={img.id ?? idx}
+                  type="button"
+                  onClick={() => setSelectedImageIndex(idx)}
+                  className={[
+                    "h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition",
+                    idx === selectedImageIndex
+                      ? "border-violet-600"
+                      : "border-transparent opacity-50 hover:opacity-80",
+                  ].join(" ")}
+                >
+                  <img src={img.url || "/default-product.svg"} alt={`이미지 ${idx + 1}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
 
           <section className="mt-6 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-violet-500">
@@ -426,6 +472,15 @@ export default function AuctionDetailPage() {
               </span>
             </div>
           </section>
+
+          {productDescription && (
+            <section className="mt-4 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
+              <h4 className="text-base font-extrabold tracking-tight text-gray-900">상품 설명</h4>
+              <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-gray-600">
+                {productDescription}
+              </p>
+            </section>
+          )}
 
           <section className="mt-4 rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
             <div className="mb-4 flex items-baseline justify-between">
