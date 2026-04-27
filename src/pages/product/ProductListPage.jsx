@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../../components/product/ProductCard";
 import { useCart } from "../../features/cart/useCart";
@@ -176,11 +176,25 @@ export default function ProductListPage() {
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
+  const PAGE_SIZE = 12;
+  const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [keyword, statusFilter, sort, selectedCategoryId]);
+
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const pagedProducts = useMemo(
+    () => filteredProducts.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE),
+    [filteredProducts, currentPage],
+  );
+
   const handleReset = () => {
     setKeyword("");
     setStatusFilter("전체");
     setSort("latest");
     setSelectedCategoryId(null);
+    setCurrentPage(0);
   };
 
   const handleAddToCart = async (product) => {
@@ -263,6 +277,7 @@ export default function ProductListPage() {
 
               <span className="text-xs text-gray-400">
                 {filteredProducts.length}개
+                {totalPages > 1 && ` · ${currentPage + 1}/${totalPages} 페이지`}
               </span>
             </div>
 
@@ -340,15 +355,41 @@ export default function ProductListPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {filteredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={handleAddToCart}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {pagedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      disabled={currentPage === 0}
+                      onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                      className="rounded border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      이전
+                    </button>
+                    <span className="text-sm text-gray-500">
+                      {currentPage + 1} / {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={currentPage >= totalPages - 1}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+                      className="rounded border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      다음
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

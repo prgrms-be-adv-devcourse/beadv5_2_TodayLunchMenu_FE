@@ -61,6 +61,9 @@ export default function AuctionListPage() {
   }, [filterKey]);
 
   const visible = useMemo(() => {
+    if (filterKey === "ALL") {
+      return auctions.filter((a) => !ENDED_STATUSES.includes(a.status));
+    }
     if (filterKey === "ENDING_SOON") {
       return auctions.filter((a) => {
         if (!a.endsAt) return false;
@@ -208,7 +211,7 @@ export default function AuctionListPage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                   {visible.map((auction) => (
                     <AuctionCard
                       key={auction.id}
