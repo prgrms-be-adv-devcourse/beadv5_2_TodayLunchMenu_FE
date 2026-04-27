@@ -45,14 +45,14 @@ function CategoryRow({ node, onAddChild, onEdit, onDelete, deleteConfirm, onDele
 
   return (
     <>
-      <tr className="border-b border-violet-50 transition hover:bg-violet-50/40">
+      <tr className="border-b border-blue-50 transition hover:bg-blue-50/40">
         <td className="px-6 py-4" style={{ paddingLeft: `${24 + indent}px` }}>
           <div className="flex items-center gap-2">
             {node.depth > 0 && (
-              <span className="text-violet-300 select-none">{'└'}</span>
+              <span className="text-blue-300 select-none">{'└'}</span>
             )}
-            <span className="font-semibold text-[#38274c]">{node.name}</span>
-            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold text-violet-600">
+            <span className="font-semibold text-gray-900">{node.name}</span>
+            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600">
               depth {node.depth}
             </span>
           </div>
@@ -88,7 +88,7 @@ function CategoryRow({ node, onAddChild, onEdit, onDelete, deleteConfirm, onDele
                 <button
                   type="button"
                   onClick={() => onAddChild(node.id)}
-                  className="rounded-lg bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-700 transition hover:bg-violet-200"
+                  className="rounded-lg bg-blue-100 px-3 py-1.5 text-xs font-bold text-blue-700 transition hover:bg-blue-200"
                 >
                   + 하위
                 </button>
@@ -96,7 +96,7 @@ function CategoryRow({ node, onAddChild, onEdit, onDelete, deleteConfirm, onDele
               <button
                 type="button"
                 onClick={() => onEdit(node)}
-                className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm ring-1 ring-violet-100 transition hover:bg-violet-50"
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50"
               >
                 편집
               </button>
@@ -252,7 +252,7 @@ export default function AdminCategoryPage() {
   const selectableParents = categories.filter((c) => c.depth < 2);
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <AdminNav currentPage="categories" />
       <AdminSidebar currentPage="categories" />
 
@@ -260,28 +260,28 @@ export default function AdminCategoryPage() {
         <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
           <header className="mb-8 flex items-end justify-between">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-[#38274c]">카테고리 관리</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">카테고리 관리</h1>
               <p className="mt-2 text-sm text-slate-500">카테고리를 추가·수정·삭제합니다. (최대 3단계)</p>
             </div>
             <button
               type="button"
               onClick={() => openCreate()}
-              className="rounded-full bg-violet-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:scale-[1.02] hover:bg-violet-700"
+              className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] hover:bg-blue-700"
             >
               + 최상위 카테고리 추가
             </button>
           </header>
 
           {errorMessage && (
-            <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <div className="mb-6 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               {errorMessage}
             </div>
           )}
 
-          <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
+          <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-violet-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                <thead className="bg-blue-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
                   <tr>
                     <th className="px-6 py-4">카테고리명</th>
                     <th className="px-4 py-4 text-center w-20">순서</th>
@@ -318,7 +318,7 @@ export default function AdminCategoryPage() {
                 </tbody>
               </table>
             </div>
-            <div className="bg-violet-50/70 px-6 py-4 text-xs font-medium text-slate-500">
+            <div className="bg-blue-50/70 px-6 py-4 text-xs font-medium text-slate-500">
               총 {categories.length}개 카테고리
             </div>
           </section>
@@ -327,8 +327,8 @@ export default function AdminCategoryPage() {
 
       {modal.open && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-[28px] bg-white p-8 shadow-2xl ring-1 ring-violet-100">
-            <h2 className="mb-6 text-xl font-extrabold text-[#38274c]">
+          <div className="w-full max-w-md bg-white p-8 shadow-2xl ring-1 ring-gray-200">
+            <h2 className="mb-6 text-xl font-extrabold text-gray-900">
               {modal.mode === 'create' ? '카테고리 추가' : '카테고리 편집'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -341,7 +341,7 @@ export default function AdminCategoryPage() {
                   onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); setFormErrors((p) => ({ ...p, name: '' })); }}
                   placeholder="카테고리명을 입력하세요"
                   maxLength={50}
-                  className="h-11 w-full rounded-2xl border-none bg-[#fdf3ff] px-4 text-sm shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-400"
+                  className="h-11 w-full rounded border-none bg-blue-50 px-4 text-sm shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-400"
                 />
                 {formErrors.name && <p className="mt-1 text-xs text-rose-500">{formErrors.name}</p>}
               </div>
@@ -354,7 +354,7 @@ export default function AdminCategoryPage() {
                   placeholder="카테고리 설명 (선택)"
                   maxLength={500}
                   rows={3}
-                  className="w-full rounded-2xl border-none bg-[#fdf3ff] px-4 py-3 text-sm shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+                  className="w-full rounded border-none bg-blue-50 px-4 py-3 text-sm shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-400 resize-none"
                 />
                 {formErrors.description && <p className="mt-1 text-xs text-rose-500">{formErrors.description}</p>}
               </div>
@@ -365,7 +365,7 @@ export default function AdminCategoryPage() {
                   type="number"
                   value={form.sortOrder}
                   onChange={(e) => setForm((p) => ({ ...p, sortOrder: e.target.value }))}
-                  className="h-11 w-full rounded-2xl border-none bg-[#fdf3ff] px-4 text-sm shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-400"
+                  className="h-11 w-full rounded border-none bg-blue-50 px-4 text-sm shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
 
@@ -374,7 +374,7 @@ export default function AdminCategoryPage() {
                 <select
                   value={form.parentId}
                   onChange={(e) => setForm((p) => ({ ...p, parentId: e.target.value }))}
-                  className="h-11 w-full rounded-2xl border-none bg-[#fdf3ff] px-4 text-sm font-medium shadow-sm ring-1 ring-violet-100 outline-none focus:ring-2 focus:ring-violet-400"
+                  className="h-11 w-full rounded border-none bg-blue-50 px-4 text-sm font-medium shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">없음 (최상위 카테고리)</option>
                   {selectableParents.map((cat) => (
@@ -386,7 +386,7 @@ export default function AdminCategoryPage() {
               </div>
 
               {submitError && (
-                <p className="rounded-xl bg-rose-50 px-4 py-2.5 text-sm text-rose-600">{submitError}</p>
+                <p className="rounded bg-rose-50 px-4 py-2.5 text-sm text-rose-600">{submitError}</p>
               )}
 
               <div className="flex gap-3 pt-2">
@@ -394,14 +394,14 @@ export default function AdminCategoryPage() {
                   type="button"
                   onClick={closeModal}
                   disabled={isSubmitting}
-                  className="flex-1 rounded-2xl bg-slate-100 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
+                  className="flex-1 bg-slate-100 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 rounded-2xl bg-violet-600 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:bg-violet-700 disabled:opacity-50"
+                  className="flex-1 bg-blue-600 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-50"
                 >
                   {isSubmitting ? '저장 중...' : '저장'}
                 </button>

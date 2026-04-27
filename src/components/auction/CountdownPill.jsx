@@ -8,23 +8,23 @@ export default function CountdownPill({ endsAt, status }) {
   const isWaiting = status === "WAITING";
 
   const tone = isWaiting
-    ? "bg-blue-500/80 text-white"
+    ? "bg-blue-500 text-white"
     : ended
-      ? "bg-gray-500/80 text-white"
+      ? "bg-gray-500 text-white"
       : urgent
         ? "bg-red-600 text-white"
-        : "bg-black/70 text-white";
+        : "bg-black/75 text-white";
 
   const label = isWaiting
     ? "시작 전"
     : ended
-      ? "종료됨"
+      ? "종료"
       : `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
 
   return (
     <span
       className={[
-        "absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-bold tabular-nums tracking-wide backdrop-blur",
+        "absolute right-2 top-2 px-2 py-0.5 text-[10px] font-bold tabular-nums tracking-wide",
         tone,
       ].join(" ")}
     >

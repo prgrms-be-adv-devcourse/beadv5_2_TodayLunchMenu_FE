@@ -658,26 +658,26 @@ export default function SellerProductCreatePage() {
     <PageContainer>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-700">
             Drafting
           </p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
             새 상품 등록
           </h1>
         </div>
-        <span className="rounded-full bg-purple-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-700">
+        <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700">
           작성 중
         </span>
       </div>
 
       {categoryNotice ? (
-        <section className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+        <section className="mb-4 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
           {categoryNotice}
         </section>
       ) : null}
 
       {submitError ? (
-        <section className="mb-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+        <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
           {submitError}
         </section>
       ) : null}
@@ -701,7 +701,7 @@ export default function SellerProductCreatePage() {
         submitText={isSubmitting ? "상품 등록 중..." : "상품 등록"}
         auctionSection={
           form.type === "AUCTION" ? (
-            <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
+            <section className="bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
               <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-amber-700">경매 설정</h2>
               <div className="grid grid-cols-1 gap-5">
 

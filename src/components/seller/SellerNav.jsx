@@ -4,6 +4,8 @@ function SellerNav({ currentPage = "products" }) {
   const isActive = (page) => currentPage === page;
 
   const navItems = [
+    { id: "home", label: "대시보드", to: "/seller/me" },
+    { id: "orders", label: "정산 대기 주문", to: "/seller/orders" },
     { id: "products", label: "상품 관리", to: "/seller/products" },
     { id: "settlements", label: "정산", to: "/seller/settlements" },
     { id: "refunds", label: "환불 관리", to: "/seller/refunds" },
@@ -13,7 +15,7 @@ function SellerNav({ currentPage = "products" }) {
     <nav className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-violet-100 bg-[#fdf3ff]/80 px-6 py-3 backdrop-blur-xl shadow-sm">
       <div className="flex items-center gap-8">
         <Link
-          to="/seller/products"
+          to="/seller/me"
           className="text-xl font-black tracking-tight text-violet-700 hover:opacity-80 transition-opacity"
         >
           판매자 센터

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
@@ -114,7 +114,7 @@ export default function MemberReportHistoryPage() {
       <div className="mx-auto max-w-3xl">
         <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-500">
               Member Report
             </p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
@@ -137,7 +137,7 @@ export default function MemberReportHistoryPage() {
           </div>
         </section>
 
-        <nav className="mb-8 flex gap-2 rounded-[20px] bg-violet-50 p-1.5 ring-1 ring-violet-100">
+        <nav className="mb-8 flex gap-2 bg-blue-50 p-1.5 ring-1 ring-gray-200">
           {statusTabs.map((tab) => {
             const active = tab.value === activeTab;
             return (
@@ -146,10 +146,10 @@ export default function MemberReportHistoryPage() {
                 type="button"
                 onClick={() => setActiveTab(tab.value)}
                 className={[
-                  'flex-1 rounded-2xl px-4 py-3 text-sm font-bold transition',
+                  'flex-1 px-4 py-3 text-sm font-bold transition',
                   active
-                    ? 'bg-white text-violet-700 shadow-sm'
-                    : 'text-gray-500 hover:text-violet-600',
+                    ? 'bg-white text-blue-700 shadow-sm'
+                    : 'text-gray-500 hover:text-blue-600',
                 ].join(' ')}
               >
                 {tab.label}
@@ -159,18 +159,18 @@ export default function MemberReportHistoryPage() {
         </nav>
 
         {errorMessage ? (
-          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+          <div className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
             {errorMessage}
           </div>
         ) : null}
 
         {loading ? (
-          <div className="rounded-[28px] border border-violet-100 bg-white px-6 py-16 text-center text-sm font-medium text-gray-500 shadow-sm">
+          <div className="border border-gray-200 bg-white px-6 py-16 text-center text-sm font-medium text-gray-500 shadow-sm">
             신고 이력을 불러오는 중입니다...
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="rounded-[28px] border border-dashed border-violet-200 bg-white px-6 py-16 text-center shadow-sm">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-violet-50 text-3xl text-violet-300">
+          <div className="border border-dashed border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-3xl text-blue-300">
               <span>🗂️</span>
             </div>
             <h2 className="mt-5 text-xl font-extrabold tracking-tight text-gray-900">
@@ -182,7 +182,7 @@ export default function MemberReportHistoryPage() {
             <div className="mt-6">
               <Link
                 to="/member-reports/new"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-violet-600 px-5 text-sm font-bold text-white transition hover:bg-violet-700"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700"
               >
                 신고하러 가기
               </Link>
@@ -199,7 +199,7 @@ export default function MemberReportHistoryPage() {
                 <article
                   key={report.reportId}
                   className={[
-                    'rounded-[28px] border-l-4 bg-white p-5 shadow-sm ring-1 ring-violet-100',
+                    'border-l-4 bg-white p-5 shadow-sm ring-1 ring-gray-200',
                     statusMeta.card,
                   ].join(' ')}
                 >
@@ -231,9 +231,9 @@ export default function MemberReportHistoryPage() {
                     <p className="text-sm leading-6 text-gray-700">{report.reason}</p>
                   </div>
 
-                  <div className="mt-5 rounded-[22px] bg-violet-50/80 p-4 ring-1 ring-violet-100">
+                  <div className="mt-5 bg-blue-50 p-4 ring-1 ring-gray-200">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-700">
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700">
                         검토 코멘트
                       </p>
                       <span className="text-[11px] font-semibold text-gray-400">

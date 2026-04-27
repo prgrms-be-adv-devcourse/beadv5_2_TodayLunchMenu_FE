@@ -8,6 +8,7 @@ function AdminSidebar({ currentPage = 'dashboard' }) {
     { id: 'reports', label: 'All Reports', icon: '⚑', to: '/admin/member-reports' },
     { id: 'sanctions', label: 'Sanction History', icon: '🚫', to: '/admin/member-restrictions' },
     { id: 'categories', label: 'Categories', icon: '🗂', to: '/admin/categories' },
+    { id: 'settlement-ops', label: 'Settlement Ops', icon: '💸', to: '/admin/settlements/ops' },
     { id: 'embeddings', label: 'Embeddings', icon: '🤖', to: '/admin/embeddings' },
   ];
 

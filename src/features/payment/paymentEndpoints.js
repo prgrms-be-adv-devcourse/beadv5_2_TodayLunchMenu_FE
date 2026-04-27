@@ -3,11 +3,10 @@ const PAYMENT_ENDPOINTS = {
   transactions: "/api/payments/transactions",
   withdrawals: "/api/payments/withdrawals",
   charge: "/api/payments/charge",
+  chargeFail: "/api/payments/charge/fail",
   chargeConfirm: "/api/payments/confirm",
   cardOrderCreate: "/api/payments/order-card/create",
-  cardPrepare: "/api/payments/order-card/prepare",
   cardConfirm: "/api/payments/card/confirm",
-  cardFail: "/api/payments/order-card/fail",
 };
 
 export { PAYMENT_ENDPOINTS };

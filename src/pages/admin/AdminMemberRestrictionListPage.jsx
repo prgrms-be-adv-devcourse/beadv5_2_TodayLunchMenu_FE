@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { ApiError } from '../../api/client';
@@ -266,38 +266,38 @@ export default function AdminMemberRestrictionListPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <AdminNav currentPage="sanctions" />
       <AdminSidebar currentPage="sanctions" />
 
       <div className="flex min-h-screen">
         <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
           <header className="mb-8">
-            <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-[#38274c]">제재 관리</h1>
+            <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-gray-900">제재 관리</h1>
             <p className="text-sm text-slate-500">회원 제재를 관리합니다.</p>
           </header>
 
           {bannerMessage ? (
-            <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+            <div className="mb-6 rounded border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
               {bannerMessage}
             </div>
           ) : null}
 
           {errorMessage ? (
-            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
+            <div className="mb-6 rounded border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">
               {errorMessage}
             </div>
           ) : null}
 
             <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
             <div className="space-y-6 xl:col-span-2">
-              <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-white p-4 shadow-sm">
+              <div className="flex flex-wrap items-center gap-4 bg-white p-4 shadow-sm">
               <div className="relative min-w-[240px] flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
                 <input
                   value={keyword}
                   onChange={(event) => setKeyword(event.target.value)}
-                  className="w-full rounded-xl border-none bg-[#f3e2ff] py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                  className="w-full rounded border-none bg-blue-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="Search by ID or reason..."
                   type="text"
                 />
@@ -305,7 +305,7 @@ export default function AdminMemberRestrictionListPage() {
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value)}
-                className="min-w-[140px] rounded-xl border-none bg-[#f3e2ff] px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-violet-400"
+                className="min-w-[140px] rounded border-none bg-blue-50 px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-400"
               >
                 <option value="ALL">All Status</option>
                 <option value="ACTIVE">Active</option>
@@ -315,17 +315,17 @@ export default function AdminMemberRestrictionListPage() {
               <button
                 type="button"
                 onClick={() => loadRestrictions((form.memberId || memberId || keyword).trim())}
-                className="flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition-all hover:bg-violet-700"
+                className="flex items-center gap-2 rounded bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-blue-700"
               >
                 Filter
               </button>
             </div>
 
-            <div className="overflow-hidden rounded-[28px] bg-white shadow-sm">
+            <div className="overflow-hidden bg-white shadow-sm">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse text-left">
                   <thead>
-                    <tr className="bg-[#f3e2ff] text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                    <tr className="bg-blue-50 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
                       <th className="px-6 py-4">Target Member</th>
                       <th className="px-6 py-4">Type</th>
                       <th className="px-6 py-4">Reason</th>
@@ -335,7 +335,7 @@ export default function AdminMemberRestrictionListPage() {
                       <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-violet-100">
+                  <tbody className="divide-y divide-blue-100">
                     {loading ? (
                       <tr>
                         <td colSpan="7" className="px-6 py-16 text-center text-sm text-slate-500">제재 목록을 불러오는 중입니다...</td>
@@ -352,11 +352,11 @@ export default function AdminMemberRestrictionListPage() {
                         return (
                           <tr
                             key={restriction.restrictionId}
-                            className={isArchived ? 'bg-[#f9edff]/40 opacity-70' : 'transition-colors hover:bg-[#f9edff]/60'}
+                            className={isArchived ? 'bg-blue-50/40 opacity-70' : 'transition-colors hover:bg-blue-50/60'}
                           >
                             <td className="px-6 py-5">
                               <div className="flex items-center gap-3">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e3c6ff] text-xs font-bold text-[#5e2d93]">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
                                   {getInitials(restriction.memberId)}
                                 </div>
                                 <div>
@@ -403,11 +403,11 @@ export default function AdminMemberRestrictionListPage() {
                   </tbody>
                 </table>
               </div>
-              <div className="flex items-center justify-between border-t border-violet-100 bg-[#f3e2ff] px-6 py-4">
+              <div className="flex items-center justify-between border-t border-gray-200 bg-blue-50 px-6 py-4">
                 <span className="text-xs text-slate-500">Showing {filteredRestrictions.length} of {restrictions.length} sanctions</span>
                 <div className="flex items-center gap-2">
                   <button type="button" className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-white">‹</button>
-                  <button type="button" className="h-8 w-8 rounded-lg bg-violet-600 text-xs font-bold text-white">1</button>
+                  <button type="button" className="h-8 w-8 rounded-lg bg-blue-600 text-xs font-bold text-white">1</button>
                   <button type="button" className="h-8 w-8 rounded-lg text-xs font-bold text-slate-600 transition-colors hover:bg-white">2</button>
                   <button type="button" className="h-8 w-8 rounded-lg text-xs font-bold text-slate-600 transition-colors hover:bg-white">3</button>
                   <button type="button" className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-white">›</button>
@@ -417,9 +417,9 @@ export default function AdminMemberRestrictionListPage() {
           </div>
 
           <div className="xl:col-span-1">
-            <div className="sticky top-24 rounded-[28px] bg-white p-8 shadow-xl shadow-violet-900/5">
+            <div className="sticky top-24 bg-white p-8 shadow-xl">
               <div className="mb-8 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">+</div>
+                <div className="flex h-12 w-12 items-center justify-center bg-blue-100 text-blue-600">+</div>
                 <div>
                   <h2 className="text-xl font-extrabold text-on-surface">Register Sanction</h2>
                   <p className="text-xs text-slate-500">Impose restrictions on a member</p>
@@ -432,7 +432,7 @@ export default function AdminMemberRestrictionListPage() {
                   <input
                     value={form.memberId}
                     onChange={(event) => setForm((current) => ({ ...current, memberId: event.target.value }))}
-                    className="w-full rounded-xl border-none bg-[#efdbff] px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                    className="w-full rounded border-none bg-blue-100 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-400"
                     placeholder="Enter Member ID"
                     type="text"
                   />
@@ -450,7 +450,7 @@ export default function AdminMemberRestrictionListPage() {
                           onChange={() => setForm((current) => ({ ...current, restrictionType: value }))}
                           type="radio"
                         />
-                        <div className="rounded-xl bg-[#efdbff] px-4 py-3 text-center text-sm font-bold text-slate-600 transition-all peer-checked:bg-violet-600 peer-checked:text-white">
+                        <div className="rounded bg-blue-100 px-4 py-3 text-center text-sm font-bold text-slate-600 transition-all peer-checked:bg-blue-600 peer-checked:text-white">
                           {label}
                         </div>
                       </label>
@@ -463,7 +463,7 @@ export default function AdminMemberRestrictionListPage() {
                   <textarea
                     value={form.reason}
                     onChange={(event) => setForm((current) => ({ ...current, reason: event.target.value }))}
-                    className="w-full rounded-xl border-none bg-[#efdbff] p-4 text-sm outline-none focus:ring-2 focus:ring-violet-400"
+                    className="w-full rounded border-none bg-blue-100 p-4 text-sm outline-none focus:ring-2 focus:ring-blue-400"
                     placeholder="Describe the violation details..."
                     rows="4"
                   />
@@ -474,7 +474,7 @@ export default function AdminMemberRestrictionListPage() {
                   <select
                     value={String(form.durationHours)}
                     onChange={(event) => setForm((current) => ({ ...current, durationHours: Number(event.target.value) }))}
-                    className="w-full rounded-xl border-none bg-[#efdbff] px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-violet-400"
+                    className="w-full rounded border-none bg-blue-100 px-4 py-3 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-400"
                   >
                     {durationOptions.map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -484,7 +484,7 @@ export default function AdminMemberRestrictionListPage() {
 
                 <div className="pt-4">
                   <button
-                    className="w-full rounded-2xl bg-gradient-to-br from-[#5130c6] to-[#5d3fd3] py-4 font-extrabold tracking-wide text-white transition-all hover:shadow-xl hover:shadow-violet-500/30 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full bg-blue-700 py-4 font-extrabold tracking-wide text-white transition-all hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={submitting}
                     type="submit"
                   >
@@ -496,9 +496,9 @@ export default function AdminMemberRestrictionListPage() {
                 </div>
               </form>
 
-              <div className="mt-8 rounded-2xl bg-[#f3e2ff] p-4">
+              <div className="mt-8 bg-blue-50 p-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Active Restrictions</p>
-                <p className="mt-2 text-3xl font-black text-violet-700">{activeCount}</p>
+                <p className="mt-2 text-3xl font-black text-blue-700">{activeCount}</p>
                 <p className="mt-1 text-xs text-slate-500">Current target: {memberId || form.memberId || '미선택'}</p>
               </div>
             </div>

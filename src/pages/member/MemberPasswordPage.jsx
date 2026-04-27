@@ -93,12 +93,12 @@ export default function MemberPasswordPage() {
   return (
     <PageContainer>
       <div className="mx-auto max-w-md">
-        <div className="mb-6 rounded-2xl border border-violet-200 bg-violet-50/80 px-4 py-4 text-sm font-medium leading-7 text-violet-700">
+        <div className="mb-6 border border-blue-200 bg-blue-50 px-4 py-4 text-sm font-medium leading-7 text-blue-700">
           안전한 비밀번호로 변경할 준비가 되었습니다.
         </div>
 
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">Password Update</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">Password Update</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">비밀번호 변경</h1>
           <p className="mt-2 text-sm leading-7 text-gray-500">
             현재 비밀번호를 확인한 뒤 새 비밀번호로 변경합니다.
@@ -107,7 +107,7 @@ export default function MemberPasswordPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 text-left rounded-[32px] bg-white p-6 shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-violet-100"
+          className="space-y-6 text-left bg-white p-6 shadow-sm ring-1 ring-gray-200"
         >
           <FormField label="현재 비밀번호" htmlFor="currentPassword" required error={errors.currentPassword}>
             <div className="relative">
@@ -119,12 +119,12 @@ export default function MemberPasswordPage() {
                 value={form.currentPassword}
                 onChange={handleChange('currentPassword')}
                 error={!!errors.currentPassword}
-                className="bg-violet-50/70 pr-16"
+                className="bg-blue-50 pr-16"
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-violet-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-blue-700"
               >
                 {showCurrentPassword ? '숨김' : '보기'}
               </button>
@@ -147,12 +147,12 @@ export default function MemberPasswordPage() {
                 value={form.newPassword}
                 onChange={handleChange('newPassword')}
                 error={!!errors.newPassword}
-                className="bg-violet-50/70 pr-16"
+                className="bg-blue-50 pr-16"
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-violet-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-blue-700"
               >
                 {showNewPassword ? '숨김' : '보기'}
               </button>
@@ -169,12 +169,12 @@ export default function MemberPasswordPage() {
                 value={form.confirmPassword}
                 onChange={handleChange('confirmPassword')}
                 error={!!errors.confirmPassword}
-                className="bg-violet-50/70 pr-16"
+                className="bg-blue-50 pr-16"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-violet-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-blue-700"
               >
                 {showConfirmPassword ? '숨김' : '보기'}
               </button>
@@ -182,7 +182,7 @@ export default function MemberPasswordPage() {
           </FormField>
 
           {errors.common ? (
-            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               {errors.common}
             </div>
           ) : null}
@@ -199,9 +199,9 @@ export default function MemberPasswordPage() {
           </div>
         </form>
 
-        <div className="mt-8 rounded-[28px] border-2 border-white bg-white/70 p-6">
+        <div className="mt-8 border-2 border-white bg-white/70 p-6">
           <h2 className="flex items-center gap-2 text-sm font-bold text-gray-900">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700">
               !
             </span>
             보안 가이드
@@ -212,7 +212,7 @@ export default function MemberPasswordPage() {
               '다른 사이트와 동일한 비밀번호는 사용하지 마세요.',
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className={cn('mt-1.5 h-1 w-1 shrink-0 rounded-full bg-violet-600')} />
+                <span className={cn('mt-1.5 h-1 w-1 shrink-0 rounded-full bg-blue-600')} />
                 <span>{item}</span>
               </li>
             ))}

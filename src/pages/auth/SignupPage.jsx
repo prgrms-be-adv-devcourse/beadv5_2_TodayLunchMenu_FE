@@ -143,14 +143,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <header className="fixed top-0 z-50 w-full bg-white/70 backdrop-blur-xl shadow-sm">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
             aria-label="뒤로 가기"
             onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-violet-700 transition hover:bg-violet-100 active:scale-95"
+            className="rounded-full p-2 text-blue-700 transition hover:bg-blue-100 active:scale-95"
           >
             {"<"}
           </button>
@@ -165,10 +165,10 @@ export default function SignupPage() {
 
       <main className="flex min-h-screen items-center justify-center px-6 pb-12 pt-24">
         <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2">
-          <section className="relative hidden aspect-[4/5] overflow-hidden rounded-xl bg-purple-100 p-12 md:flex md:flex-col md:justify-end">
-            <div className="absolute inset-0 bg-gradient-to-t from-violet-500/30 to-transparent" />
+          <section className="relative hidden aspect-[4/5] overflow-hidden bg-gray-100 p-12 md:flex md:flex-col md:justify-end">
+            <div className="absolute inset-0 bg-blue-500/30 to-transparent" />
             <div className="relative z-10 space-y-4">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
                 TodayLunch Market
               </span>
               <h2 className="text-5xl font-extrabold leading-[1.08] tracking-tighter">
@@ -194,7 +194,7 @@ export default function SignupPage() {
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               {pendingKakaoLink?.linkToken ? (
-                <div className="rounded-2xl border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
+                <div className="border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
                   <p className="font-semibold">회원가입 후 카카오 계정을 연결할 수 있어요.</p>
                   <p className="mt-1">
                     먼저 회원가입을 완료한 뒤 로그인하면 카카오 계정 연결을 이어서 진행할 수 있어요.
@@ -231,7 +231,7 @@ export default function SignupPage() {
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     onChange={handleProfileImageChange}
-                    className="block w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-200"
+                    className="block w-full rounded border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-200"
                   />
                   {profileImage ? (
                     <p className="mt-2 text-xs font-medium text-gray-500">
@@ -278,7 +278,7 @@ export default function SignupPage() {
                 label={
                   <>
                     이용약관 및{" "}
-                    <a href="#" className="font-semibold text-violet-700 hover:underline">
+                    <a href="#" className="font-semibold text-blue-700 hover:underline">
                       개인정보 처리방침
                     </a>
                     에 동의합니다.
@@ -287,7 +287,7 @@ export default function SignupPage() {
               />
 
               {errors.common ? (
-                <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+                <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
                   {errors.common}
                 </div>
               ) : null}
@@ -302,7 +302,7 @@ export default function SignupPage() {
             <div className="pt-4 text-center">
               <p className="font-medium text-gray-500">
                 이미 계정이 있으신가요?
-                <Link to="/login" className="ml-1 font-bold text-violet-700 hover:underline">
+                <Link to="/login" className="ml-1 font-bold text-blue-700 hover:underline">
                   로그인
                 </Link>
               </p>

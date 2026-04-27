@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
@@ -99,7 +99,7 @@ export default function MemberReportCreatePage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-violet-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-500">
               Member Report
             </p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
@@ -115,19 +115,19 @@ export default function MemberReportCreatePage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-          <section className="rounded-[28px] border border-violet-100 bg-gradient-to-br from-violet-50 via-fuchsia-50 to-white p-6 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-violet-500">
+          <section className="border border-gray-200 bg-blue-50 p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-blue-500">
               신고 대상
             </p>
-            <div className="mt-5 flex items-center gap-4 rounded-[24px] bg-white/80 p-4 ring-1 ring-violet-100 backdrop-blur">
+            <div className="mt-5 flex items-center gap-4 bg-white/80 p-4 ring-1 ring-gray-200 backdrop-blur">
               {target.image ? (
                 <img
                   src={target.image}
                   alt={target.nickname}
-                  className="h-16 w-16 rounded-full object-cover ring-2 ring-violet-200"
+                  className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200"
                 />
               ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-600 text-lg font-extrabold text-white ring-2 ring-violet-200">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 text-lg font-extrabold text-white ring-2 ring-blue-200">
                   {getInitials(target.nickname)}
                 </div>
               )}
@@ -136,20 +136,20 @@ export default function MemberReportCreatePage() {
                   <h2 className="truncate text-xl font-extrabold tracking-tight text-gray-900">
                     {target.nickname}
                   </h2>
-                  <span className="rounded-full bg-violet-100 px-2 py-1 text-[11px] font-bold text-violet-700">
+                  <span className="rounded-full bg-blue-100 px-2 py-1 text-[11px] font-bold text-blue-700">
                     신고 대상
                   </span>
                 </div>
                 <p className="mt-1 truncate text-sm font-medium text-gray-500">
                   {target.username || '닉네임 정보만 제공됨'}
                 </p>
-                <div className="mt-3 rounded-2xl bg-violet-950 px-3 py-2 text-xs font-medium text-violet-100">
+                <div className="mt-3 bg-gray-900 px-3 py-2 text-xs font-medium text-gray-100">
                   memberId: {target.memberId || '없음'}
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 rounded-[24px] bg-white/80 p-5 ring-1 ring-violet-100">
+            <div className="mt-6 bg-white/80 p-5 ring-1 ring-gray-200">
               <p className="text-sm font-bold text-gray-900">신고 전에 확인해주세요</p>
               <ul className="mt-3 space-y-3 text-sm leading-6 text-gray-600">
                 <li>구체적인 정황을 작성할수록 관리자가 더 정확하게 검토할 수 있습니다.</li>
@@ -159,7 +159,7 @@ export default function MemberReportCreatePage() {
             </div>
           </section>
 
-          <form onSubmit={handleSubmit} className="rounded-[28px] border border-violet-100 bg-white p-6 shadow-sm">
+          <form onSubmit={handleSubmit} className="border border-gray-200 bg-white p-6 shadow-sm">
             <div className="space-y-6">
               <div>
                 <label className="mb-3 block text-sm font-bold text-gray-900">
@@ -173,10 +173,10 @@ export default function MemberReportCreatePage() {
                       <label
                         key={option.value}
                         className={[
-                          'cursor-pointer rounded-2xl border p-4 transition',
+                          'cursor-pointer border p-4 transition',
                           selected
-                            ? 'border-violet-500 bg-violet-50 shadow-sm'
-                            : 'border-gray-200 bg-gray-50 hover:border-violet-200 hover:bg-violet-50/40',
+                            ? 'border-blue-500 bg-blue-50 shadow-sm'
+                            : 'border-gray-200 bg-gray-50 hover:border-blue-200 hover:bg-blue-50/40',
                         ].join(' ')}
                       >
                         <input
@@ -195,7 +195,7 @@ export default function MemberReportCreatePage() {
                           <span
                             className={[
                               'mt-0.5 h-5 w-5 rounded-full border-2',
-                              selected ? 'border-violet-600 bg-violet-600' : 'border-gray-300 bg-white',
+                              selected ? 'border-blue-600 bg-blue-600' : 'border-gray-300 bg-white',
                             ].join(' ')}
                           />
                         </div>
@@ -212,7 +212,7 @@ export default function MemberReportCreatePage() {
                   </label>
                   <span className="text-xs font-semibold text-gray-400">{charCount} / 1000</span>
                 </div>
-                <div className="overflow-hidden rounded-[24px] border border-violet-100 bg-violet-50/70 shadow-inner shadow-violet-100/50 focus-within:border-violet-300 focus-within:ring-2 focus-within:ring-violet-200">
+                <div className="overflow-hidden border border-gray-200 bg-blue-50 shadow-inner focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-200">
                   <textarea
                     id="report-reason"
                     value={reason}
@@ -224,18 +224,18 @@ export default function MemberReportCreatePage() {
               </div>
 
               {errorMessage ? (
-                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                <div className="border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                   {errorMessage}
                 </div>
               ) : null}
 
               {successMessage ? (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                <div className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
                   {successMessage}
                 </div>
               ) : null}
 
-              <div className="rounded-[24px] bg-gray-50 px-4 py-4 text-sm leading-6 text-gray-600 ring-1 ring-gray-100">
+              <div className="bg-gray-50 px-4 py-4 text-sm leading-6 text-gray-600 ring-1 ring-gray-100">
                 신고 내용은 관리자 검토 후 처리됩니다. 반복적인 위반이 확인되면 로그인, 거래, 채팅 기능 제한으로 이어질 수 있습니다.
               </div>
 
@@ -257,4 +257,3 @@ export default function MemberReportCreatePage() {
     </PageContainer>
   );
 }
-

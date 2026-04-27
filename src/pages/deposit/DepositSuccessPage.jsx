@@ -58,44 +58,44 @@ export default function DepositSuccessPage() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-violet-700 transition hover:bg-violet-100/60"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-blue-700 transition hover:bg-blue-100/60"
               aria-label="뒤로 가기"
             >
               ←
             </button>
-            <h1 className="font-headline text-base font-bold tracking-tight text-violet-700">
+            <h1 className="font-headline text-base font-bold tracking-tight text-blue-700">
               Transaction Details
             </h1>
           </div>
-          <div className="text-lg font-extrabold tracking-tight text-violet-900">
+          <div className="text-lg font-extrabold tracking-tight text-gray-900">
             VIVID ARTIFACT
           </div>
         </header>
 
         <main className="flex-1">
           <div className="mb-12 flex flex-col items-center text-center">
-            <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-violet-700 text-white shadow-[0_0_20px_rgba(93,63,211,0.2)]">
+            <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-700 text-white shadow-[0_0_20px_rgba(29,78,216,0.2)]">
               <span className="text-5xl">✓</span>
-              <div className="absolute -inset-2 rounded-full border-2 border-violet-700/20 animate-pulse" />
+              <div className="absolute -inset-2 rounded-full border-2 border-blue-700/20 animate-pulse" />
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">충전 완료</h2>
             <p className="mt-2 font-medium text-gray-500">예치금이 성공적으로 충전되었습니다.</p>
           </div>
 
-          <section className="relative overflow-hidden rounded-[28px] bg-white px-8 py-8 shadow-[0_40px_60px_-20px_rgba(56,39,76,0.08)] ring-1 ring-purple-100">
-            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-violet-700/5" />
+          <section className="relative overflow-hidden bg-white px-8 py-8 shadow-[0_40px_60px_-20px_rgba(0,0,0,0.08)] ring-1 ring-gray-200">
+            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-blue-700/5" />
 
             <div className="relative z-10 space-y-8">
-              <div className="flex items-end justify-between border-b border-purple-100 pb-6">
+              <div className="flex items-end justify-between border-b border-blue-200 pb-6">
                 <div>
                   <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
                     Approved Amount
                   </p>
-                  <h3 className="text-2xl font-extrabold tracking-tight text-violet-700">
+                  <h3 className="text-2xl font-extrabold tracking-tight text-blue-700">
                     {formatPrice(result.approvedAmount)}
                   </h3>
                 </div>
-                <span className="text-3xl text-violet-300">₩</span>
+                <span className="text-3xl text-blue-400">₩</span>
               </div>
 
               <div className="space-y-6">
@@ -113,7 +113,7 @@ export default function DepositSuccessPage() {
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-sm text-gray-500">충전 ID</span>
-                  <span className="rounded bg-purple-100 px-2 py-1 font-mono text-xs font-semibold text-violet-700">
+                  <span className="rounded bg-gray-100 px-2 py-1 font-mono text-xs font-semibold text-blue-700">
                     {result.chargeId}
                   </span>
                 </div>
@@ -124,7 +124,7 @@ export default function DepositSuccessPage() {
           <section className="mt-12 flex flex-col gap-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg shadow-violet-500/20"
+              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
               onClick={() => navigate("/deposits")}
             >
               거래내역 보기

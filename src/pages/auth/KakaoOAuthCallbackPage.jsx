@@ -79,7 +79,7 @@ export default function KakaoOAuthCallbackPage() {
             isAuthenticated: true,
             loading: false,
           });
-          navigate("/products", { replace: true });
+          navigate("/", { replace: true });
           return;
         }
 

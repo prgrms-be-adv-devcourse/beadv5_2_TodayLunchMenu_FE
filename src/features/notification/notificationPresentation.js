@@ -35,6 +35,30 @@ const TYPE_META = {
     tone: "bg-violet-50 text-violet-700 ring-violet-200",
     accent: "bg-violet-600",
   },
+  BUYER_AUCTION_WON: {
+    icon: "★",
+    label: "낙찰",
+    tone: "bg-amber-50 text-amber-700 ring-amber-200",
+    accent: "bg-amber-600",
+  },
+  BUYER_AUCTION_OUTBID: {
+    icon: "!",
+    label: "입찰",
+    tone: "bg-orange-50 text-orange-700 ring-orange-200",
+    accent: "bg-orange-600",
+  },
+  SELLER_AUCTION_CLOSED_SOLD: {
+    icon: "OK",
+    label: "낙찰",
+    tone: "bg-amber-50 text-amber-700 ring-amber-200",
+    accent: "bg-amber-600",
+  },
+  SELLER_AUCTION_CLOSED_UNSOLD: {
+    icon: "—",
+    label: "유찰",
+    tone: "bg-gray-50 text-gray-700 ring-gray-200",
+    accent: "bg-gray-500",
+  },
 };
 
 const ACTION_VARIANT_CLASS = {
@@ -48,11 +72,19 @@ const ROUTE_KEY_PATHS = {
   MY_OAUTH_ACCOUNTS: "/me/external-accounts",
   ORDER_DETAIL: ({ referenceId }) => (referenceId ? `/orders/${referenceId}` : "/orders"),
   DELIVERY_DETAIL: ({ referenceId }) => (referenceId ? `/orders/${referenceId}` : "/orders"),
+  ORDER_HISTORY: "/orders",
   WALLET_TOPUP: "/deposits",
   SELLER_DASHBOARD: "/seller/products",
   SELLER_PRODUCTS: "/seller/products",
+  SELLER_VERIFICATION: "/seller/account-verification",
+  SELLER_ORDER_MANAGEMENT: "/seller/products",
+  SELLER_AUCTION_MANAGEMENT: "/auctions",
+  SELLER_AUCTION_CREATE: "/seller/products/new",
   SETTLEMENT_DETAIL: "/seller/products",
   SELLER_TRANSACTION_HISTORY: "/seller/products",
+  AUCTION_LIST: "/auctions",
+  AUCTION_DETAIL: ({ referenceId }) => (referenceId ? `/auctions/${referenceId}` : "/auctions"),
+  AUCTION_PAYMENT: ({ referenceId }) => (referenceId ? `/auctions/${referenceId}` : "/auctions"),
   SUPPORT_CONTACT: null,
 };
 

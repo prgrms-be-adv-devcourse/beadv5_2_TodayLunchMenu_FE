@@ -46,7 +46,7 @@ function NotificationActionButtons({ notification, onAction }) {
           <button
             type="button"
             onClick={() => onAction("__mark_read__")}
-            className="rounded-full bg-violet-100 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition hover:bg-violet-200"
+            className="rounded-full bg-blue-100 px-3 py-1.5 text-[11px] font-bold text-blue-700 transition hover:bg-blue-200"
           >
             읽음 처리
           </button>
@@ -215,9 +215,9 @@ export default function NotificationListPage() {
 
   return (
     <PageContainer>
-      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-violet-700 via-violet-600 to-fuchsia-600 p-6 text-white shadow-[0_20px_70px_rgba(91,33,182,0.25)]">
+      <section className="relative overflow-hidden bg-blue-700 p-6 text-white shadow-[0_20px_70px_rgba(29,78,216,0.25)]">
         <div className="absolute -right-10 -top-8 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-16 left-8 h-28 w-28 rounded-full bg-fuchsia-300/20 blur-2xl" />
+        <div className="absolute -bottom-16 left-8 h-28 w-28 rounded-full bg-blue-300/20 blur-2xl" />
         <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-white/70">알림</p>
@@ -233,7 +233,7 @@ export default function NotificationListPage() {
             </div>
             <Button
               variant="secondary"
-              className="bg-white text-violet-700 hover:bg-violet-50"
+              className="bg-white text-blue-700 hover:bg-blue-50"
               onClick={handleMarkAllRead}
             >
               모두 읽음
@@ -243,7 +243,7 @@ export default function NotificationListPage() {
       </section>
 
       {error ? (
-        <section className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-left text-sm text-amber-700">
+        <section className="mt-4 bg-amber-50 px-4 py-3 text-left text-sm text-amber-700">
           {error}
         </section>
       ) : null}
@@ -253,12 +253,12 @@ export default function NotificationListPage() {
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="h-28 animate-pulse rounded-[28px] bg-white/80 shadow-sm ring-1 ring-purple-100"
+              className="h-28 animate-pulse bg-white/80 shadow-sm ring-1 ring-gray-200"
             />
           ))}
         </section>
       ) : notifications.length === 0 ? (
-        <section className="mt-8 rounded-[32px] bg-white/80 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+        <section className="mt-8 bg-white/80 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
           <p className="text-lg font-bold text-gray-900">도착한 알림이 아직 없어요</p>
           <p className="mt-2 text-sm text-gray-500">
             주문, 결제, 정산 상태가 바뀌면 여기에서 바로 확인할 수 있어요.
@@ -266,7 +266,7 @@ export default function NotificationListPage() {
           {!isAuthenticated ? (
             <Link
               to="/login"
-              className="mt-6 inline-flex text-sm font-bold text-violet-700 hover:underline"
+              className="mt-6 inline-flex text-sm font-bold text-blue-700 hover:underline"
             >
               로그인하고 알림 확인하기
             </Link>
@@ -277,7 +277,7 @@ export default function NotificationListPage() {
           {Object.entries(sections).map(([sectionLabel, items]) => (
             <div key={sectionLabel}>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xs font-extrabold uppercase tracking-[0.25em] text-violet-700/70">
+                <h2 className="text-xs font-extrabold uppercase tracking-[0.25em] text-blue-700/70">
                   {sectionLabel}
                 </h2>
                 <span className="text-xs font-medium text-gray-400">{items.length}개</span>
@@ -292,14 +292,14 @@ export default function NotificationListPage() {
                   return (
                     <article
                       key={notification.notificationId}
-                      className="group relative overflow-hidden rounded-[24px] border border-violet-100 bg-white p-5 text-left shadow-[0_16px_40px_rgba(93,63,211,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(93,63,211,0.16)]"
+                      className="group relative overflow-hidden border border-gray-200 bg-white p-5 text-left shadow-[0_16px_40px_rgba(29,78,216,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(29,78,216,0.12)]"
                     >
-                      <div className="absolute inset-y-0 left-0 w-1.5 rounded-l-[24px] bg-violet-600/90" />
+                      <div className="absolute inset-y-0 left-0 w-1.5 bg-blue-600/90" />
 
                       <div className="flex items-start gap-4 pl-2">
                         <div
                           className={[
-                            "mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-extrabold ring-1",
+                            "mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center text-sm font-extrabold ring-1",
                             meta.tone,
                           ].join(" ")}
                         >
@@ -313,7 +313,7 @@ export default function NotificationListPage() {
                                 {notification.title}
                               </h3>
                               {visibleSubtitle ? (
-                                <p className="mt-1 text-sm font-semibold text-violet-700/80">
+                                <p className="mt-1 text-sm font-semibold text-blue-700/80">
                                   {visibleSubtitle}
                                 </p>
                               ) : null}
@@ -323,7 +323,7 @@ export default function NotificationListPage() {
                             </div>
 
                             <div className="flex shrink-0 items-center gap-2">
-                              <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-700/75">
+                              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-blue-700/75">
                                 {elapsedTime}
                               </span>
                             </div>

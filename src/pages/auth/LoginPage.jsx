@@ -26,7 +26,7 @@ export default function LoginPage() {
   const safeRedirectTarget =
     typeof redirectTarget === "string" && redirectTarget.startsWith("/")
       ? redirectTarget
-      : "/products";
+      : "/";
 
   const [form, setForm] = useState({
     email: initialEmail,
@@ -139,14 +139,14 @@ export default function LoginPage() {
   const submitDisabled = isSubmitting || loading;
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <header className="fixed top-0 z-50 w-full bg-white/70 backdrop-blur-xl shadow-sm">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
             aria-label="이전 페이지로 이동"
             onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-violet-700 transition hover:bg-violet-100 active:scale-95"
+            className="rounded-full p-2 text-blue-700 transition hover:bg-blue-100 active:scale-95"
           >
             {"<"}
           </button>
@@ -161,8 +161,8 @@ export default function LoginPage() {
 
       <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 pb-12 pt-24">
           <div className="mb-12 text-center">
-            <div className="mb-4 inline-flex rounded-xl bg-purple-100 p-4">
-              <span className="text-4xl text-violet-700">G</span>
+            <div className="mb-4 inline-flex bg-gray-100 p-4">
+              <span className="text-4xl text-blue-700">G</span>
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight">GoodsMall</h2>
             <p className="mt-2 font-medium text-gray-500">
@@ -173,7 +173,7 @@ export default function LoginPage() {
         <div className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {pendingKakaoLink?.linkToken ? (
-              <div className="rounded-2xl border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
+              <div className="border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
                 <p className="font-semibold">이 계정에 카카오 연동 대기 상태가 있어요.</p>
                 <p className="mt-1">
                   기존 계정으로 로그인하면 카카오 연동을 자동으로 완료할게요.
@@ -208,7 +208,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-violet-700"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-blue-700"
                   >
                     {showPassword ? "숨기기" : "보기"}
                   </button>
@@ -217,7 +217,7 @@ export default function LoginPage() {
                 <div className="flex justify-end pt-1">
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-semibold text-violet-700 transition hover:text-violet-800"
+                    className="text-xs font-semibold text-blue-700 transition hover:text-blue-700"
                   >
                     비밀번호를 잊으셨나요?
                   </Link>
@@ -226,15 +226,15 @@ export default function LoginPage() {
             </div>
 
             {errors.common ? (
-              <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+              <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
                 {errors.common}
               </div>
             ) : null}
 
             {verificationPending ? (
-              <div className="rounded-2xl bg-violet-50 px-4 py-4 text-sm text-violet-900">
+              <div className="bg-blue-50 px-4 py-4 text-sm text-blue-900">
                 <p className="font-semibold">이메일 인증이 필요해요.</p>
-                <p className="mt-1 text-violet-700">
+                <p className="mt-1 text-blue-700">
                   인증 이메일이 필요하면 아래 버튼을 눌러 다시 받을 수 있어요.
                 </p>
                 {verificationMessage ? (
@@ -260,11 +260,11 @@ export default function LoginPage() {
           </form>
 
           <div className="my-8 flex items-center gap-4">
-            <div className="h-px flex-1 bg-purple-100" />
+            <div className="h-px flex-1 bg-gray-100" />
             <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
               또는 간편 로그인
             </span>
-            <div className="h-px flex-1 bg-purple-100" />
+            <div className="h-px flex-1 bg-gray-100" />
           </div>
 
           <Button
@@ -311,7 +311,7 @@ export default function LoginPage() {
           <div className="mt-12 text-center">
             <p className="text-sm font-medium text-gray-500">
               아직 계정이 없으신가요?
-              <Link to="/signup" className="ml-1 font-bold text-violet-700 hover:underline">
+              <Link to="/signup" className="ml-1 font-bold text-blue-700 hover:underline">
                 회원가입
               </Link>
             </p>
@@ -319,8 +319,8 @@ export default function LoginPage() {
         </div>
       </main>
 
-      <div className="pointer-events-none fixed right-[-5%] top-[-10%] -z-10 h-96 w-96 rounded-full bg-violet-200/30 blur-[100px]" />
-      <div className="pointer-events-none fixed bottom-[-10%] left-[-5%] -z-10 h-96 w-96 rounded-full bg-fuchsia-200/20 blur-[100px]" />
+      <div className="pointer-events-none fixed right-[-5%] top-[-10%] -z-10 h-96 w-96 rounded-full bg-blue-200/30 blur-[100px]" />
+      <div className="pointer-events-none fixed bottom-[-10%] left-[-5%] -z-10 h-96 w-96 rounded-full bg-blue-200/20 blur-[100px]" />
     </div>
   );
 }

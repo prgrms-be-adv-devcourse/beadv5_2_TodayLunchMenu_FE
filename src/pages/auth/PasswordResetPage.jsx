@@ -82,12 +82,12 @@ export default function PasswordResetPage() {
   return (
     <PageContainer>
       <div className="mx-auto max-w-md">
-        <div className="mb-6 rounded-2xl border border-violet-200 bg-violet-50/80 px-4 py-4 text-sm font-medium leading-7 text-violet-700">
+        <div className="mb-6 border border-blue-200 bg-blue-50/80 px-4 py-4 text-sm font-medium leading-7 text-blue-700">
           메일에서 받은 링크를 통해 새 비밀번호를 설정하는 단계입니다.
         </div>
 
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-500">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">
             Set New Password
           </p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
@@ -100,7 +100,7 @@ export default function PasswordResetPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-[32px] bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-violet-100"
+          className="space-y-6 bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-gray-200"
         >
           <FormField
             label="새 비밀번호"
@@ -131,7 +131,7 @@ export default function PasswordResetPage() {
               <button
                 type="button"
                 onClick={() => setShowNewPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-violet-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-blue-700"
               >
                 {showNewPassword ? "숨기기" : "보기"}
               </button>
@@ -161,7 +161,7 @@ export default function PasswordResetPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-violet-700"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400 transition hover:text-blue-700"
               >
                 {showConfirmPassword ? "숨기기" : "보기"}
               </button>
@@ -169,7 +169,7 @@ export default function PasswordResetPage() {
           </FormField>
 
           {errors.common ? (
-            <div className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+            <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               {errors.common}
             </div>
           ) : null}

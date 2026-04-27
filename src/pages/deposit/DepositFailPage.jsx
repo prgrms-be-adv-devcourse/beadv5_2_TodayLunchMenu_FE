@@ -2,7 +2,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
-import { clearPendingCharge, getPendingCharge } from "../../features/payment/paymentApi";
+import {
+  clearPendingCharge,
+  failChargeApi,
+  getPendingCharge,
+} from "../../features/payment/paymentApi";
+
+function getChargeFailureReportKey(orderId) {
+  return `charge-failure-reported:${orderId}`;
+}
 
 const MOCK_DEPOSIT_FAILURE = {
   errorTitle: "결제 한도 초과",
@@ -37,6 +45,10 @@ function buildFailureModel(search, state) {
   };
 }
 
+function canReportChargeFailure(result) {
+  return Boolean(result.orderId && result.errorMessage);
+}
+
 export default function DepositFailPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,10 +59,45 @@ export default function DepositFailPage() {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function reportFailure() {
+      if (!canReportChargeFailure(result)) {
+        return;
+      }
+
+      const key = getChargeFailureReportKey(result.orderId);
+      if (window.sessionStorage.getItem(key) === "1") {
+        return;
+      }
+
+      try {
+        await failChargeApi({
+          orderId: result.orderId,
+          code: result.errorCode,
+          message: result.errorMessage,
+        });
+
+        if (!cancelled) {
+          window.sessionStorage.setItem(key, "1");
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error("[DepositFailPage] failed to report charge failure", error);
+        }
+      }
+    }
+
+    reportFailure();
+
     if (result.orderId) {
       clearPendingCharge(result.orderId);
     }
-  }, [result.orderId]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [result]);
 
   return (
     <PageContainer>
@@ -60,12 +107,12 @@ export default function DepositFailPage() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex h-10 w-10 items-center justify-center rounded-full p-2 text-violet-700 transition hover:bg-violet-100/50"
+              className="flex h-10 w-10 items-center justify-center rounded-full p-2 text-blue-700 transition hover:bg-blue-100/50"
               aria-label="뒤로 가기"
             >
               ←
             </button>
-            <h1 className="text-lg font-extrabold tracking-tight text-violet-900">
+            <h1 className="text-lg font-extrabold tracking-tight text-gray-900">
               Transaction Details
             </h1>
           </div>
@@ -81,9 +128,9 @@ export default function DepositFailPage() {
             <p className="leading-relaxed text-gray-500">{result.errorMessage}</p>
           </div>
 
-          <section className="space-y-6 rounded-[28px] bg-white px-8 py-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-purple-100">
+          <section className="space-y-6 bg-white px-8 py-8 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.06)] ring-1 ring-gray-200">
             <div className="space-y-4">
-              <div className="flex items-start justify-between border-b border-purple-100 pb-4">
+              <div className="flex items-start justify-between border-b border-blue-200 pb-4">
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   실패 사유
                 </span>
@@ -95,7 +142,7 @@ export default function DepositFailPage() {
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   시도 금액
                 </span>
-                <span className="text-lg font-extrabold text-violet-700">
+                <span className="text-lg font-extrabold text-blue-700">
                   {formatPrice(result.amount)}
                 </span>
               </div>
@@ -103,7 +150,7 @@ export default function DepositFailPage() {
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   에러 코드
                 </span>
-                <span className="rounded bg-purple-100 px-2 py-1 font-mono text-xs text-gray-900">
+                <span className="rounded bg-gray-100 px-2 py-1 font-mono text-xs text-gray-900">
                   {result.errorCode}
                 </span>
               </div>
@@ -121,7 +168,7 @@ export default function DepositFailPage() {
           <section className="flex flex-col space-y-4 pt-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg shadow-violet-500/20"
+              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
               onClick={() => navigate("/deposits")}
             >
               다시 시도하기
@@ -130,7 +177,7 @@ export default function DepositFailPage() {
             <div className="flex flex-col items-center space-y-4 pt-2">
               <button
                 type="button"
-                className="text-sm font-semibold text-violet-700 transition hover:underline"
+                className="text-sm font-semibold text-blue-700 transition hover:underline"
                 onClick={() => navigate("/deposits")}
               >
                 충전 페이지로 돌아가기

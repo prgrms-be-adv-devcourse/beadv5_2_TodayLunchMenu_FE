@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -47,12 +47,12 @@ export default function PaymentFailPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-violet-700 transition hover:bg-violet-100/60"
+            className="rounded-full p-2 text-blue-700 transition hover:bg-blue-100/60"
             aria-label="뒤로 가기"
           >
             ←
           </button>
-          <span className="text-lg font-black tracking-tight text-violet-900">The Collector</span>
+          <span className="text-lg font-black tracking-tight text-gray-900">The Collector</span>
         </div>
 
         <div className="space-y-12">
@@ -73,20 +73,20 @@ export default function PaymentFailPage() {
               <h1 className="text-4xl font-black tracking-tight text-gray-900">결제가 중단되었습니다</h1>
             </div>
 
-            <section className="space-y-4 rounded-[28px] bg-purple-50/80 p-6 text-left ring-1 ring-purple-100">
+            <section className="space-y-4 bg-blue-50/80 p-6 text-left ring-1 ring-gray-200">
               <div className="flex items-start gap-4">
-                <div className="mt-1 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-purple-100">
-                  <span className="text-xl text-violet-700">원</span>
+                <div className="mt-1 bg-white p-3 shadow-sm ring-1 ring-gray-200">
+                  <span className="text-xl text-blue-700">원</span>
                 </div>
                 <div>
                   <p className="text-lg font-extrabold text-gray-900">{payment.errorTitle}</p>
                   <p className="mt-2 text-sm leading-6 text-gray-500">{payment.errorMessage}</p>
                 </div>
               </div>
-              <div className="h-px bg-purple-100" />
+              <div className="h-px bg-gray-200" />
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold uppercase tracking-[0.2em] text-gray-500">Transaction ID</span>
-                <span className="font-mono font-semibold text-violet-700">#{payment.orderId}</span>
+                <span className="font-mono font-semibold text-blue-700">#{payment.orderId}</span>
               </div>
             </section>
           </div>
@@ -94,7 +94,7 @@ export default function PaymentFailPage() {
           <div className="flex flex-col gap-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(93,63,211,0.5)]"
+              className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(29,78,216,0.5)]"
               onClick={() => navigate(`/payments`, { state: payment })}
             >
               다시 시도하기
@@ -114,9 +114,9 @@ export default function PaymentFailPage() {
           </p>
         </div>
 
-        <footer className="mt-12 rounded-[28px] bg-white p-6 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
+        <footer className="mt-12 bg-white p-6 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-purple-100 text-2xl text-violet-700">
+            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center bg-blue-100 text-2xl text-blue-700">
               🔒
             </div>
             <div>

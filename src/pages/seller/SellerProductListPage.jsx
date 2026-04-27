@@ -102,13 +102,13 @@ export default function SellerProductListPage() {
         {/* 헤더 */}
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">Seller Hub</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500">Seller Hub</p>
             <h1 className="mt-0.5 text-xl font-extrabold text-gray-900">상품 관리</h1>
           </div>
           <button
             type="button"
             onClick={() => navigate("/seller/products/new")}
-            className="flex items-center gap-1.5 rounded-full bg-violet-700 px-4 py-2 text-sm font-bold text-white shadow-md shadow-violet-500/20 transition hover:bg-violet-800 active:scale-[0.97]"
+            className="flex items-center gap-1.5 rounded-full bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.97]"
           >
             <span className="text-base leading-none">+</span>
             상품 등록
@@ -117,7 +117,7 @@ export default function SellerProductListPage() {
 
         {/* 통계 요약 */}
         {!loading && products.length > 0 && (
-          <div className="mb-5 grid grid-cols-4 divide-x divide-gray-100 rounded-2xl bg-white py-3 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-5 grid grid-cols-4 divide-x divide-gray-100 bg-white py-3 shadow-sm ring-1 ring-gray-100">
             {[
               { label: "전체", value: products.length, color: "text-gray-900" },
               { label: "판매중", value: activeCount, color: "text-emerald-600" },
@@ -154,7 +154,7 @@ export default function SellerProductListPage() {
                   className={[
                     "flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition",
                     active
-                      ? "bg-violet-700 text-white"
+                      ? "bg-blue-700 text-white"
                       : "bg-gray-100 text-gray-500 hover:bg-gray-200",
                   ].join(" ")}
                 >
@@ -167,7 +167,7 @@ export default function SellerProductListPage() {
 
         {/* 에러 */}
         {error && (
-          <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
+          <div className="mb-4 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
         )}
 
         {/* 상품 목록 */}
@@ -182,7 +182,7 @@ export default function SellerProductListPage() {
               <button
                 type="button"
                 onClick={() => navigate("/seller/products/new")}
-                className="mt-4 text-sm font-semibold text-violet-600 underline underline-offset-2"
+                className="mt-4 text-sm font-semibold text-blue-600 underline underline-offset-2"
               >
                 첫 상품 등록하기
               </button>
@@ -193,11 +193,11 @@ export default function SellerProductListPage() {
             {filteredProducts.map((product) => (
               <li key={product.id}>
                 <article
-                  className="flex cursor-pointer gap-3 rounded-2xl bg-white p-3.5 shadow-sm ring-1 ring-gray-100 transition hover:ring-violet-200"
+                  className="flex cursor-pointer gap-3 bg-white p-3.5 shadow-sm ring-1 ring-gray-100 transition hover:ring-blue-200"
                   onClick={() => navigate(`/seller/products/${product.id}/edit`)}
                 >
                   {/* 썸네일 */}
-                  <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden rounded-xl bg-gray-50">
+                  <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden bg-gray-50">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
@@ -218,7 +218,7 @@ export default function SellerProductListPage() {
 
                     <p className="mt-0.5 truncate text-xs text-gray-400">{product.category}</p>
 
-                    <p className="mt-1 text-sm font-extrabold text-violet-700">
+                    <p className="mt-1 text-sm font-extrabold text-blue-700">
                       {formatPrice(product.price)}원
                     </p>
 

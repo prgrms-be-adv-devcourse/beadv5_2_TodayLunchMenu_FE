@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
@@ -53,6 +53,10 @@ function getStatusMeta(status) {
       return { label: "일부 배송 중", className: "bg-sky-100 text-sky-700" };
     case "DELIVERED":
       return { label: "배송 완료", className: "bg-indigo-100 text-indigo-700" };
+      return {
+        label: "주문 완료",
+        className: "bg-blue-100 text-blue-700",
+      };
     case "COMPLETED":
       return { label: "구매 확정", className: "bg-emerald-100 text-emerald-700" };
     case "PARTIAL_CANCELED":
@@ -149,7 +153,7 @@ export default function OrderListPage() {
         }
       />
 
-      <section className="mb-6 rounded-[28px] bg-white/80 p-4 shadow-sm ring-1 ring-purple-100">
+      <section className="mb-6 bg-white/80 p-4 shadow-sm ring-1 ring-gray-200">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.5fr_1fr]">
           <Input
             placeholder="주문번호 또는 상품명 검색"
@@ -160,7 +164,7 @@ export default function OrderListPage() {
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-14 rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300"
+            className="h-14 bg-blue-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-blue-200"
           >
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -172,16 +176,16 @@ export default function OrderListPage() {
       </section>
 
       {loading ? (
-        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
           <p className="text-sm font-medium text-gray-500">주문 목록을 불러오는 중입니다...</p>
         </section>
       ) : error ? (
-        <section className="rounded-[32px] bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
+        <section className="bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
           <p className="mb-2 text-lg font-bold text-red-600">주문 목록을 불러오지 못했습니다</p>
           <p className="text-sm text-red-500">{error}</p>
         </section>
       ) : filteredOrders.length === 0 ? (
-        <section className="rounded-[32px] bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-purple-100">
+        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
           <p className="mb-2 text-lg font-bold text-gray-900">주문 내역이 없어요</p>
           <p className="text-sm text-gray-500">첫 주문을 생성하면 이곳에서 확인할 수 있어요.</p>
         </section>
@@ -195,11 +199,11 @@ export default function OrderListPage() {
               <Link
                 key={order.orderId}
                 to={`/orders/${order.orderId}`}
-                className="block rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100 transition hover:-translate-y-0.5 hover:shadow-md"
+                className="block bg-white/80 p-5 shadow-sm ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 overflow-hidden rounded-2xl bg-purple-50">
+                    <div className="h-20 w-20 overflow-hidden bg-blue-50">
                       {thumbnailSrc ? (
                         <img
                           src={thumbnailSrc}
@@ -207,7 +211,7 @@ export default function OrderListPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
                           {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
                         </div>
                       )}
@@ -241,7 +245,7 @@ export default function OrderListPage() {
 
                   <div className="md:text-right">
                     <p className="text-sm text-gray-500">총 결제 금액</p>
-                    <p className="mt-1 text-2xl font-extrabold tracking-tight text-violet-700">
+                    <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
                       {formatPrice(order.totalAmount)}원
                     </p>
                   </div>

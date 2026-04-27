@@ -28,7 +28,7 @@ const STATUS_META = {
 };
 
 const SELECT_CLASS =
-  "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100";
+  "w-full rounded border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-gray-200";
 
 function formatPrice(v) {
   return new Intl.NumberFormat("ko-KR").format(v);
@@ -296,7 +296,7 @@ export default function SellerProductEditPage() {
         <p className="py-16 text-center text-sm text-red-500">{pageError}</p>
         <button
           type="button"
-          className="mt-2 w-full text-center text-sm text-violet-600 underline underline-offset-2"
+          className="mt-2 w-full text-center text-sm text-blue-600 underline underline-offset-2"
           onClick={() => navigate("/seller/products")}
         >
           목록으로 돌아가기
@@ -324,7 +324,7 @@ export default function SellerProductEditPage() {
       </button>
 
       {/* 대표 이미지 (크게) */}
-      <div className="mb-4 overflow-hidden rounded-2xl bg-gray-50">
+      <div className="mb-4 overflow-hidden bg-gray-50">
         {thumbnailImage?.url ? (
           <img
             src={thumbnailImage.url}
@@ -339,10 +339,10 @@ export default function SellerProductEditPage() {
       </div>
 
       {/* 상품 현황 스트립 */}
-      <div className="mb-6 flex items-center justify-between rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-gray-100">
+      <div className="mb-6 flex items-center justify-between bg-white px-4 py-3 shadow-sm ring-1 ring-gray-100">
         <div className="min-w-0">
           <p className="truncate font-bold text-gray-900">{form.title || "—"}</p>
-          <p className="text-sm font-semibold text-violet-700">{formatPrice(form.price || 0)}원</p>
+          <p className="text-sm font-semibold text-blue-700">{formatPrice(form.price || 0)}원</p>
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-1">
           <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${statusMeta.className}`}>
@@ -353,7 +353,7 @@ export default function SellerProductEditPage() {
       </div>
 
       {/* ── 이미지 관리 섹션 ── */}
-      <section className="mb-5 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+      <section className="mb-5 bg-white p-5 shadow-sm ring-1 ring-gray-100">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">상품 이미지</h3>
           <span className="text-xs text-gray-400">{images.length}장</span>
@@ -374,7 +374,7 @@ export default function SellerProductEditPage() {
                 <div
                   className={[
                     "h-24 w-24 overflow-hidden rounded-xl bg-gray-50 ring-2 transition",
-                    img.isThumbnail ? "ring-violet-400" : "ring-transparent",
+                    img.isThumbnail ? "ring-blue-400" : "ring-transparent",
                   ].join(" ")}
                 >
                   {img.url ? (
@@ -391,7 +391,7 @@ export default function SellerProductEditPage() {
                   )}
                 </div>
                 {img.isThumbnail && (
-                  <span className="absolute bottom-1 left-1 rounded bg-violet-600 px-1 py-px text-[9px] font-bold text-white">
+                  <span className="absolute bottom-1 left-1 rounded bg-blue-600 px-1 py-px text-[9px] font-bold text-white">
                     대표
                   </span>
                 )}
@@ -417,7 +417,7 @@ export default function SellerProductEditPage() {
               key={`uploading-${i}`}
               className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100"
             >
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
             </div>
           ))}
 
@@ -426,7 +426,7 @@ export default function SellerProductEditPage() {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
-            className="flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 transition hover:border-violet-300 hover:text-violet-500 disabled:opacity-40"
+            className="flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center gap-1 border-2 border-dashed border-gray-200 text-gray-400 transition hover:border-blue-300 hover:text-blue-500 disabled:opacity-40"
           >
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
               <path d="M11 4v14M4 11h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -449,12 +449,12 @@ export default function SellerProductEditPage() {
       <h2 className="mb-4 text-base font-extrabold text-gray-800">상품 정보 수정</h2>
 
       {submitError && (
-        <div className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{submitError}</div>
+        <div className="mb-5 bg-red-50 px-4 py-3 text-sm text-red-600">{submitError}</div>
       )}
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         {/* 기본 정보 */}
-        <section className="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <section className="space-y-4 bg-white p-5 shadow-sm ring-1 ring-gray-100">
           <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">기본 정보</h3>
 
           <FormField label="상품명" htmlFor="title" required error={errors.title}>
@@ -475,13 +475,13 @@ export default function SellerProductEditPage() {
               placeholder="상품에 대한 설명을 입력해 주세요 (선택)"
               rows={4}
               disabled={isBusy}
-              className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100 disabled:opacity-50"
+              className="w-full resize-none rounded border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-gray-200 disabled:opacity-50"
             />
           </FormField>
         </section>
 
         {/* 카테고리 */}
-        <section className="space-y-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <section className="space-y-3 bg-white p-5 shadow-sm ring-1 ring-gray-100">
           <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">카테고리</h3>
 
           <FormField label="대분류" htmlFor="cat-0" required error={errors.categoryId}>
@@ -535,7 +535,7 @@ export default function SellerProductEditPage() {
         </section>
 
         {/* 판매 조건 */}
-        <section className="space-y-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <section className="space-y-4 bg-white p-5 shadow-sm ring-1 ring-gray-100">
           <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">판매 조건</h3>
 
           <FormField label="판매가 (원)" htmlFor="price" required error={errors.price}>
@@ -561,7 +561,7 @@ export default function SellerProductEditPage() {
                   }))
                 }
                 disabled={isBusy || Number(form.stockQuantity) <= MIN_STOCK}
-                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-600 transition hover:border-violet-300 hover:text-violet-700 disabled:opacity-40"
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-600 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-40"
               >
                 −
               </button>
@@ -583,7 +583,7 @@ export default function SellerProductEditPage() {
                   }))
                 }
                 disabled={isBusy}
-                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-600 transition hover:border-violet-300 hover:text-violet-700 disabled:opacity-40"
+                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-lg font-bold text-gray-600 transition hover:border-blue-300 hover:text-blue-700 disabled:opacity-40"
               >
                 +
               </button>
