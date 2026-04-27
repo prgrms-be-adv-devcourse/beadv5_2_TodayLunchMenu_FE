@@ -33,9 +33,6 @@ export default function AuctionCard({ auction, productImage }) {
             alt={title}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />
-          <span className="absolute left-2 top-2 bg-white/90 px-1.5 py-0.5 text-[10px] font-bold text-gray-700">
-            Lot {auction.id?.slice(0, 6).toUpperCase()}
-          </span>
           <CountdownPill endsAt={auction.endsAt} status={auction.status} />
         </div>
       </Link>
