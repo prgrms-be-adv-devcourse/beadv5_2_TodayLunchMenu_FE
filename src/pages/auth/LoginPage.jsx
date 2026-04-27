@@ -26,7 +26,7 @@ export default function LoginPage() {
   const safeRedirectTarget =
     typeof redirectTarget === "string" && redirectTarget.startsWith("/")
       ? redirectTarget
-      : "/products";
+      : "/";
 
   const [form, setForm] = useState({
     email: initialEmail,
