@@ -10,14 +10,10 @@ export default function Button({
   ...props
 }) {
   const variants = {
-    primary:
-      "bg-gradient-to-br from-violet-700 to-violet-600 text-white shadow-lg shadow-violet-500/20 hover:brightness-110",
-    secondary:
-      "bg-purple-100 text-violet-800 hover:bg-purple-200",
-    ghost:
-      "bg-transparent text-violet-700 hover:bg-purple-100",
-    danger:
-      "bg-red-600 text-white hover:bg-red-700",
+    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    secondary: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100",
+    ghost: "bg-transparent text-blue-600 hover:bg-blue-50",
+    danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
   const sizes = {
@@ -31,11 +27,11 @@ export default function Button({
       type={type}
       disabled={disabled}
       className={cn(
-        "inline-flex items-center justify-center transition active:scale-[0.98]",
+        "inline-flex items-center justify-center transition",
         "disabled:cursor-not-allowed disabled:opacity-50",
         variants[variant],
         sizes[size],
-        className
+        className,
       )}
       {...props}
     >

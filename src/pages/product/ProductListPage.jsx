@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
 import ProductCard from "../../components/product/ProductCard";
 import { useCart } from "../../features/cart/useCart";
 import { useCategories, useProducts } from "../../features/product/useProducts";
@@ -99,9 +100,7 @@ export default function ProductListPage() {
 
   const categoryTree = useMemo(() => {
     const roots = categories.filter((c) => !c.parentId);
-    const getChildren = (parentId) =>
-      categories.filter((c) => c.parentId === parentId);
-
+    const getChildren = (parentId) => categories.filter((c) => c.parentId === parentId);
     return roots.map((root) => ({
       ...root,
       children: getChildren(root.id).map((child) => ({
@@ -113,7 +112,6 @@ export default function ProductListPage() {
 
   const descendantMap = useMemo(() => {
     const map = {};
-
     function collectIds(categoryId) {
       if (map[categoryId]) return map[categoryId];
       const children = categories.filter((c) => c.parentId === categoryId);
@@ -121,7 +119,6 @@ export default function ProductListPage() {
       map[categoryId] = ids;
       return ids;
     }
-
     categories.forEach((c) => collectIds(c.id));
     return map;
   }, [categories]);
@@ -135,20 +132,14 @@ export default function ProductListPage() {
     }
 
     if (statusFilter === "판매중") {
-      result = result.filter(
-        (p) => p.status !== "SOLD_OUT" && p.stockCount > 0,
-      );
+      result = result.filter((p) => p.status !== "SOLD_OUT" && p.stockCount > 0);
     } else if (statusFilter === "품절") {
-      result = result.filter(
-        (p) => p.status === "SOLD_OUT" || p.stockCount <= 0,
-      );
+      result = result.filter((p) => p.status === "SOLD_OUT" || p.stockCount <= 0);
     }
 
     if (keyword.trim()) {
       const lowerKeyword = keyword.toLowerCase();
-      result = result.filter((p) =>
-        p.name.toLowerCase().includes(lowerKeyword),
-      );
+      result = result.filter((p) => p.name.toLowerCase().includes(lowerKeyword));
     }
 
     switch (sort) {
@@ -159,15 +150,12 @@ export default function ProductListPage() {
         result = [...result].sort((a, b) => b.price - a.price);
         break;
       case "name":
-        result = [...result].sort((a, b) =>
-          a.name.localeCompare(b.name, "ko"),
-        );
+        result = [...result].sort((a, b) => a.name.localeCompare(b.name, "ko"));
         break;
       default:
         result = [...result].sort(
           (a, b) =>
-            new Date(b.createdAt || 0).getTime() -
-            new Date(a.createdAt || 0).getTime(),
+            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
         );
     }
 
@@ -202,197 +190,185 @@ export default function ProductListPage() {
       await addToCart({ productId: product.id, quantity: 1 });
       window.alert("장바구니에 담았습니다.");
     } catch (nextError) {
-      if (nextError?.status === 401) {
-        navigate("/login");
-        return;
-      }
+      if (nextError?.status === 401) { navigate("/login"); return; }
       window.alert(nextError?.message || "장바구니에 담지 못했습니다.");
     }
   };
 
+  const hasFilter = keyword || statusFilter !== "전체" || sort !== "latest" || selectedCategoryId;
+
   return (
-    <div className="flex items-start gap-0">
-      {/* Category Sidebar */}
-      <aside
-        className={[
-          "shrink-0 transition-all duration-200",
-          sidebarOpen ? "w-52" : "w-0 overflow-hidden",
-        ].join(" ")}
-      >
-        <div className="mr-4 overflow-hidden border border-gray-200 bg-white">
-          <div className="bg-gray-800 px-4 py-2.5">
-            <h2 className="text-sm font-bold text-white">카테고리</h2>
-          </div>
-          <CategoryTree
-            tree={categoryTree}
-            selectedId={selectedCategoryId}
-            onSelect={setSelectedCategoryId}
-          />
-        </div>
-      </aside>
+    <div className="text-left">
+      {/* Page Header */}
+      <div className="mb-5">
+        <h1 className="text-xl font-black text-gray-900">상품 목록</h1>
+        <p className="mt-0.5 text-sm text-gray-500">다양한 상품을 탐색하고 원하는 상품을 찾아보세요</p>
+      </div>
 
-      {/* Main Content */}
-      <div className="min-w-0 flex-1">
-        {/* Top Bar */}
-        <div className="mb-4 border-b border-gray-200 pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen((v) => !v)}
-                className="flex h-8 w-8 items-center justify-center rounded border border-gray-300 text-gray-500 transition hover:bg-gray-100"
-                title="카테고리 열기/닫기"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <line x1="2" y1="4" x2="14" y2="4" />
-                  <line x1="2" y1="8" x2="14" y2="8" />
-                  <line x1="2" y1="12" x2="14" y2="12" />
-                </svg>
-              </button>
-
-              <div className="flex items-center gap-1 text-sm">
-                <button
-                  type="button"
-                  onClick={() => setSelectedCategoryId(null)}
-                  className="text-gray-500 hover:text-blue-600"
-                >
-                  전체
-                </button>
-                {selectedCategory && (
-                  <>
-                    <span className="text-gray-400">&gt;</span>
-                    <span className="font-semibold text-gray-900">
-                      {selectedCategory.name}
-                    </span>
-                  </>
-                )}
-              </div>
-
-              <span className="text-xs text-gray-400">
-                {filteredProducts.length}개
-                {totalPages > 1 && ` · ${currentPage + 1}/${totalPages} 페이지`}
-              </span>
+      <div className="flex items-start gap-0">
+        {/* Category Sidebar */}
+        <aside
+          className={[
+            "shrink-0 transition-all duration-200",
+            sidebarOpen ? "w-48" : "w-0 overflow-hidden",
+          ].join(" ")}
+        >
+          <div className="mr-4 overflow-hidden border border-gray-200 bg-white">
+            <div className="bg-blue-700 px-4 py-2.5">
+              <h2 className="text-sm font-bold text-white">카테고리</h2>
             </div>
+            <CategoryTree
+              tree={categoryTree}
+              selectedId={selectedCategoryId}
+              onSelect={setSelectedCategoryId}
+            />
+          </div>
+        </aside>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="상품명 검색"
-                className="h-8 rounded border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
-              />
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-8 rounded border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
-              >
-                {STATUS_OPTIONS.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="h-8 rounded border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-
-              {(keyword || statusFilter !== "전체" || sort !== "latest" || selectedCategoryId) && (
+        {/* Main Content */}
+        <div className="min-w-0 flex-1">
+          {/* Top Bar */}
+          <div className="mb-4 border-b border-gray-200 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={handleReset}
-                  className="h-8 rounded border border-gray-300 px-2.5 text-xs text-gray-600 transition hover:bg-gray-100"
+                  onClick={() => setSidebarOpen((v) => !v)}
+                  className="flex h-8 w-8 items-center justify-center border border-gray-300 text-gray-500 transition hover:bg-gray-100"
+                  title="카테고리 열기/닫기"
                 >
-                  초기화
+                  <Menu className="h-4 w-4" />
                 </button>
-              )}
-            </div>
-          </div>
-        </div>
 
-        {/* Product Grid */}
-        {loading ? (
-          <div className="py-20 text-center text-sm text-gray-500">
-            상품을 불러오는 중입니다…
-          </div>
-        ) : error ? (
-          <div className="py-20 text-center text-sm text-red-500">
-            상품 목록을 불러오지 못했습니다.
-          </div>
-        ) : (
-          <div
-            className={
-              fetching ? "pointer-events-none opacity-50 transition-opacity" : ""
-            }
-          >
-            {filteredProducts.length === 0 ? (
-              <div className="py-20 text-center">
-                <p className="mb-3 text-sm font-semibold text-gray-700">
-                  조건에 맞는 상품이 없습니다.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="rounded border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100"
-                >
-                  필터 초기화
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                  {pagedProducts.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      onAddToCart={handleAddToCart}
-                    />
-                  ))}
+                <div className="flex items-center gap-1 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategoryId(null)}
+                    className="text-gray-500 hover:text-blue-600"
+                  >
+                    전체
+                  </button>
+                  {selectedCategory && (
+                    <>
+                      <span className="text-gray-400">›</span>
+                      <span className="font-semibold text-gray-900">
+                        {selectedCategory.name}
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                {totalPages > 1 && (
-                  <div className="mt-6 flex items-center justify-center gap-2">
-                    <button
-                      type="button"
-                      disabled={currentPage === 0}
-                      onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-                      className="rounded border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      이전
-                    </button>
-                    <span className="text-sm text-gray-500">
-                      {currentPage + 1} / {totalPages}
-                    </span>
-                    <button
-                      type="button"
-                      disabled={currentPage >= totalPages - 1}
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
-                      className="rounded border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      다음
-                    </button>
-                  </div>
+                <span className="text-xs text-gray-400">
+                  {filteredProducts.length}개
+                  {totalPages > 1 && ` · ${currentPage + 1}/${totalPages}페이지`}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="상품명 검색"
+                  className="h-8 border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
+                />
+
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="h-8 border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
+                >
+                  {STATUS_OPTIONS.map((o) => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="h-8 border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
+                >
+                  {SORT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+
+                {hasFilter && (
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="h-8 border border-gray-300 px-2.5 text-xs text-gray-600 transition hover:bg-gray-100"
+                  >
+                    초기화
+                  </button>
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Product Grid */}
+          {loading ? (
+            <div className="py-20 text-center text-sm text-gray-400">
+              상품을 불러오는 중입니다…
+            </div>
+          ) : error ? (
+            <div className="py-20 text-center text-sm text-red-500">
+              상품 목록을 불러오지 못했습니다.
+            </div>
+          ) : (
+            <div className={fetching ? "pointer-events-none opacity-50 transition-opacity" : ""}>
+              {filteredProducts.length === 0 ? (
+                <div className="py-20 text-center">
+                  <p className="mb-3 text-sm font-semibold text-gray-700">
+                    조건에 맞는 상품이 없습니다.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100"
+                  >
+                    필터 초기화
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {pagedProducts.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                      />
+                    ))}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        disabled={currentPage === 0}
+                        onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        이전
+                      </button>
+                      <span className="text-sm text-gray-500">
+                        {currentPage + 1} / {totalPages}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={currentPage >= totalPages - 1}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        다음
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
