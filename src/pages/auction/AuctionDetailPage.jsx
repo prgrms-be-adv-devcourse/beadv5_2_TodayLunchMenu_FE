@@ -138,6 +138,14 @@ export default function AuctionDetailPage() {
   const { auction, setAuction, loading, error, reload } = useAuction(auctionId);
   const { bids, prependBid } = useAuctionBids(auctionId, { size: 30 });
   const { ended } = useCountdown(auction?.endsAt);
+
+  const myId = user?.memberId;
+
+  const validBids = useMemo(
+    () => bids.filter((bid) => SHOW_BID_STATUSES.has(bid.status)),
+    [bids],
+  );
+
   const [productImages, setProductImages] = useState([]);
   const [productDescription, setProductDescription] = useState(null);
   const [productName, setProductName] = useState(null);
@@ -220,8 +228,6 @@ export default function AuctionDetailPage() {
     return () => clearTimeout(timer);
   }, [toast]);
 
-  const myId = user?.memberId;
-
   const handleBidEvent = useCallback(
     (payload) => {
       if (!payload?.auctionId || String(payload.auctionId) !== String(auctionId)) return;
@@ -256,11 +262,6 @@ export default function AuctionDetailPage() {
   }, []);
 
   useAuctionSocket(auctionId, handleBidEvent, myId, handleUserMessage);
-
-  const validBids = useMemo(
-    () => bids.filter((bid) => SHOW_BID_STATUSES.has(bid.status)),
-    [bids],
-  );
 
   const quicks = useMemo(() => {
     if (!auction || bidUnit <= 0) return [];
