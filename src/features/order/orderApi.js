@@ -27,6 +27,7 @@ function toUiOrderItem(item) {
   const quantity = item?.quantity ?? 0;
 
   return {
+    orderItemId: item?.orderItemId,
     productId: item?.productId,
     productName: item?.productName ?? "상품명 없음",
     unitPrice,
@@ -34,6 +35,7 @@ function toUiOrderItem(item) {
     status: item?.status ?? "UNKNOWN",
     thumbnailKey: item?.thumbnailKey ?? "",
     totalPrice: Number(unitPrice) * Number(quantity),
+    deliveryId: item?.deliveryId ?? null,
   };
 }
 
@@ -58,6 +60,7 @@ function toUiOrderDetail(order) {
     itemCount: order?.itemCount ?? items.length,
     status: order?.status ?? "UNKNOWN",
     items,
+    deliveryMemo: order?.deliveryMemo ?? null,
   };
 }
 
@@ -134,4 +137,53 @@ async function cancelOrderApi(orderId, { reason, detailReason }) {
   };
 }
 
-export { cancelOrderApi, createOrderApi, getOrderDetailApi, getOrdersApi };
+async function getDeliveryTrackingApi(deliveryId) {
+  const response = await apiClient(`/api/deliveries/${deliveryId}/tracking`, {
+    method: "GET",
+  });
+
+  const payload = response.data?.data ?? response.data;
+  return {
+    courierCode: payload?.courierCode ?? "",
+    invoiceNumber: payload?.invoiceNumber ?? "",
+    delivered: payload?.delivered ?? false,
+    details: Array.isArray(payload?.details)
+      ? payload.details.map((d) => ({
+          time: d?.time ?? "",
+          location: d?.location ?? "",
+          status: d?.status ?? "",
+        }))
+      : [],
+  };
+}
+
+async function confirmOrderItemApi(orderId, orderItemId) {
+  const response = await apiClient(`/api/orders/${orderId}/items/${orderItemId}/confirm`, {
+    method: "POST",
+  });
+
+  return response.data?.data ?? response.data;
+}
+
+async function getOrderPaymentApi(orderId) {
+  const response = await apiClient(`/api/payments/orders/${orderId}`, {
+    method: "GET",
+  });
+  const payload = response.data?.data ?? response.data;
+  return {
+    paymentMethod: payload?.paymentMethod ?? null,
+    paymentStatus: payload?.paymentStatus ?? null,
+    totalAmount: payload?.totalAmount ?? null,
+    paidAt: payload?.paidAt ?? null,
+  };
+}
+
+async function confirmOrderApi(orderId) {
+  const response = await apiClient(`/api/orders/${orderId}/confirm`, {
+    method: "POST",
+  });
+
+  return response.data?.data ?? response.data;
+}
+
+export { cancelOrderApi, confirmOrderApi, confirmOrderItemApi, createOrderApi, getDeliveryTrackingApi, getOrderDetailApi, getOrderPaymentApi, getOrdersApi };
