@@ -300,6 +300,13 @@ async function getProductsByIdsApi(productIds) {
   return list.map(toUiProduct);
 }
 
+async function reindexProductsEsApi() {
+  const response = await apiClient("/api/admin/products/reindex", {
+    method: "POST",
+  });
+  return response.data;
+}
+
 export {
   createProductApi,
   updateProductApi,
@@ -317,5 +324,6 @@ export {
   updateCategoryAdminApi,
   updateCategorySellerApi,
   deleteCategoryApi,
+  reindexProductsEsApi,
 };
 

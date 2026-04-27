@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ApiError } from '../../api/client';
 import { backfillMissingEmbeddingsApi, reindexAllEmbeddingsApi } from '../../features/ai/embeddingAdminApi';
+import { reindexProductsEsApi } from '../../features/product/productApi';
 import AdminNav from '../../components/admin/AdminNav';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 
@@ -11,6 +12,9 @@ function AdminEmbeddingPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [lastCompletedAction, setLastCompletedAction] = useState(null);
+  const [esLoading, setEsLoading] = useState(false);
+  const [esResult, setEsResult] = useState(null);
+  const [esError, setEsError] = useState(null);
 
   const handleBackfillMissing = () => {
     setPendingAction('backfill');
@@ -63,6 +67,21 @@ function AdminEmbeddingPage() {
     }
   };
 
+  const handleEsReindex = async () => {
+    if (!window.confirm('DB의 모든 상품을 ElasticSearch에 재인덱싱합니다. 계속하시겠습니까?')) return;
+    try {
+      setEsLoading(true);
+      setEsError(null);
+      setEsResult(null);
+      const data = await reindexProductsEsApi();
+      setEsResult(data);
+    } catch (err) {
+      setEsError(err instanceof ApiError ? err.message : '재인덱싱 중 오류가 발생했습니다.');
+    } finally {
+      setEsLoading(false);
+    }
+  };
+
   const getConfirmMessage = () => {
     if (pendingAction === 'backfill') {
       return '누락된 임베딩을 추가하시겠습니까? 이 작업은 시간이 걸릴 수 있습니다.';
@@ -93,6 +112,40 @@ function AdminEmbeddingPage() {
               {error}
             </div>
           )}
+
+          {/* ES Reindex Section */}
+          <section className="mb-8 overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-extrabold text-gray-900 mb-1">상품 ES 재인덱싱</h2>
+              <p className="text-sm text-slate-500">DB의 모든 상품을 ElasticSearch에 다시 인덱싱합니다. ES로 전환 후 기존 상품이 검색되지 않을 때 실행하세요.</p>
+            </div>
+            <div className="p-6">
+              {esError && (
+                <div className="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                  {esError}
+                </div>
+              )}
+              <button
+                onClick={handleEsReindex}
+                disabled={esLoading}
+                className="w-full border border-blue-600 bg-white px-5 py-3 text-sm font-bold text-blue-600 transition hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {esLoading ? '재인덱싱 중...' : '전체 상품 ES 재인덱싱'}
+              </button>
+              {esResult && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="border border-gray-200 bg-gray-50 p-3 text-center">
+                    <p className="text-xs text-gray-500">인덱싱 성공</p>
+                    <p className="text-2xl font-black text-blue-600">{esResult.indexed ?? 0}</p>
+                  </div>
+                  <div className="border border-gray-200 bg-gray-50 p-3 text-center">
+                    <p className="text-xs text-gray-500">실패</p>
+                    <p className="text-2xl font-black text-red-500">{esResult.failed ?? 0}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Content Grid */}
           <div className="grid gap-6 md:grid-cols-2 mb-8">
