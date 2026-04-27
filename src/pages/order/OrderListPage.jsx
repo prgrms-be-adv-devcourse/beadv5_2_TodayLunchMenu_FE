@@ -10,7 +10,11 @@ const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
   { value: "CREATED", label: "결제 대기" },
   { value: "CONFIRMED", label: "주문 완료" },
+  { value: "SHIPPING", label: "배송 중" },
+  { value: "PARTIAL_SHIPPING", label: "일부 배송 중" },
+  { value: "DELIVERED", label: "배송 완료" },
   { value: "COMPLETED", label: "구매 확정" },
+  { value: "PARTIAL_CANCELED", label: "일부 취소" },
   { value: "CANCELED", label: "취소" },
 ];
 
@@ -40,30 +44,23 @@ function formatDate(value) {
 function getStatusMeta(status) {
   switch (status) {
     case "CREATED":
-      return {
-        label: "결제 대기",
-        className: "bg-amber-100 text-amber-700",
-      };
+      return { label: "결제 대기", className: "bg-amber-100 text-amber-700" };
     case "CONFIRMED":
-      return {
-        label: "주문 완료",
-        className: "bg-violet-100 text-violet-700",
-      };
+      return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
+    case "SHIPPING":
+      return { label: "배송 중", className: "bg-blue-100 text-blue-700" };
+    case "PARTIAL_SHIPPING":
+      return { label: "일부 배송 중", className: "bg-sky-100 text-sky-700" };
+    case "DELIVERED":
+      return { label: "배송 완료", className: "bg-indigo-100 text-indigo-700" };
     case "COMPLETED":
-      return {
-        label: "구매 확정",
-        className: "bg-emerald-100 text-emerald-700",
-      };
+      return { label: "구매 확정", className: "bg-emerald-100 text-emerald-700" };
+    case "PARTIAL_CANCELED":
+      return { label: "일부 취소", className: "bg-orange-100 text-orange-700" };
     case "CANCELED":
-      return {
-        label: "취소됨",
-        className: "bg-red-100 text-red-600",
-      };
+      return { label: "취소됨", className: "bg-red-100 text-red-600" };
     default:
-      return {
-        label: status,
-        className: "bg-gray-100 text-gray-700",
-      };
+      return { label: status, className: "bg-gray-100 text-gray-700" };
   }
 }
 
