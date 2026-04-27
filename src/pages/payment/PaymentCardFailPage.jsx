@@ -34,6 +34,15 @@ function buildFailureModel(search, state) {
   };
 }
 
+function clearPendingCardPayment(result) {
+  const candidateIds = [result.pgOrderId, result.orderId].filter(Boolean);
+  const uniqueIds = [...new Set(candidateIds)];
+
+  uniqueIds.forEach((id) => {
+    clearPendingOrderPayment(id);
+  });
+}
+
 export default function PaymentCardFailPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,13 +51,11 @@ export default function PaymentCardFailPage() {
     () => buildFailureModel(location.search, location.state),
     [location.search, location.state]
   );
+  const displayOrderId = result.orderId || result.pgOrderId || "-";
 
   useEffect(() => {
-    // TODO: PG 결제 실패 시 백엔드에 별도 fail 통지 API가 필요한지 payment 모듈 기준 재확인 필요.
-    if (result.pgOrderId) {
-      clearPendingOrderPayment(result.pgOrderId);
-    }
-  }, [result.pgOrderId]);
+    clearPendingCardPayment(result);
+  }, [result]);
 
   return (
     <PageContainer>
@@ -77,7 +84,7 @@ export default function PaymentCardFailPage() {
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">orderId</span>
-              <span className="font-mono font-semibold text-gray-900">{result.orderId || "-"}</span>
+              <span className="font-mono font-semibold text-gray-900">{displayOrderId}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-gray-500">결제 금액</span>

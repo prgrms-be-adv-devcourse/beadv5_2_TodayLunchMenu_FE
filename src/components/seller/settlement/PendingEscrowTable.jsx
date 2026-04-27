@@ -17,9 +17,9 @@ function shortId(value) {
 function statusLabel(status) {
   switch (status) {
     case "HELD":
-      return "보류 중";
+      return "정산 대기";
     case "RELEASED":
-      return "해제";
+      return "정산 완료";
     case "REFUNDED":
       return "환불";
     default:
@@ -34,7 +34,7 @@ export default function PendingEscrowTable({
   onOpenTransactions,
 }) {
   if (loading) {
-    return <p className="py-12 text-center text-sm text-gray-500">에스크로 보류 내역을 불러오는 중입니다...</p>;
+    return <p className="py-12 text-center text-sm text-gray-500">정산 대기 내역을 불러오는 중입니다...</p>;
   }
 
   if (error) {
@@ -42,7 +42,7 @@ export default function PendingEscrowTable({
   }
 
   if (items.length === 0) {
-    return <p className="py-12 text-center text-sm text-gray-500">현재 보류 중인 에스크로 수입이 없습니다.</p>;
+    return <p className="py-12 text-center text-sm text-gray-500">현재 정산 대기 중인 주문 수입이 없습니다.</p>;
   }
 
   return (
@@ -52,7 +52,7 @@ export default function PendingEscrowTable({
           <tr className="text-xs font-bold uppercase text-gray-400">
             <th className="px-4 py-2">주문</th>
             <th className="px-4 py-2">에스크로</th>
-            <th className="px-4 py-2">보류 금액</th>
+            <th className="px-4 py-2">정산 대기 금액</th>
             <th className="px-4 py-2">상태</th>
             <th className="px-4 py-2">생성일</th>
             <th className="px-4 py-2 text-right">거래</th>

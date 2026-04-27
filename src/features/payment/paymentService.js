@@ -1,4 +1,4 @@
-import { ApiError, apiClient } from "../../api/client";
+import { apiClient } from "../../api/client";
 import {
   getApiPayload,
   toUiCardPaymentConfirmResult,
@@ -79,6 +79,19 @@ async function confirmChargeApi({ chargeId, paymentKey, orderId, amount }) {
   return toUiChargeConfirmResult(getApiPayload(response.data));
 }
 
+async function failChargeApi({ orderId, code, message }) {
+  const response = await apiClient(PAYMENT_ENDPOINTS.chargeFail, {
+    method: "POST",
+    body: {
+      orderId,
+      code,
+      message,
+    },
+  });
+
+  return getApiPayload(response.data);
+}
+
 async function createWithdrawalApi({ amount, bankAccount, accountHolder }) {
   const response = await apiClient(PAYMENT_ENDPOINTS.withdrawals, {
     method: "POST",
@@ -90,15 +103,6 @@ async function createWithdrawalApi({ amount, bankAccount, accountHolder }) {
   });
 
   return toUiWithdrawal(getApiPayload(response.data));
-}
-
-function createCardPaymentNotImplementedError(step) {
-  return new ApiError({
-    status: 501,
-    code: "NOT_IMPLEMENTED",
-    message: `${step} API is not implemented yet.`,
-    data: { step },
-  });
 }
 
 async function createOrderForCardPaymentApi(payload) {
@@ -129,12 +133,6 @@ async function createOrderForCardPaymentApi(payload) {
   };
 }
 
-async function prepareCardPaymentApi(payload) {
-  void payload;
-  void PAYMENT_ENDPOINTS.cardPrepare;
-  throw createCardPaymentNotImplementedError("prepareCardPayment");
-}
-
 async function confirmCardPaymentApi(payload) {
   const response = await apiClient(PAYMENT_ENDPOINTS.cardConfirm, {
     method: "POST",
@@ -148,21 +146,14 @@ async function confirmCardPaymentApi(payload) {
   return toUiCardPaymentConfirmResult(getApiPayload(response.data));
 }
 
-async function failCardPaymentApi(payload) {
-  void payload;
-  void PAYMENT_ENDPOINTS.cardFail;
-  throw createCardPaymentNotImplementedError("failCardPayment");
-}
-
 export {
   confirmChargeApi,
   confirmCardPaymentApi,
   createChargeApi,
   createOrderForCardPaymentApi,
   createWithdrawalApi,
-  failCardPaymentApi,
+  failChargeApi,
   getTransactionsApi,
   getWalletSummaryApi,
   getWithdrawalsApi,
-  prepareCardPaymentApi,
 };

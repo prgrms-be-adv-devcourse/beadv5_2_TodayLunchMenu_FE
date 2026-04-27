@@ -8,6 +8,7 @@ function AdminNav({ currentPage = 'dashboard' }) {
     { id: 'reports', label: 'Reports', to: '/admin/member-reports' },
     { id: 'sanctions', label: 'Sanctions', to: '/admin/member-restrictions' },
     { id: 'categories', label: 'Categories', to: '/admin/categories' },
+    { id: 'settlement-ops', label: 'Settlement Ops', to: '/admin/settlements/ops' },
     { id: 'embeddings', label: 'Embeddings', to: '/admin/embeddings' },
     { id: 'users', label: 'Users', href: '#' },
   ];

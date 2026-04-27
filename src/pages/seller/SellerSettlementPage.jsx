@@ -21,7 +21,7 @@ import {
 import { useAuth } from "../../features/auth/useAuth";
 
 const TABS = [
-  { value: "escrow", label: "에스크로 보류" },
+  { value: "escrow", label: "정산 대기" },
   { value: "partial", label: "부분 정산 가능" },
   { value: "transactions", label: "거래 내역" },
 ];
@@ -161,7 +161,7 @@ export default function SellerSettlementPage() {
         ...prev,
         pending: getErrorMessage(
           pendingResult.reason,
-          "에스크로 보류 내역을 불러오지 못했습니다."
+          "정산 대기 내역을 불러오지 못했습니다."
         ),
       }));
     }
@@ -338,7 +338,7 @@ export default function SellerSettlementPage() {
             정산 관리
           </h1>
           <p className="text-sm leading-6 text-gray-500">
-            판매 확정 전 보류 금액과 지금 정산 가능한 금액을 한곳에서 확인하세요.
+            정산 대기 금액과 지금 정산 가능한 금액을 한곳에서 확인하세요.
           </p>
         </section>
 
