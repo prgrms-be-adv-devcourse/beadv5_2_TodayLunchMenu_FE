@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from "react";
-import { getProductDetailApi, getProductsApi } from "./productApi";
+import { getCategoriesApi, getProductDetailApi, getProductsApi } from "./productApi";
 
 function useProducts(params = {}) {
   const [products, setProducts] = useState([]);
@@ -115,4 +115,31 @@ function useProduct(productId) {
   };
 }
 
-export { useProduct, useProducts };
+function useCategories() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        const data = await getCategoriesApi();
+        if (!cancelled) setCategories(data);
+      } catch (err) {
+        if (!cancelled) setError(err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return { categories, loading, error };
+}
+
+export { useProduct, useProducts, useCategories };

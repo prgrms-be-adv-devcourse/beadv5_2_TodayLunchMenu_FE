@@ -323,8 +323,8 @@ export default function AuctionDetailPage() {
       setToast({ type: "error", message: "입찰가는 9억 9천만원을 초과할 수 없습니다." });
       return;
     }
-    if (amount % 100 !== 0) {
-      setToast({ type: "error", message: "입찰가는 100원 단위로 입력해 주세요." });
+    if (bidUnit > 0 && amount % bidUnit !== 0) {
+      setToast({ type: "error", message: `입찰가는 ${formatKRW(bidUnit)}원 단위로 입력해 주세요.` });
       return;
     }
     if (amount < nextMin) {
@@ -380,6 +380,7 @@ export default function AuctionDetailPage() {
   const isSeller = myId && auction.sellerId && myId === auction.sellerId;
   const isWaiting = auction.status === "WAITING";
   const topBid = bids[0];
+  const isHighestBidder = !ended && auction.hasBid && validBids[0] && myId && String(validBids[0].bidderId) === String(myId);
 
   return (
     <PageContainer>
@@ -535,7 +536,16 @@ export default function AuctionDetailPage() {
             </div>
           )}
 
-          {!ended && !isSeller && !isWaiting && (
+          {!ended && !isSeller && !isWaiting && isHighestBidder && (
+            <div className="rounded-[28px] bg-violet-50 p-6 shadow-sm ring-1 ring-violet-200">
+              <p className="text-sm font-extrabold text-violet-800">현재 최고 입찰자입니다</p>
+              <p className="mt-1 text-sm text-violet-600">
+                내가 최고가인 동안에는 재입찰할 수 없어요. 다른 입찰자가 더 높은 금액을 제시하면 다시 입찰할 수 있습니다.
+              </p>
+            </div>
+          )}
+
+          {!ended && !isSeller && !isWaiting && !isHighestBidder && (
             <div className="rounded-[28px] bg-white/80 p-6 shadow-sm ring-1 ring-purple-100">
               <span className="block text-sm font-bold text-gray-700">빠른 입찰</span>
               <div className="mt-2 grid grid-cols-2 gap-2">
@@ -612,7 +622,42 @@ export default function AuctionDetailPage() {
             </div>
           )}
 
-          {ended && (
+          {ended && auction.status === "PENDING_PAYMENT" && myId && topBid?.bidderId === myId && (
+            <div className="rounded-[28px] bg-amber-50 p-6 shadow-sm ring-1 ring-amber-200">
+              <p className="text-sm font-extrabold text-amber-800">🎉 낙찰을 축하합니다!</p>
+              <p className="mt-1 text-sm text-amber-700">
+                <b className="tabular-nums">{formatKRW(currentPrice)}원</b>에 낙찰되었어요.
+                48시간 안에 결제를 완료해 주세요.
+              </p>
+              <Button
+                className="mt-4 w-full"
+                size="lg"
+                onClick={() =>
+                  navigate("/payments", {
+                    state: {
+                      auctionId: auction.id,
+                      totalPrice: currentPrice,
+                      itemPrice: currentPrice,
+                      shippingFee: 0,
+                      items: [
+                        {
+                          productId: auction.productId,
+                          name: auction.productTitle ?? productName ?? "경매 상품",
+                          price: currentPrice,
+                          quantity: 1,
+                        },
+                      ],
+                      depositLabel: "예치금 결제",
+                    },
+                  })
+                }
+              >
+                결제하기
+              </Button>
+            </div>
+          )}
+
+          {ended && auction.status !== "PENDING_PAYMENT" && (
             <div className="rounded-[28px] bg-white/80 p-6 text-sm font-medium text-gray-500 shadow-sm ring-1 ring-purple-100">
               경매가 종료됐어요. 낙찰자에게 안내가 발송됩니다.
             </div>
