@@ -51,6 +51,7 @@ const toUiProduct = (product) => {
 
   return {
     id: product.productId,
+    sellerId: product.sellerId ?? null,
     name: product.title,
     description: product.description || "상품 설명이 아직 등록되지 않았습니다.",
     price: toNumber(product.price),
