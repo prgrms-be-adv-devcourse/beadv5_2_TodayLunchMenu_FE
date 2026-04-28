@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { ApiError } from '../../api/client';
 import { backfillMissingEmbeddingsApi, reindexAllEmbeddingsApi } from '../../features/ai/embeddingAdminApi';
 import { reindexProductsEsApi } from '../../features/product/productApi';
-import AdminNav from '../../components/admin/AdminNav';
-import AdminSidebar from '../../components/admin/AdminSidebar';
 
 function AdminEmbeddingPage() {
   const [loading, setLoading] = useState(false);
@@ -92,12 +90,7 @@ function AdminEmbeddingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 text-gray-900">
-      <AdminNav currentPage="embeddings" />
-      <AdminSidebar currentPage="embeddings" />
-
-      <div className="flex min-h-screen">
-        <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
+    <>
           {/* Header */}
           <header className="mb-8 flex items-end justify-between">
             <div>
@@ -233,9 +226,6 @@ function AdminEmbeddingPage() {
               </div>
             </section>
           </div>
-        </main>
-      </div>
-
       {/* Confirm Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -261,7 +251,7 @@ function AdminEmbeddingPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

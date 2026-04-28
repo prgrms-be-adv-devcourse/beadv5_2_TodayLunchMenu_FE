@@ -8,8 +8,6 @@ import {
   getCategoriesApi,
   updateCategoryAdminApi,
 } from '../../features/product/productApi';
-import AdminNav from '../../components/admin/AdminNav';
-import AdminSidebar from '../../components/admin/AdminSidebar';
 
 function buildTree(categories) {
   const map = new Map();
@@ -252,12 +250,7 @@ export default function AdminCategoryPage() {
   const selectableParents = categories.filter((c) => c.depth < 2);
 
   return (
-    <div className="min-h-screen bg-blue-50 text-gray-900">
-      <AdminNav currentPage="categories" />
-      <AdminSidebar currentPage="categories" />
-
-      <div className="flex min-h-screen">
-        <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
+    <>
           <header className="mb-8 flex items-end justify-between">
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">카테고리 관리</h1>
@@ -322,9 +315,6 @@ export default function AdminCategoryPage() {
               총 {categories.length}개 카테고리
             </div>
           </section>
-        </main>
-      </div>
-
       {modal.open && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="w-full max-w-md bg-white p-8 shadow-2xl ring-1 ring-gray-200">
@@ -410,6 +400,6 @@ export default function AdminCategoryPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

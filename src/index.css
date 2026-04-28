@@ -50,6 +50,13 @@ body {
   background: #fff;
 }
 
+#root.admin-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-inline: none;
+}
+
 h1,
 h2 {
   margin: 0;
