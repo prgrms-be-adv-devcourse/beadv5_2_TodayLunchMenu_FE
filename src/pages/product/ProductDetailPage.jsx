@@ -4,6 +4,7 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 import ProductRecommendationSection from "../../components/product/ProductRecommendationSection";
 import { useProductRecommendations } from "../../features/ai/useProductRecommendations";
 import { useCart } from "../../features/cart/useCart";
+import { useCartToast } from "../../features/cart/useCartToast";
 import { useProduct } from "../../features/product/useProducts";
 
 function formatPrice(price) {
@@ -26,6 +27,7 @@ export default function ProductDetailPage() {
   const { recommendations, loading: recommendationsLoading, error: recommendationsError } =
     useProductRecommendations(product?.id);
   const { addToCart } = useCart({ autoLoad: false });
+  const { toast, showToast } = useCartToast();
 
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -37,10 +39,10 @@ export default function ProductDetailPage() {
     try {
       setIsAddingToCart(true);
       await addToCart({ productId: product.id, quantity });
-      window.alert("장바구니에 담았습니다.");
+      showToast("장바구니에 담았습니다.");
     } catch (err) {
       if (err?.status === 401) { navigate("/login"); return; }
-      window.alert(err?.message || "장바구니에 담지 못했습니다.");
+      showToast(err?.message || "장바구니에 담지 못했습니다.", true);
     } finally {
       setIsAddingToCart(false);
     }
@@ -307,6 +309,22 @@ export default function ProductDetailPage() {
           });
         }}
       />
+
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
+          {toast.error ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          {toast.message}
+        </div>
+      )}
     </>
   );
 }
