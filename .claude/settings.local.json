@@ -35,15 +35,10 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:api.github.com)",
       "Bash(npx vite *)",
-      "mcp__claude_ai_Notion__notion-search",
-      "mcp__claude_ai_Notion__notion-fetch",
-      "mcp__claude_ai_Notion__notion-create-pages",
-      "Bash(git -C \"C:/Users/home/IdeaProjects/beadv5_2_TodayLunchMenu_FE\" status)",
-      "Bash(git -C \"C:/Users/home/IdeaProjects/beadv5_2_TodayLunchMenu_FE\" diff --stat)",
-      "Bash(git *)",
-      "Bash(npm install *)",
-      "Bash(npm list *)",
-      "Bash(npm run *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ]
   }
 }
