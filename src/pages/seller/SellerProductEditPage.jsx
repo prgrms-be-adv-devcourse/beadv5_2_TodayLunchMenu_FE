@@ -8,6 +8,7 @@ import {
   getCategoriesApi,
   getChildCategoriesApi,
   getProductDetailApi,
+  setImageThumbnailApi,
   updateProductApi,
   uploadProductImageApi,
 } from "../../features/product/productApi";
@@ -76,6 +77,8 @@ export default function SellerProductEditPage() {
   const [images, setImages] = useState([]);
   const [uploadingCount, setUploadingCount] = useState(0);
   const [deletingIds, setDeletingIds] = useState(new Set());
+  const [settingThumbnailId, setSettingThumbnailId] = useState(null);
+  const [previewIdx, setPreviewIdx] = useState(null);
   const [imageError, setImageError] = useState("");
   const [imageLimitModal, setImageLimitModal] = useState({ open: false, title: "", description: "" });
 
@@ -182,13 +185,50 @@ export default function SellerProductEditPage() {
     setImageError("");
     try {
       await deleteProductImageApi(productId, imageId);
-      setImages((prev) => prev.filter((img) => img.id !== imageId));
+      setImages((prev) => {
+        const next = prev.filter((img) => img.id !== imageId);
+        // 삭제된 이미지가 라이트박스에 열려 있으면 닫기
+        setPreviewIdx((pi) => {
+          if (pi === null) return null;
+          const deletedIdx = prev.findIndex((img) => img.id === imageId);
+          if (deletedIdx === -1) return pi;
+          if (pi >= next.length) return next.length > 0 ? next.length - 1 : null;
+          return pi > deletedIdx ? pi - 1 : pi;
+        });
+        return next;
+      });
     } catch (err) {
       setImageError(err instanceof ApiError ? err.message : "이미지 삭제에 실패했습니다.");
     } finally {
       setDeletingIds((prev) => { const next = new Set(prev); next.delete(imageId); return next; });
     }
   };
+
+  const handleSetThumbnail = async (imageId) => {
+    if (settingThumbnailId) return;
+    setSettingThumbnailId(imageId);
+    setImageError("");
+    try {
+      await setImageThumbnailApi(productId, imageId);
+      setImages((prev) => prev.map((img) => ({ ...img, isThumbnail: img.id === imageId })));
+    } catch (err) {
+      setImageError(err instanceof ApiError ? err.message : "대표 이미지 변경에 실패했습니다.");
+    } finally {
+      setSettingThumbnailId(null);
+    }
+  };
+
+  // 라이트박스 키보드 탐색
+  useEffect(() => {
+    if (previewIdx === null) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setPreviewIdx(null);
+      else if (e.key === "ArrowRight") setPreviewIdx((i) => (i < images.length - 1 ? i + 1 : i));
+      else if (e.key === "ArrowLeft") setPreviewIdx((i) => (i > 0 ? i - 1 : i));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [previewIdx, images.length]);
 
   const handleChange = (key) => (e) => {
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -364,64 +404,115 @@ export default function SellerProductEditPage() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-3">
-                  {images.map((img) => {
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-3">
+                  {images.map((img, idx) => {
                     const isDeleting = deletingIds.has(img.id);
+                    const isSettingThumb = settingThumbnailId === img.id;
                     return (
-                      <div key={img.id} className="relative flex-shrink-0">
-                        <div className={[
-                          "h-24 w-24 overflow-hidden rounded-lg bg-gray-100 ring-2 transition",
-                          img.isThumbnail ? "ring-blue-500" : "ring-transparent hover:ring-gray-300",
-                        ].join(" ")}>
-                          {img.url ? (
-                            <img src={img.url} alt="" className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-gray-300 text-xs">없음</div>
-                          )}
-                          {isDeleting && (
-                            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
-                              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                            </div>
-                          )}
-                        </div>
-                        {img.isThumbnail && (
-                          <span className="absolute bottom-1 left-1 rounded bg-blue-600 px-1.5 py-px text-[9px] font-bold text-white shadow">
-                            대표
-                          </span>
-                        )}
-                        {!isDeleting && (
+                      <div key={img.id} className="flex flex-col gap-1.5">
+                        {/* 이미지 카드 */}
+                        <div className="relative">
                           <button
                             type="button"
-                            aria-label="이미지 삭제"
-                            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white shadow transition hover:bg-red-500"
-                            onClick={() => handleDeleteImage(img.id)}
+                            onClick={() => img.url && setPreviewIdx(idx)}
+                            disabled={!img.url}
+                            className={[
+                              "group relative h-24 w-full overflow-hidden rounded-lg bg-gray-100 ring-2 transition",
+                              img.isThumbnail ? "ring-blue-500" : "ring-transparent hover:ring-gray-200",
+                              img.url ? "cursor-zoom-in" : "cursor-default",
+                            ].join(" ")}
                           >
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                              <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                            </svg>
+                            {img.url ? (
+                              <img src={img.url} alt="" className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-xs text-gray-300">없음</div>
+                            )}
+                            {/* 확대 힌트 */}
+                            {img.url && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
+                                <svg className="h-5 w-5 text-white opacity-0 drop-shadow transition group-hover:opacity-100" fill="none" viewBox="0 0 20 20">
+                                  <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.8" />
+                                  <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                                </svg>
+                              </div>
+                            )}
+                            {isDeleting && (
+                              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
+                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                              </div>
+                            )}
                           </button>
+
+                          {/* 대표 뱃지 */}
+                          {img.isThumbnail && (
+                            <span className="absolute bottom-1 left-1 rounded bg-blue-600 px-1.5 py-px text-[9px] font-bold text-white shadow">
+                              대표
+                            </span>
+                          )}
+
+                          {/* 삭제 버튼 */}
+                          {!isDeleting && (
+                            <button
+                              type="button"
+                              aria-label="이미지 삭제"
+                              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white shadow transition hover:bg-red-500"
+                              onClick={() => handleDeleteImage(img.id)}
+                            >
+                              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                                <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* 대표로 설정 버튼 (비대표 이미지만) */}
+                        {!img.isThumbnail && !isDeleting ? (
+                          <button
+                            type="button"
+                            onClick={() => handleSetThumbnail(img.id)}
+                            disabled={!!settingThumbnailId || uploadingCount > 0}
+                            className="w-full rounded border border-gray-200 bg-white py-1 text-[10px] font-medium text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            {isSettingThumb ? (
+                              <span className="flex items-center justify-center gap-1">
+                                <svg className="h-3 w-3 animate-spin" viewBox="0 0 12 12" fill="none">
+                                  <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.3" />
+                                  <path d="M6 1.5A4.5 4.5 0 0110.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                                </svg>
+                                처리중
+                              </span>
+                            ) : "대표로 설정"}
+                          </button>
+                        ) : (
+                          <div className="h-[26px]" />
                         )}
                       </div>
                     );
                   })}
 
                   {Array.from({ length: uploadingCount }).map((_, i) => (
-                    <div key={`uploading-${i}`} className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+                    <div key={`uploading-${i}`} className="flex flex-col gap-1.5">
+                      <div className="flex h-24 w-full items-center justify-center rounded-lg bg-gray-100">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+                      </div>
+                      <div className="h-[26px]" />
                     </div>
                   ))}
 
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
-                    className="flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition hover:border-blue-400 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                    </svg>
-                    <span className="text-[11px] font-medium">이미지 추가</span>
-                  </button>
+                  <div className="flex flex-col gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
+                      className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition hover:border-blue-400 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                      <span className="text-[11px] font-medium">이미지 추가</span>
+                    </button>
+                    <div className="h-[26px]" />
+                  </div>
 
                   <input
                     ref={fileInputRef}
@@ -649,6 +740,73 @@ export default function SellerProductEditPage() {
           </Button>
         }
       />
+
+      {/* 이미지 라이트박스 */}
+      {previewIdx !== null && images[previewIdx]?.url && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+          onClick={() => setPreviewIdx(null)}
+        >
+          {/* 이전 버튼 */}
+          {previewIdx > 0 && (
+            <button
+              type="button"
+              aria-label="이전 이미지"
+              onClick={(e) => { e.stopPropagation(); setPreviewIdx((i) => i - 1); }}
+              className="absolute left-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/25"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M12 4l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+
+          {/* 이미지 */}
+          <img
+            src={images[previewIdx].url}
+            alt=""
+            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* 다음 버튼 */}
+          {previewIdx < images.length - 1 && (
+            <button
+              type="button"
+              aria-label="다음 이미지"
+              onClick={(e) => { e.stopPropagation(); setPreviewIdx((i) => i + 1); }}
+              className="absolute right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/25"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M8 4l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+
+          {/* 닫기 버튼 */}
+          <button
+            type="button"
+            aria-label="닫기"
+            onClick={() => setPreviewIdx(null)}
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/25"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 3l12 12M15 3L3 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {/* 카운터 + 대표 여부 */}
+          <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/50 px-4 py-2 text-xs font-medium text-white">
+            <span>{previewIdx + 1} / {images.length}</span>
+            {images[previewIdx].isThumbnail && (
+              <>
+                <span className="opacity-40">·</span>
+                <span className="text-blue-300">대표 이미지</span>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
