@@ -239,7 +239,7 @@ export default function OrderDetailPage() {
   return (
     <>
       <PageContainer>
-        <div className="mx-auto max-w-2xl space-y-10 text-left">
+        <div className="mx-auto max-w-2xl space-y-7 text-left">
 
           {/* 헤더 */}
           <div>
@@ -300,7 +300,7 @@ export default function OrderDetailPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="font-bold text-gray-900">{item.productName}</p>
+                          <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-violet-700 transition-colors">{item.productName}</Link>
                           <span className={`flex-shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                             {statusMeta.label}
                           </span>
