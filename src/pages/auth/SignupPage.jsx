@@ -14,6 +14,7 @@ import {
 } from "../../features/member/memberApi";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_PROFILE_IMAGE_SIZE = 1 * 1024 * 1024;
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -40,6 +41,17 @@ export default function SignupPage() {
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files?.[0] ?? null;
+
+    if (file && file.size > MAX_PROFILE_IMAGE_SIZE) {
+      setProfileImage(null);
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "프로필 이미지는 1MB 이하만 업로드할 수 있습니다.",
+        common: "",
+      }));
+      return;
+    }
+
     setProfileImage(file);
     setErrors((prev) => ({ ...prev, profileImage: "", common: "" }));
   };
@@ -67,6 +79,9 @@ export default function SignupPage() {
     }
     if (profileImage && !ACCEPTED_IMAGE_TYPES.includes(profileImage.type)) {
       nextErrors.profileImage = "jpg, png, webp 형식의 이미지만 업로드할 수 있습니다.";
+    }
+    if (profileImage && profileImage.size > MAX_PROFILE_IMAGE_SIZE) {
+      nextErrors.profileImage = "프로필 이미지는 1MB 이하만 업로드할 수 있습니다.";
     }
     if (!form.agree) {
       nextErrors.agree = "약관 동의가 필요합니다.";
@@ -118,8 +133,8 @@ export default function SignupPage() {
       if (signupData?.status === "PENDING_VERIFICATION") {
         navigate(
           `/signup/pending-verification?email=${encodeURIComponent(
-            signupData.email || form.email.trim()
-          )}`
+            signupData.email || form.email.trim(),
+          )}`,
         );
         return;
       }
@@ -144,7 +159,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-blue-50 text-gray-900">
-      <header className="fixed top-0 z-50 w-full bg-white/70 backdrop-blur-xl shadow-sm">
+      <header className="fixed top-0 z-50 w-full bg-white/70 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
@@ -166,7 +181,7 @@ export default function SignupPage() {
       <main className="flex min-h-screen items-center justify-center px-6 pb-12 pt-24">
         <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2">
           <section className="relative hidden aspect-[4/5] overflow-hidden bg-gray-100 p-12 md:flex md:flex-col md:justify-end">
-            <div className="absolute inset-0 bg-blue-500/30 to-transparent" />
+            <div className="absolute inset-0 bg-blue-500/30" />
             <div className="relative z-10 space-y-4">
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
                 TodayLunch Market
@@ -174,12 +189,12 @@ export default function SignupPage() {
               <h2 className="text-5xl font-extrabold leading-[1.08] tracking-tighter">
                 오늘의 취향을
                 <br />
-                함께 모으는
+                가볍게 모으는
                 <br />
-                점심 마켓
+                마켓
               </h2>
               <p className="max-w-xs font-medium text-gray-600">
-                마음에 드는 메뉴를 발견하고, 매일의 점심을 더 즐겁게 기록해 보세요.
+                마음에 드는 메뉴를 발견하고, 매일의 선택을 즐겁게 기록해 보세요.
               </p>
             </div>
           </section>
@@ -237,7 +252,11 @@ export default function SignupPage() {
                     <p className="mt-2 text-xs font-medium text-gray-500">
                       선택한 파일: {profileImage.name}
                     </p>
-                  ) : null}
+                  ) : (
+                    <p className="mt-2 text-xs font-medium text-gray-500">
+                      jpg, png, webp 형식 / 최대 1MB
+                    </p>
+                  )}
                 </FormField>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -261,7 +280,7 @@ export default function SignupPage() {
                     <Input
                       id="confirmPassword"
                       type="password"
-                      placeholder="비밀번호를 한 번 더 입력해 주세요"
+                      placeholder="비밀번호를 다시 입력해 주세요"
                       value={form.confirmPassword}
                       onChange={handleChange("confirmPassword")}
                       error={!!errors.confirmPassword}

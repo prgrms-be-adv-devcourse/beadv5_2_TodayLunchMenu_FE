@@ -6,11 +6,13 @@ import ProductCard from "../../components/product/ProductCard";
 import HeroBanner from "../../components/home/HeroBanner";
 import CategoryTiles from "../../components/home/CategoryTiles";
 import { useCart } from "../../features/cart/useCart";
+import { useCartToast } from "../../features/cart/useCartToast";
 import { getAuctionsApi } from "../../features/auction/auctionApi";
 import {
   getCategoriesApi,
   getPopularProductsApi,
   getProductsApi,
+  getProductsByIdsApi,
 } from "../../features/product/productApi";
 
 function SectionHeader({ title, to }) {
@@ -33,6 +35,7 @@ function EmptyState({ message }) {
 export default function HomePage() {
   const navigate = useNavigate();
   const { addToCart } = useCart({ autoLoad: false });
+  const { toast, showToast } = useCartToast();
 
   const [allCategories, setAllCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -40,6 +43,7 @@ export default function HomePage() {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [ongoingAuctions, setOngoingAuctions] = useState([]);
+  const [auctionImageMap, setAuctionImageMap] = useState({});
 
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingPopularProducts, setLoadingPopularProducts] = useState(true);
@@ -106,7 +110,18 @@ export default function HomePage() {
     async function load() {
       try {
         const response = await getAuctionsApi({ status: "ONGOING", page: 0, size: 8 });
-        if (!cancelled) setOngoingAuctions(response.items);
+        if (cancelled) return;
+        setOngoingAuctions(response.items);
+        const ids = [...new Set(response.items.map((a) => a.productId).filter(Boolean))];
+        if (ids.length) {
+          getProductsByIdsApi(ids)
+            .then((products) => {
+              if (cancelled) return;
+              const map = Object.fromEntries(products.map((p) => [p.id, p.image]));
+              setAuctionImageMap(map);
+            })
+            .catch(() => {});
+        }
       } catch {
         // ignore
       } finally {
@@ -120,13 +135,13 @@ export default function HomePage() {
   async function handleAddToCart(product) {
     try {
       await addToCart({ productId: product.id, quantity: 1 });
-      window.alert("장바구니에 담았습니다.");
+      showToast("장바구니에 담았습니다.");
     } catch (error) {
       if (error?.status === 401) {
         navigate("/login");
         return;
       }
-      window.alert(error?.message || "장바구니에 담지 못했습니다.");
+      showToast(error?.message || "장바구니에 담지 못했습니다.", true);
     }
   }
 
@@ -192,7 +207,7 @@ export default function HomePage() {
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {ongoingAuctions.map((auction) => (
                 <div key={auction.id} className="w-44 flex-none sm:w-52">
-                  <AuctionCard auction={auction} />
+                  <AuctionCard auction={auction} productImage={auctionImageMap[auction.productId] ?? null} />
                 </div>
               ))}
             </div>
@@ -272,6 +287,22 @@ export default function HomePage() {
           )}
         </section>
       </div>
+
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
+          {toast.error ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

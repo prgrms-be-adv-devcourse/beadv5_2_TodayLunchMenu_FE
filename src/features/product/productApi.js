@@ -51,6 +51,7 @@ const toUiProduct = (product) => {
 
   return {
     id: product.productId,
+    sellerId: product.sellerId ?? null,
     name: product.title,
     description: product.description || "상품 설명이 아직 등록되지 않았습니다.",
     price: toNumber(product.price),
@@ -254,6 +255,14 @@ async function deleteProductImageApi(productId, imageId) {
   });
 }
 
+async function setImageThumbnailApi(productId, imageId) {
+  const response = await apiClient(`/api/products/${productId}/images/${imageId}`, {
+    method: "PATCH",
+    body: { isThumbnail: true },
+  });
+  return toUiImage(response.data);
+}
+
 async function createCategoryAdminApi({ name, description, sortOrder, parentId }) {
   const response = await apiClient("/api/categories/admin", {
     method: "POST",
@@ -312,6 +321,7 @@ export {
   updateProductApi,
   uploadProductImageApi,
   deleteProductImageApi,
+  setImageThumbnailApi,
   getCategoriesApi,
   getChildCategoriesApi,
   getProductDetailApi,

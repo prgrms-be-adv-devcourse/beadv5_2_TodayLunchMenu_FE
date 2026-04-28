@@ -1,6 +1,8 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 
+import AdminLayout from "./components/admin/AdminLayout";
+import RequireAdmin from "./components/common/RequireAdmin";
 import Layout from "./components/layout/Layout";
 import EmailVerificationPage from "./pages/auth/EmailVerificationPage";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
@@ -122,14 +124,39 @@ const router = createBrowserRouter([
       { path: "seller/orders", element: <SellerOrderListPage /> },
       { path: "seller/products", element: <SellerProductListPage /> },
       { path: "seller/products/new", element: <SellerProductCreatePage /> },
-      { path: "seller/products/:productId/edit", element: <SellerProductEditPage /> },
+      {
+        path: "seller/products/:productId/edit",
+        element: <SellerProductEditPage />,
+      },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
       { path: "seller/refunds", element: <SellerRefundManagementPage /> },
       { path: "auctions", element: <AuctionListPage /> },
       { path: "auctions/:auctionId", element: <AuctionDetailPage /> },
-      { path: "*", element: <NotFoundPage /> },
     ],
   },
+  {
+    path: "/admin",
+    element: <RequireAdmin />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          { path: "categories", element: <AdminCategoryPage /> },
+          { path: "member-reports", element: <AdminMemberReportListPage /> },
+          {
+            path: "member-reports/:reportId",
+            element: <AdminMemberReportDetailPage />,
+          },
+          {
+            path: "member-restrictions",
+            element: <AdminMemberRestrictionListPage />,
+          },
+          { path: "embeddings", element: <AdminEmbeddingPage /> },
+        ],
+      },
+    ],
+  },
+  { path: "*", element: <NotFoundPage /> },
 ]);
 
 function App() {

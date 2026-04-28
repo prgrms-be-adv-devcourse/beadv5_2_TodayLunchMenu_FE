@@ -1,6 +1,6 @@
 import { getVisibleNotificationSubtitle } from "./notificationPresentation";
 
-const DEFAULT_TOAST_TIMEOUT_MS = 450000; // 7.5 minutes
+const DEFAULT_TOAST_TIMEOUT_MS = 1000 * 10; // 10초
 let nextToastId = 1;
 let toastState = {
   items: [],
@@ -56,7 +56,10 @@ const pushToast = ({
   timeoutMs = DEFAULT_TOAST_TIMEOUT_MS,
 }) => {
   const id = String(nextToastId++);
-  const visibleSubtitle = getVisibleNotificationSubtitle({ subtitle, referenceId });
+  const visibleSubtitle = getVisibleNotificationSubtitle({
+    subtitle,
+    referenceId,
+  });
   const toast = {
     id,
     title: title || "새 알림",
