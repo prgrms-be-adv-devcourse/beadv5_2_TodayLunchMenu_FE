@@ -51,6 +51,12 @@ export async function getAdminMemberRestrictions(memberId) {
   return response.data?.data ?? response.data ?? [];
 }
 
+export async function getAllAdminMemberRestrictions() {
+  const response = await apiClient('/api/admin/member-restrictions');
+
+  return response.data?.data ?? response.data ?? [];
+}
+
 export async function createAdminMemberRestriction(payload) {
   const response = await apiClient('/api/admin/member-restrictions', {
     method: 'POST',
