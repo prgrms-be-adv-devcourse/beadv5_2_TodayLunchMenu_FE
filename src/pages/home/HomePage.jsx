@@ -12,6 +12,7 @@ import {
   getCategoriesApi,
   getPopularProductsApi,
   getProductsApi,
+  getProductsByIdsApi,
 } from "../../features/product/productApi";
 
 function SectionHeader({ title, to }) {
@@ -42,6 +43,7 @@ export default function HomePage() {
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [ongoingAuctions, setOngoingAuctions] = useState([]);
+  const [auctionImageMap, setAuctionImageMap] = useState({});
 
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingPopularProducts, setLoadingPopularProducts] = useState(true);
@@ -108,7 +110,18 @@ export default function HomePage() {
     async function load() {
       try {
         const response = await getAuctionsApi({ status: "ONGOING", page: 0, size: 8 });
-        if (!cancelled) setOngoingAuctions(response.items);
+        if (cancelled) return;
+        setOngoingAuctions(response.items);
+        const ids = [...new Set(response.items.map((a) => a.productId).filter(Boolean))];
+        if (ids.length) {
+          getProductsByIdsApi(ids)
+            .then((products) => {
+              if (cancelled) return;
+              const map = Object.fromEntries(products.map((p) => [p.id, p.image]));
+              setAuctionImageMap(map);
+            })
+            .catch(() => {});
+        }
       } catch {
         // ignore
       } finally {
@@ -194,7 +207,7 @@ export default function HomePage() {
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {ongoingAuctions.map((auction) => (
                 <div key={auction.id} className="w-44 flex-none sm:w-52">
-                  <AuctionCard auction={auction} />
+                  <AuctionCard auction={auction} productImage={auctionImageMap[auction.productId] ?? null} />
                 </div>
               ))}
             </div>
