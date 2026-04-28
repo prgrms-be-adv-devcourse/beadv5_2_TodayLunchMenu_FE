@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import Button from '../../components/common/Button';
-import FormField from '../../components/common/FormField';
-import Input from '../../components/common/Input';
-import PageContainer from '../../components/common/PageContainer';
-import { ApiError } from '../../api/client';
-import { useAuth } from '../../features/auth/useAuth';
+import Button from "../../components/common/Button";
+import FormField from "../../components/common/FormField";
+import Input from "../../components/common/Input";
+import PageContainer from "../../components/common/PageContainer";
+import { ApiError } from "../../api/client";
+import { useAuth } from "../../features/auth/useAuth";
 import {
   presignProfileImageUploadApi,
   updateCurrentMemberApi,
   uploadProfileImageToS3,
-} from '../../features/member/memberApi';
-import { pushToast } from '../../features/notification/notificationToastStore';
+} from "../../features/member/memberApi";
+import { pushToast } from "../../features/notification/notificationToastStore";
 
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_PROFILE_IMAGE_SIZE = 1 * 1024 * 1024;
 
 export default function MemberEditPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading, refreshUser } = useAuth();
   const [form, setForm] = useState({
-    nickname: '',
-    email: '',
-    phone: '',
-    address: '',
+    nickname: "",
+    email: "",
+    phone: "",
+    address: "",
   });
   const [profileImage, setProfileImage] = useState(null);
   const [errors, setErrors] = useState({});
@@ -35,33 +36,48 @@ export default function MemberEditPage() {
     }
 
     setForm({
-      nickname: user.nickname ?? '',
-      email: user.email ?? '',
-      phone: user.phone ?? '',
-      address: user.address ?? '',
+      nickname: user.nickname ?? "",
+      email: user.email ?? "",
+      phone: user.phone ?? "",
+      address: user.address ?? "",
     });
   }, [user]);
 
   const handleChange = (key) => (event) => {
     setForm((prev) => ({ ...prev, [key]: event.target.value }));
-    setErrors((prev) => ({ ...prev, [key]: '', common: '' }));
+    setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
   };
 
   const handleProfileImageChange = (event) => {
     const file = event.target.files?.[0] ?? null;
+
+    if (file && file.size > MAX_PROFILE_IMAGE_SIZE) {
+      setProfileImage(null);
+      setErrors((prev) => ({
+        ...prev,
+        profileImage: "프로필 이미지는 1MB 이하만 업로드할 수 있습니다.",
+        common: "",
+      }));
+      return;
+    }
+
     setProfileImage(file);
-    setErrors((prev) => ({ ...prev, profileImage: '', common: '' }));
+    setErrors((prev) => ({ ...prev, profileImage: "", common: "" }));
   };
 
   const validate = () => {
     const nextErrors = {};
 
     if (!form.nickname.trim()) {
-      nextErrors.nickname = '닉네임을 입력해 주세요.';
+      nextErrors.nickname = "닉네임을 입력해 주세요.";
     }
 
     if (profileImage && !ACCEPTED_IMAGE_TYPES.includes(profileImage.type)) {
-      nextErrors.profileImage = 'jpg, png, webp 형식의 이미지 파일만 업로드할 수 있습니다.';
+      nextErrors.profileImage = "jpg, png, webp 형식의 이미지 파일만 업로드할 수 있습니다.";
+    }
+
+    if (profileImage && profileImage.size > MAX_PROFILE_IMAGE_SIZE) {
+      nextErrors.profileImage = "프로필 이미지는 1MB 이하만 업로드할 수 있습니다.";
     }
 
     setErrors(nextErrors);
@@ -95,7 +111,7 @@ export default function MemberEditPage() {
 
     try {
       setIsSubmitting(true);
-      setErrors((prev) => ({ ...prev, common: '' }));
+      setErrors((prev) => ({ ...prev, common: "" }));
 
       const profileImageKey = await uploadProfileImageIfNeeded();
 
@@ -108,17 +124,23 @@ export default function MemberEditPage() {
 
       await refreshUser();
       pushToast({
-        title: '프로필 저장 완료',
-        message: '변경한 내용이 반영되었습니다.',
-        tone: 'success',
+        title: "프로필 수정 완료",
+        message: "변경한 내용이 반영되었습니다.",
+        tone: "success",
         timeoutMs: 2500,
       });
-      navigate('/me');
+      navigate("/me");
     } catch (error) {
       if (error instanceof ApiError) {
-        setErrors((prev) => ({ ...prev, common: error.message || '프로필 저장에 실패했습니다.' }));
+        setErrors((prev) => ({
+          ...prev,
+          common: error.message || "프로필 수정에 실패했습니다.",
+        }));
       } else {
-        setErrors((prev) => ({ ...prev, common: '프로필 저장에 실패했습니다. 잠시 후 다시 시도해 주세요.' }));
+        setErrors((prev) => ({
+          ...prev,
+          common: "프로필 수정에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        }));
       }
     } finally {
       setIsSubmitting(false);
@@ -140,8 +162,12 @@ export default function MemberEditPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">Profile Edit</p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">프로필 편집</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">
+              Profile Edit
+            </p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
+              프로필 수정
+            </h1>
             <Link
               to="/me/password"
               className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-blue-100 px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
@@ -164,7 +190,7 @@ export default function MemberEditPage() {
               />
             ) : (
               <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-600 text-2xl font-extrabold text-white">
-                {(form.nickname || user?.nickname || 'U').slice(0, 1).toUpperCase()}
+                {(form.nickname || user?.nickname || "U").slice(0, 1).toUpperCase()}
               </div>
             )}
             <div className="flex-1">
@@ -177,9 +203,13 @@ export default function MemberEditPage() {
                   className="block w-full border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-200"
                 />
                 {profileImage ? (
-                  <p className="mt-2 text-xs font-medium text-gray-500">새 파일: {profileImage.name}</p>
+                  <p className="mt-2 text-xs font-medium text-gray-500">
+                    새 파일: {profileImage.name}
+                  </p>
                 ) : (
-                  <p className="mt-2 text-xs font-medium text-gray-500">이미지를 선택하지 않으면 기존 프로필 사진을 유지합니다.</p>
+                  <p className="mt-2 text-xs font-medium text-gray-500">
+                    이미지를 선택하지 않으면 기존 프로필 사진이 유지됩니다. 최대 1MB까지 업로드할 수 있습니다.
+                  </p>
                 )}
               </FormField>
             </div>
@@ -187,7 +217,7 @@ export default function MemberEditPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="닉네임" htmlFor="nickname" required error={errors.nickname}>
-              <Input id="nickname" value={form.nickname} onChange={handleChange('nickname')} error={!!errors.nickname} />
+              <Input id="nickname" value={form.nickname} onChange={handleChange("nickname")} error={!!errors.nickname} />
             </FormField>
 
             <FormField
@@ -199,16 +229,18 @@ export default function MemberEditPage() {
             </FormField>
 
             <FormField label="전화번호" htmlFor="phone" error={errors.phone}>
-              <Input id="phone" value={form.phone} onChange={handleChange('phone')} error={!!errors.phone} />
+              <Input id="phone" value={form.phone} onChange={handleChange("phone")} error={!!errors.phone} />
             </FormField>
 
             <FormField label="주소" htmlFor="address" error={errors.address}>
-              <Input id="address" value={form.address} onChange={handleChange('address')} error={!!errors.address} />
+              <Input id="address" value={form.address} onChange={handleChange("address")} error={!!errors.address} />
             </FormField>
           </div>
 
           {errors.common ? (
-            <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">{errors.common}</div>
+            <div className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+              {errors.common}
+            </div>
           ) : null}
 
           <div className="flex justify-end gap-3">
@@ -216,7 +248,7 @@ export default function MemberEditPage() {
               <Button type="button" variant="secondary">취소</Button>
             </Link>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? '저장 중...' : '저장하기'}
+              {isSubmitting ? "저장 중..." : "저장하기"}
             </Button>
           </div>
         </form>
