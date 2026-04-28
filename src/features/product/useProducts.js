@@ -1,5 +1,9 @@
 ﻿import { useEffect, useState } from "react";
-import { getCategoriesApi, getProductDetailApi, getProductsApi } from "./productApi";
+import {
+  getCategoriesApi,
+  getProductDetailApi,
+  getProductsApi,
+} from "./productApi";
 
 function useProducts(params = {}) {
   const [products, setProducts] = useState([]);
@@ -136,7 +140,9 @@ function useCategories() {
     }
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return { categories, loading, error };
