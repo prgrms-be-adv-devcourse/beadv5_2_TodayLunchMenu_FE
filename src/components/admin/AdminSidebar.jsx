@@ -1,14 +1,24 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-function AdminSidebar({ currentPage = 'dashboard' }) {
+function AdminSidebar({ currentPage = "dashboard" }) {
   const isActive = (page) => currentPage === page;
 
   const sidebarItems = [
-    { id: 'dashboard', label: '개요', icon: 'O', to: '#' },
-    { id: 'reports', label: '전체 신고', icon: 'R', to: '/admin/member-reports' },
-    { id: 'sanctions', label: '제재 이력', icon: 'S', to: '/admin/member-restrictions' },
-    { id: 'categories', label: '카테고리', icon: 'C', to: '/admin/categories' },
-    { id: 'embeddings', label: '임베딩', icon: 'E', to: '/admin/embeddings' },
+    { id: "dashboard", label: "개요", icon: "O", to: "#" },
+    {
+      id: "reports",
+      label: "전체 신고",
+      icon: "R",
+      to: "/admin/member-reports",
+    },
+    {
+      id: "sanctions",
+      label: "제재 이력",
+      icon: "S",
+      to: "/admin/member-restrictions",
+    },
+    { id: "categories", label: "카테고리", icon: "C", to: "/admin/categories" },
+    { id: "embeddings", label: "임베딩", icon: "E", to: "/admin/embeddings" },
   ];
 
   return (
@@ -23,8 +33,8 @@ function AdminSidebar({ currentPage = 'dashboard' }) {
           const isCurrentActive = isActive(item.id);
           const className = `flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition ${
             isCurrentActive
-              ? 'bg-violet-100 text-violet-700'
-              : 'text-slate-600 hover:translate-x-1 hover:bg-white/70'
+              ? "bg-violet-100 text-violet-700"
+              : "text-slate-600 hover:translate-x-1 hover:bg-white/70"
           }`;
 
           return (

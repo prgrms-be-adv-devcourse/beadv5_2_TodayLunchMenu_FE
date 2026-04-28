@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import AuctionCard from "../../components/auction/AuctionCard";
@@ -6,11 +6,13 @@ import ProductCard from "../../components/product/ProductCard";
 import HeroBanner from "../../components/home/HeroBanner";
 import CategoryTiles from "../../components/home/CategoryTiles";
 import { useCart } from "../../features/cart/useCart";
+import { useCartToast } from "../../features/cart/useCartToast";
 import { getAuctionsApi } from "../../features/auction/auctionApi";
 import {
   getCategoriesApi,
   getPopularProductsApi,
   getProductsApi,
+  getProductsByIdsApi,
 } from "../../features/product/productApi";
 
 function SectionHeader({ title, to }) {
@@ -33,13 +35,15 @@ function EmptyState({ message }) {
 export default function HomePage() {
   const navigate = useNavigate();
   const { addToCart } = useCart({ autoLoad: false });
+  const { toast, showToast } = useCartToast();
 
-  const [categories, setCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const [popularProducts, setPopularProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
   const [ongoingAuctions, setOngoingAuctions] = useState([]);
+  const [auctionImageMap, setAuctionImageMap] = useState({});
 
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingPopularProducts, setLoadingPopularProducts] = useState(true);
@@ -50,8 +54,8 @@ export default function HomePage() {
     let cancelled = false;
     async function load() {
       try {
-        const data = await getCategoriesApi({ depth: 1 });
-        if (!cancelled) setCategories(data);
+        const data = await getCategoriesApi();
+        if (!cancelled) setAllCategories(data);
       } catch {
         // ignore
       } finally {
@@ -106,7 +110,18 @@ export default function HomePage() {
     async function load() {
       try {
         const response = await getAuctionsApi({ status: "ONGOING", page: 0, size: 8 });
-        if (!cancelled) setOngoingAuctions(response.items);
+        if (cancelled) return;
+        setOngoingAuctions(response.items);
+        const ids = [...new Set(response.items.map((a) => a.productId).filter(Boolean))];
+        if (ids.length) {
+          getProductsByIdsApi(ids)
+            .then((products) => {
+              if (cancelled) return;
+              const map = Object.fromEntries(products.map((p) => [p.id, p.image]));
+              setAuctionImageMap(map);
+            })
+            .catch(() => {});
+        }
       } catch {
         // ignore
       } finally {
@@ -120,22 +135,58 @@ export default function HomePage() {
   async function handleAddToCart(product) {
     try {
       await addToCart({ productId: product.id, quantity: 1 });
-      window.alert("장바구니에 담았습니다.");
+      showToast("장바구니에 담았습니다.");
     } catch (error) {
       if (error?.status === 401) {
         navigate("/login");
         return;
       }
-      window.alert(error?.message || "장바구니에 담지 못했습니다.");
+      showToast(error?.message || "장바구니에 담지 못했습니다.", true);
     }
   }
+
+  // 루트 카테고리 (parentId 없는 것)
+  const rootCategories = useMemo(
+    () => allCategories.filter((c) => !c.parentId),
+    [allCategories],
+  );
+
+  // 카테고리 ID → 루트 카테고리 ID 매핑
+  const categoryToRoot = useMemo(() => {
+    const map = {};
+    function findRoot(cat) {
+      if (!cat.parentId) return cat.id;
+      const parent = allCategories.find((c) => c.id === cat.parentId);
+      return parent ? findRoot(parent) : cat.id;
+    }
+    allCategories.forEach((c) => { map[c.id] = findRoot(c); });
+    return map;
+  }, [allCategories]);
+
+  // 실제 상품이 있는 루트 카테고리 ID만 추출
+  const activeRootIds = useMemo(() => {
+    const ids = new Set();
+    [...latestProducts, ...popularProducts].forEach((p) => {
+      if (p.categoryId) {
+        const rootId = categoryToRoot[p.categoryId];
+        if (rootId) ids.add(rootId);
+      }
+    });
+    return ids;
+  }, [latestProducts, popularProducts, categoryToRoot]);
+
+  // 상품이 있는 루트 카테고리만
+  const activeCategories = useMemo(
+    () => rootCategories.filter((c) => activeRootIds.has(c.id)),
+    [rootCategories, activeRootIds],
+  );
 
   const mostUrgentAuction =
     ongoingAuctions
       .filter((a) => a.endsAt && a.status === "ONGOING")
       .sort((a, b) => a.endsAt - b.endsAt)[0] ?? null;
 
-  const selectedCategory = categories.find((c) => c.id === selectedCategoryId) ?? null;
+  const selectedCategory = activeCategories.find((c) => c.id === selectedCategoryId) ?? null;
 
   return (
     <div className="text-left">
@@ -143,7 +194,7 @@ export default function HomePage() {
 
       <div className="mt-8 space-y-10">
         {/* Category Tiles */}
-        {!loadingCategories && <CategoryTiles categories={categories} />}
+        {!loadingCategories && <CategoryTiles categories={activeCategories} />}
 
         {/* Live Auctions */}
         <section>
@@ -156,7 +207,7 @@ export default function HomePage() {
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {ongoingAuctions.map((auction) => (
                 <div key={auction.id} className="w-44 flex-none sm:w-52">
-                  <AuctionCard auction={auction} />
+                  <AuctionCard auction={auction} productImage={auctionImageMap[auction.productId] ?? null} />
                 </div>
               ))}
             </div>
@@ -202,7 +253,7 @@ export default function HomePage() {
             >
               전체
             </button>
-            {categories.map((category) => (
+            {activeCategories.map((category) => (
               <button
                 key={category.id}
                 type="button"
@@ -236,6 +287,22 @@ export default function HomePage() {
           )}
         </section>
       </div>
+
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
+          {toast.error ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

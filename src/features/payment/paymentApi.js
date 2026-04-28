@@ -4,11 +4,10 @@ export {
   createChargeApi,
   createOrderForCardPaymentApi,
   createWithdrawalApi,
-  failCardPaymentApi,
+  failChargeApi,
   getTransactionsApi,
   getWalletSummaryApi,
   getWithdrawalsApi,
-  prepareCardPaymentApi,
 } from "./paymentService";
 export {
   clearPendingCharge,

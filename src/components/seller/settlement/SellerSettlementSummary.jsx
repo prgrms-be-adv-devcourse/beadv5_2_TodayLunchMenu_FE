@@ -40,9 +40,9 @@ export default function SellerSettlementSummary({
         tone="accent"
       />
       <SummaryItem
-        label="에스크로 보류 금액"
+        label="정산 대기 금액"
         value={pendingEscrowAmount}
-        helper="구매확정 전 대기 중인 판매 금액"
+        helper="구매확정 전이라 아직 정산되지 않은 판매 금액"
       />
       <SummaryItem
         label="부분 정산 가능 금액"

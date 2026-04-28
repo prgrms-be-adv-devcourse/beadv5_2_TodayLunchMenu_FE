@@ -13,9 +13,9 @@ function formatDate(value) {
 function typeLabel(type) {
   switch (type) {
     case "HOLD":
-      return "보류";
+      return "정산 대기";
     case "RELEASE":
-      return "해제";
+      return "정산 완료";
     case "REFUND":
       return "환불";
     default:

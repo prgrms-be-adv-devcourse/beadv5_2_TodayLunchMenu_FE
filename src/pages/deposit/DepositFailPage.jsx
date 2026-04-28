@@ -2,7 +2,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
-import { clearPendingCharge, getPendingCharge } from "../../features/payment/paymentApi";
+import {
+  clearPendingCharge,
+  failChargeApi,
+  getPendingCharge,
+} from "../../features/payment/paymentApi";
+
+function getChargeFailureReportKey(orderId) {
+  return `charge-failure-reported:${orderId}`;
+}
 
 const MOCK_DEPOSIT_FAILURE = {
   errorTitle: "결제 한도 초과",
@@ -37,6 +45,10 @@ function buildFailureModel(search, state) {
   };
 }
 
+function canReportChargeFailure(result) {
+  return Boolean(result.orderId && result.errorMessage);
+}
+
 export default function DepositFailPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -47,10 +59,45 @@ export default function DepositFailPage() {
   );
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function reportFailure() {
+      if (!canReportChargeFailure(result)) {
+        return;
+      }
+
+      const key = getChargeFailureReportKey(result.orderId);
+      if (window.sessionStorage.getItem(key) === "1") {
+        return;
+      }
+
+      try {
+        await failChargeApi({
+          orderId: result.orderId,
+          code: result.errorCode,
+          message: result.errorMessage,
+        });
+
+        if (!cancelled) {
+          window.sessionStorage.setItem(key, "1");
+        }
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error("[DepositFailPage] failed to report charge failure", error);
+        }
+      }
+    }
+
+    reportFailure();
+
     if (result.orderId) {
       clearPendingCharge(result.orderId);
     }
-  }, [result.orderId]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [result]);
 
   return (
     <PageContainer>

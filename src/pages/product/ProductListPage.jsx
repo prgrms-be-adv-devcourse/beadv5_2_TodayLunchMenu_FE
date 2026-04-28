@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import ProductCard from "../../components/product/ProductCard";
 import { useCart } from "../../features/cart/useCart";
+import { useCartToast } from "../../features/cart/useCartToast";
 import { useCategories, useProducts } from "../../features/product/useProducts";
 
 const STATUS_OPTIONS = ["전체", "판매중", "품절"];
@@ -91,6 +92,7 @@ export default function ProductListPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const { addToCart } = useCart({ autoLoad: false });
+  const { toast, showToast } = useCartToast();
   const { products, loading, fetching, error } = useProducts({
     page: 0,
     size: 50,
@@ -188,10 +190,10 @@ export default function ProductListPage() {
   const handleAddToCart = async (product) => {
     try {
       await addToCart({ productId: product.id, quantity: 1 });
-      window.alert("장바구니에 담았습니다.");
+      showToast("장바구니에 담았습니다.");
     } catch (nextError) {
       if (nextError?.status === 401) { navigate("/login"); return; }
-      window.alert(nextError?.message || "장바구니에 담지 못했습니다.");
+      showToast(nextError?.message || "장바구니에 담지 못했습니다.", true);
     }
   };
 
@@ -370,6 +372,22 @@ export default function ProductListPage() {
           )}
         </div>
       </div>
+
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
+          {toast.error ? (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4.5 4.5l5 5M9.5 4.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

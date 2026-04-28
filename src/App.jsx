@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import AdminLayout from "./components/admin/AdminLayout";
 import RequireAdmin from "./components/common/RequireAdmin";
@@ -18,6 +19,7 @@ import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
 import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
 import AdminEmbeddingPage from "./pages/admin/AdminEmbeddingPage";
+import AdminSettlementOpsPage from "./pages/admin/AdminSettlementOpsPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
 import AdminMemberReportListPage from "./pages/admin/AdminMemberReportListPage";
 import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestrictionListPage";
@@ -43,6 +45,8 @@ import ProductListPage from "./pages/product/ProductListPage";
 import SellerCategoryPage from "./pages/seller/SellerCategoryPage";
 import SellerRegisterPage from "./pages/seller/SellerRegisterPage";
 import SellerAccountVerificationPage from "./pages/seller/SellerAccountVerificationPage";
+import SellerMyPage from "./pages/seller/SellerMyPage";
+import SellerOrderListPage from "./pages/seller/SellerOrderListPage";
 import SellerProductCreatePage from "./pages/seller/SellerProductCreatePage";
 import SellerProductEditPage from "./pages/seller/SellerProductEditPage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
@@ -97,15 +101,33 @@ const router = createBrowserRouter([
       { path: "member-reports/new", element: <MemberReportCreatePage /> },
       { path: "member-reports/me", element: <MemberReportHistoryPage /> },
       { path: "notifications", element: <NotificationListPage /> },
+      { path: "admin/categories", element: <AdminCategoryPage /> },
+      { path: "admin/member-reports", element: <AdminMemberReportListPage /> },
+      {
+        path: "admin/member-reports/:reportId",
+        element: <AdminMemberReportDetailPage />,
+      },
+      {
+        path: "admin/member-restrictions",
+        element: <AdminMemberRestrictionListPage />,
+      },
+      { path: "admin/embeddings", element: <AdminEmbeddingPage /> },
+      { path: "admin/settlements/ops", element: <AdminSettlementOpsPage /> },
       { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {
         path: "seller/account-verification",
         element: <SellerAccountVerificationPage />,
       },
+      { path: "seller", element: <Navigate to="/seller/me" replace /> },
+      { path: "seller/me", element: <SellerMyPage /> },
+      { path: "seller/orders", element: <SellerOrderListPage /> },
       { path: "seller/products", element: <SellerProductListPage /> },
       { path: "seller/products/new", element: <SellerProductCreatePage /> },
-      { path: "seller/products/:productId/edit", element: <SellerProductEditPage /> },
+      {
+        path: "seller/products/:productId/edit",
+        element: <SellerProductEditPage />,
+      },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
       { path: "seller/refunds", element: <SellerRefundManagementPage /> },
       { path: "auctions", element: <AuctionListPage /> },
