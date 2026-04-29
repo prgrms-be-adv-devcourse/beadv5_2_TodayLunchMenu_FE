@@ -1,12 +1,13 @@
 ﻿// authStore.js : 인증 상태 관리를 위한 간단한 스토어 구현(외부 store, 프론트엔드 메모리 상태)
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
+const hasAccessToken = () => Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 
 // 초기 인증 상태
 let authState = {
   user: null,
-  isAuthenticated: Boolean(localStorage.getItem(ACCESS_TOKEN_KEY)),
-  loading: false,
+  isAuthenticated: hasAccessToken(),
+  loading: hasAccessToken(),
 };
 
 // 구독자 관리 : 인증 상태 변경을 구독하는 리스너들을 관리하는 Set
