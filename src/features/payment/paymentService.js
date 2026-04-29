@@ -127,6 +127,7 @@ async function createOrderForCardPaymentApi(payload) {
 
   return {
     orderId: order?.orderId ?? null,
+    orderNumber: order?.orderNumber ?? null,
     totalPrice: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
     createdAt: order?.createdAt ?? null,

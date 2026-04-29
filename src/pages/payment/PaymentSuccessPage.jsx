@@ -61,18 +61,6 @@ export default function PaymentSuccessPage() {
   return (
     <PageContainer>
       <section className="mx-auto max-w-2xl pb-16 pt-4">
-        <div className="mb-8 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => navigate("/products")}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50"
-            aria-label="닫기"
-          >
-            ×
-          </button>
-          <h1 className="text-lg font-extrabold tracking-tight text-gray-900">결제 상세</h1>
-          <div className="w-10" />
-        </div>
 
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-100">

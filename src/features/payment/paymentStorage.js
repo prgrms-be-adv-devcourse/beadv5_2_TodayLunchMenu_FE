@@ -51,6 +51,7 @@ function savePendingOrderPayment(payment) {
     `${PENDING_ORDER_PAYMENT_KEY_PREFIX}${payment.pgOrderId}`,
     JSON.stringify({
       orderId: payment.orderId ?? null,
+      orderNumber: payment.orderNumber ?? null,
       pgOrderId: payment.pgOrderId,
       amount: payment.amount ?? 0,
       orderName: payment.orderName ?? "",

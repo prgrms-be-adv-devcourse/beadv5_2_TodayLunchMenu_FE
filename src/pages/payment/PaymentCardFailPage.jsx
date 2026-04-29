@@ -27,6 +27,7 @@ function buildFailureModel(search, state) {
     errorCode: state?.errorCode || searchParams.get("code") || "CARD_PAYMENT_FAILED",
     pgOrderId,
     orderId: state?.orderId || pendingPayment?.orderId || null,
+    orderNumber: pendingPayment?.orderNumber || null,
     amount: state?.amount ?? pendingPayment?.amount ?? parseAmount(searchParams.get("amount")),
     items: pendingPayment?.items || [],
     shipping: pendingPayment?.shipping || null,
@@ -51,7 +52,7 @@ export default function PaymentCardFailPage() {
     () => buildFailureModel(location.search, location.state),
     [location.search, location.state]
   );
-  const displayOrderId = result.orderId || result.pgOrderId || "-";
+  const displayOrderId = result.orderNumber || result.orderId || result.pgOrderId || "-";
 
   useEffect(() => {
     clearPendingCardPayment(result);
@@ -83,7 +84,7 @@ export default function PaymentCardFailPage() {
               <span className="font-mono font-semibold text-gray-900">{result.errorCode}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-500">orderId</span>
+              <span className="text-gray-500">주문번호</span>
               <span className="font-mono font-semibold text-gray-900">{displayOrderId}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
