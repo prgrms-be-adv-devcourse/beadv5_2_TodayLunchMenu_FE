@@ -307,6 +307,7 @@ export default function PaymentPage() {
 
         savePendingOrderPayment({
           orderId,
+          orderNumber: createdOrder.orderNumber ?? null,
           pgOrderId: orderId,
           amount,
           orderName,
@@ -401,14 +402,14 @@ export default function PaymentPage() {
     }
   };
 
+  useEffect(() => {
+    if (!hasPaymentItems) {
+      navigate("/orders", { replace: true });
+    }
+  }, [hasPaymentItems, navigate]);
+
   if (!hasPaymentItems) {
-    return (
-      <PageContainer>
-        <section className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-          결제할 주문 정보가 없습니다. 장바구니에서 다시 시작해 주세요.
-        </section>
-      </PageContainer>
-    );
+    return null;
   }
 
   return (
