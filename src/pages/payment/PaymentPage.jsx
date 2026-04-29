@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useBlocker, useLocation, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
+import ConfirmModal from "../../components/common/ConfirmModal";
 import PageContainer from "../../components/common/PageContainer";
 import {
   createOrderForCardPaymentApi,
@@ -9,7 +10,7 @@ import {
   loadTossPaymentsSdk,
   savePendingOrderPayment,
 } from "../../features/payment/paymentApi";
-import { acceptAuctionOrderApi, createOrderApi } from "../../features/order/orderApi";
+import { acceptAuctionOrderApi, createOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
 
 const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY;
 
@@ -77,11 +78,35 @@ export default function PaymentPage() {
   const [walletBalance, setWalletBalance] = useState(null);
   const [walletLoading, setWalletLoading] = useState(true);
   const [walletError, setWalletError] = useState("");
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
 
   const isAuction = location.state?.isAuction === true;
   const auctionOrderId = location.state?.auctionOrderId ?? null;
-  const payment = useMemo(() => buildPaymentModel(location.state), [location.state]);
+  const stateWithMock = location.state ?? (import.meta.env.DEV ? {
+    items: [{ name: "오늘의 점심 도시락", quantity: 2, price: 15000, image: null, cartId: "mock-1", productId: "mock-p1" }],
+    shipping: { receiver: "홍길동", receiverPhone: "01012345678", address: "서울특별시 강남구 테헤란로 123", addressDetail: "4층 401호", zipCode: "06234" },
+    selectedPaymentMethod: "DEPOSIT",
+    paymentMethodCode: "DEPOSIT",
+    paymentMethod: "예치금 결제",
+    depositLabel: "예치금 결제",
+    itemPrice: 30000,
+    shippingFee: 0,
+    totalPrice: 30000,
+  } : null);
+  const payment = useMemo(() => buildPaymentModel(stateWithMock), [stateWithMock]);
   const hasPaymentItems = payment.items.length > 0;
+
+  const blocker = useBlocker(({ nextLocation }) => {
+    if (nextLocation.pathname.startsWith("/payments/")) return false;
+    return hasPaymentItems;
+  });
+
+  useEffect(() => {
+    if (blocker.state === "blocked") {
+      setShowLeaveModal(true);
+    }
+  }, [blocker.state]);
+
   const isCardPayment =
     payment.selectedPaymentMethod === "CARD" ||
     payment.paymentMethodCode === "CARD" ||
@@ -154,6 +179,30 @@ export default function PaymentPage() {
       setIsPreparingCardOrder(true);
 
       if (isUuid(payment.orderId)) {
+        if (isAuction) {
+          try {
+            const orderDetail = await getOrderDetailApi(payment.orderId);
+            if (!cancelled) {
+              setPreparedCardOrder({
+                orderId: payment.orderId,
+                totalPrice: orderDetail.totalPrice,
+                createdAt: orderDetail.createdAt || new Date().toISOString(),
+              });
+            }
+          } catch (error) {
+            if (!cancelled) {
+              setSubmitError(
+                error instanceof ApiError
+                  ? error.message
+                  : "주문 정보를 불러오는 중 오류가 발생했습니다."
+              );
+            }
+          } finally {
+            if (!cancelled) setIsPreparingCardOrder(false);
+          }
+          return;
+        }
+
         if (!cancelled) {
           setPreparedCardOrder({
             orderId: payment.orderId,
@@ -301,6 +350,7 @@ export default function PaymentPage() {
           receiverPhone: payment.shipping?.receiverPhone,
         });
         navigate(`/payments/${auctionOrderId}/success`, {
+          replace: true,
           state: {
             ...payment,
             orderId: auctionOrderId,
@@ -320,6 +370,7 @@ export default function PaymentPage() {
       });
 
       navigate(`/payments/${createdOrder.orderId}/success`, {
+        replace: true,
         state: {
           ...payment,
           orderId: createdOrder.orderId,
@@ -363,286 +414,130 @@ export default function PaymentPage() {
   return (
     <>
       <PageContainer>
-        {submitError ? (
-          <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
-            {submitError}
-          </section>
-        ) : null}
+        <div className="mx-auto max-w-2xl space-y-7 text-left">
 
-        <section className="mb-6 flex items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm ring-1 ring-gray-200 transition hover:bg-blue-50"
-          >
-            <span aria-hidden="true">←</span>
-            주문서로 돌아가기
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/orders")}
-            className="text-sm font-bold text-blue-500 transition hover:text-blue-700"
-          >
-            주문내역 보기
-          </button>
-        </section>
+          {submitError ? (
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-600">{submitError}</p>
+          ) : null}
 
-        <section className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="bg-white p-6 shadow-[0_40px_80px_-30px_rgba(56,39,76,0.18)] ring-1 ring-gray-200 md:col-span-2">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-500">
-                Order Reference
-              </p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-gray-900">
-                #{payment.orderId || "주문 생성 전"}
-              </h1>
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  sessionStorage.setItem("checkout-form-state", JSON.stringify({
+                    form: {
+                      receiver: payment.shipping?.receiver || "",
+                      receiverPhone: payment.shipping?.receiverPhone || "",
+                      address: payment.shipping?.address || "",
+                      addressDetail: payment.shipping?.addressDetail || "",
+                      zipCode: payment.shipping?.zipCode || "",
+                      memo: location.state?.memo || "",
+                    },
+                    paymentMethod: payment.selectedPaymentMethod || payment.paymentMethodCode || "DEPOSIT",
+                  }));
+                } catch {}
+                navigate("/orders/checkout", { state: location.state });
+              }}
+              className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition"
+            >
+              <span aria-hidden="true">←</span> 주문서로 돌아가기
+            </button>
+          </div>
+
+          {/* 주문 상품 */}
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
+              <div className="flex items-start gap-4">
+                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                  {primaryItem?.image ? (
+                    <img src={primaryItem.image} alt={primaryItem.name || "상품"} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                      {(primaryItem?.name || "P").slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-900">
+                    {primaryItem?.name || "상품 정보 없음"}
+                    {payment.items.length > 1 ? ` 외 ${payment.items.length - 1}건` : ""}
+                  </p>
+                  <p className="mt-1.5 text-sm text-gray-500">수량: {primaryItem?.quantity || 1}개</p>
+                  <p className="mt-0.5 text-sm text-gray-500">결제 금액: {formatPrice(payment.totalPrice)}</p>
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div className="mt-8 flex items-center gap-4 bg-blue-50/80 p-4">
-              <div className="h-20 w-20 overflow-hidden bg-white shadow-sm ring-1 ring-gray-200">
-                {primaryItem?.image ? (
-                  <img
-                    src={primaryItem.image}
-                    alt={primaryItem.name || "상품"}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs font-bold text-gray-400">
-                    이미지 없음
-                  </div>
-                )}
+          <hr className="border-gray-100" />
+
+          {/* 배송 정보 */}
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-4 text-sm">
+              <div>
+                <p className="text-gray-400">받는 분</p>
+                <p className="mt-1 font-semibold text-gray-900">{payment.shipping?.receiver || "-"}</p>
               </div>
               <div>
-                <p className="text-lg font-extrabold text-gray-900">
-                  {primaryItem?.name || "상품 정보 없음"}
+                <p className="text-gray-400">연락처</p>
+                <p className="mt-1 font-semibold text-gray-900">{payment.shipping?.receiverPhone || "-"}</p>
+              </div>
+              <div>
+                <p className="text-gray-400">배송 주소</p>
+                <p className="mt-1 font-semibold text-gray-900">
+                  {[payment.shipping?.address, payment.shipping?.addressDetail].filter(Boolean).join(" ") || "-"}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
-                  {primaryItem?.subtitle || `${primaryItem?.quantity || 0}개 주문`}
-                </p>
-                <p className="mt-2 text-sm font-semibold text-blue-700">
-                  총 {payment.items.length}개 상품
-                </p>
+                {payment.shipping?.zipCode && (
+                  <p className="mt-0.5 text-gray-500">({payment.shipping.zipCode})</p>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-700 p-6 text-white">
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-blue-100">
-              Total Amount
-            </p>
-            <p className="mt-3 text-4xl font-black tracking-tight">
-              {formatPrice(payment.totalPrice)}
-            </p>
-            <div className="mt-5 inline-flex rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]">
-              {paymentMethodLabel}
-            </div>
-          </div>
-        </section>
+          <hr className="border-gray-100" />
 
-        <section className="mb-6 bg-blue-50/85 p-6 ring-1 ring-gray-200">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
-              배송 요약
-            </h2>
-          </div>
-
-          <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
-                수령인
-              </p>
-              <p className="mt-2 text-base font-bold text-gray-900">
-                {payment.shipping?.receiver || "-"}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                {payment.shipping?.receiverPhone || "-"}
-              </p>
-            </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-gray-500">
-                배송지
-              </p>
-              <p className="mt-2 text-sm leading-6 text-gray-700">
-                {payment.shipping?.address || "-"}
-                <br />
-                {payment.shipping?.addressDetail || "-"}
-                <br />
-                {payment.shipping?.zipCode || "-"}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mb-6 border border-gray-200 bg-white p-6 shadow-[0_30px_60px_-40px_rgba(56,39,76,0.2)]">
-          <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
-            결제 수단
-          </h2>
-
-          <div
-            className={[
-              "mt-5 flex items-center border p-4",
-              isCardPayment
-                ? "border-amber-200 bg-amber-50/80"
-                : "border-blue-200 bg-blue-50/70",
-            ].join(" ")}
-          >
-            <div
-              className={[
-                "flex h-14 w-14 items-center justify-center text-2xl text-white shadow-lg",
-                isCardPayment
-                  ? "bg-amber-500"
-                  : "bg-blue-700",
-              ].join(" ")}
-            >
-              {isCardPayment ? "카" : "원"}
-            </div>
-            <div className="ml-4 flex-1">
-              <p className="text-lg font-extrabold text-gray-900">
-                {isCardPayment ? "카드 결제" : payment.depositLabel || "예치금 결제"}
-              </p>
-              <p className="mt-1 text-sm text-gray-500">
-                {isCardPayment
-                  ? "결제 버튼을 누르면 주문을 먼저 생성한 뒤 토스 결제창이 열립니다."
-                  : "예치금으로 부족 없이 결제를 진행합니다."}
-              </p>
-            </div>
-            <div
-              className={[
-                "text-sm font-black",
-                isCardPayment ? "text-amber-700" : "text-blue-700",
-              ].join(" ")}
-            >
-              {isCardPayment ? "선택됨" : "확인됨"}
-            </div>
-          </div>
-
-          {isCardPayment ? (
-            <div className="mt-4 space-y-3">
-              <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-                카드 결제는 주문 생성 후 토스 결제창으로 이동합니다.
+          {/* 결제 정보 */}
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제 정보</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-400">결제 수단</span>
+                <span className="font-semibold text-gray-900">{paymentMethodLabel}</span>
               </div>
-              <div className="border border-amber-200 bg-white px-4 py-4 text-sm text-gray-600">
-                승인 완료 후에는 성공 URL에서 결제 확정 API를 호출하고 최종
-                상태를 반영합니다.
+              {!isCardPayment && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">보유 예치금</span>
+                    <span className="font-semibold text-gray-900">
+                      {walletLoading ? "확인 중..." : walletBalance === null ? "-" : formatPrice(walletBalance)}
+                    </span>
+                  </div>
+                  {!walletLoading && walletBalance !== null && !hasEnoughDeposit && (
+                    <p className="text-xs font-medium text-red-500">예치금이 {formatPrice(shortageAmount)} 부족합니다</p>
+                  )}
+                  {walletError && <p className="text-xs text-red-500">{walletError}</p>}
+                </>
+              )}
+              <div className="flex justify-between border-t border-gray-100 pt-3">
+                <span className="text-gray-400">상품 금액</span>
+                <span className="font-semibold text-gray-900">{formatPrice(payment.itemPrice)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">배송비</span>
+                <span className="font-semibold text-gray-900">{payment.shippingFee === 0 ? "무료" : formatPrice(payment.shippingFee)}</span>
+              </div>
+              <div className="flex justify-between border-t border-gray-100 pt-3">
+                <span className="font-bold text-gray-900">총 결제 금액</span>
+                <span className="font-extrabold text-violet-700">{formatPrice(payment.totalPrice)}</span>
               </div>
             </div>
-          ) : null}
-        </section>
-
-        <section className="mb-6 bg-white p-6 ring-1 ring-gray-200">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-extrabold tracking-tight text-gray-900">
-              {isCardPayment ? "카드 결제 준비" : "예치금 확인"}
-            </h2>
-            {!isCardPayment ? (
-              <span
-                className={[
-                  "inline-flex items-center rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
-                  hasEnoughDeposit
-                    ? "bg-emerald-50 text-emerald-600"
-                    : "bg-red-50 text-red-500",
-                ].join(" ")}
-              >
-                {hasEnoughDeposit ? "결제 가능" : "잔액 부족"}
-              </span>
-            ) : (
-              <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-amber-700">
-                연동 대기
-              </span>
-            )}
           </div>
 
-          {isCardPayment ? (
-            <div className="mt-6 space-y-4">
-              <div className="bg-amber-50 px-4 py-4 text-sm font-medium text-amber-700">
-                카드 결제는 예치금 잔액과 무관하게 주문 생성 후 PG 결제창에서
-                진행됩니다.
-              </div>
-              <div className="space-y-3 border border-gray-200 bg-blue-50/70 px-4 py-4 text-sm text-gray-600">
-                <div className="flex items-center justify-between">
-                  <span>현재 단계</span>
-                  <span className="font-semibold text-gray-900">
-                    주문 생성 후 토스 결제창 호출
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>성공 복귀 후</span>
-                  <span className="font-semibold text-gray-900">
-                    confirm API 호출
-                  </span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>현재 예치금</span>
-                <span className="text-base font-extrabold text-gray-900">
-                  {walletLoading
-                    ? "불러오는 중..."
-                    : walletBalance === null
-                      ? "-"
-                      : formatPrice(walletBalance)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-sm text-red-500">
-                <span>결제 예정 금액</span>
-                <span className="text-base font-extrabold">
-                  -{formatPrice(payment.totalPrice)}
-                </span>
-              </div>
-              <div className="h-px bg-gray-200" />
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-700">
-                  결제 후 예상 잔액
-                </span>
-                <span className="text-xl font-black tracking-tight text-blue-700">
-                  {walletLoading || walletBalance === null
-                    ? "-"
-                    : formatPrice(
-                        Math.max(effectiveDepositBalance - payment.totalPrice, 0)
-                      )}
-                </span>
-              </div>
-
-              {walletError ? (
-                <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-                  {walletError}
-                </div>
-              ) : null}
-
-              {!walletLoading && walletBalance !== null && !hasEnoughDeposit ? (
-                <div className="bg-red-50 px-4 py-3 text-sm font-medium text-red-500">
-                  예치금이 {formatPrice(shortageAmount)} 부족합니다. 충전 후
-                  다시 시도해 주세요.
-                </div>
-              ) : null}
-            </div>
-          )}
-        </section>
-
-        <section className="mb-32 space-y-3 px-2">
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>상품 금액</span>
-            <span className="font-semibold text-gray-900">
-              {formatPrice(payment.itemPrice)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>배송비</span>
-            <span className="font-semibold text-gray-900">
-              {formatPrice(payment.shippingFee)}
-            </span>
-          </div>
-          <div className="flex items-end justify-between border-t border-gray-200 pt-4">
-            <span className="text-lg font-extrabold text-gray-900">
-              총 결제 금액
-            </span>
-            <span className="text-3xl font-black tracking-tight text-blue-700">
-              {formatPrice(payment.totalPrice)}
-            </span>
-          </div>
-        </section>
+          <div className="pb-32" />
+        </div>
       </PageContainer>
 
       <footer className="fixed bottom-0 left-0 z-40 w-full bg-white/85 backdrop-blur-xl">
@@ -655,7 +550,7 @@ export default function PaymentPage() {
           </div>
           <Button
             size="lg"
-            className="h-16 w-full rounded-full text-lg font-extrabold shadow-lg"
+            className="h-14 w-full text-base font-extrabold"
             disabled={
               isCardPayment
                 ? isSubmitting || isPreparingCardOrder || !preparedCardOrder
@@ -704,13 +599,17 @@ export default function PaymentPage() {
               실패 화면 보기
             </Button>
           ) : null}
-          <p className="text-center text-[11px] font-bold uppercase tracking-[0.22em] text-gray-400">
-            {isCardPayment
-              ? "Order Create + Toss Card Payment"
-              : "Secure Deposit Transaction"}
-          </p>
         </div>
       </footer>
+
+      <ConfirmModal
+        open={showLeaveModal}
+        onClose={() => { setShowLeaveModal(false); blocker.reset?.(); }}
+        title="결제를 중단하시겠습니까?"
+        description="페이지를 벗어나면 현재 결제가 중단됩니다."
+        confirmText="나가기"
+        onConfirm={() => { setShowLeaveModal(false); blocker.proceed?.(); }}
+      />
     </>
   );
 }

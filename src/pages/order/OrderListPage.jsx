@@ -290,27 +290,23 @@ export default function OrderListPage() {
 
             if (isPendingAuction) {
               return (
-                <div key={order.orderId} className="bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
+                <Link
+                  key={order.orderId}
+                  to="/orders/checkout"
+                  state={{
+                    isAuction: true,
+                    orderId: order.orderId,
+                    items: [{
+                      name: order.representativeProductName,
+                      quantity: 1,
+                      price: order.totalAmount,
+                      image: order.representativeThumbnailKey,
+                    }],
+                  }}
+                  className="block bg-white/80 p-5 shadow-sm ring-1 ring-amber-300 transition hover:-translate-y-0.5 hover:shadow-md"
+                >
                   {cardContent}
-                  <div className="mt-4 border-t border-gray-100 pt-4">
-                    <Link
-                      to="/orders/checkout"
-                      state={{
-                        isAuction: true,
-                        orderId: order.orderId,
-                        items: [{
-                          name: order.representativeProductName,
-                          quantity: 1,
-                          price: order.totalAmount,
-                          image: order.representativeThumbnailKey,
-                        }],
-                      }}
-                      className="block w-full rounded-lg bg-violet-600 py-2.5 text-center text-sm font-bold text-white hover:bg-violet-700 transition"
-                    >
-                      주문하기
-                    </Link>
-                  </div>
-                </div>
+                </Link>
               );
             }
 
