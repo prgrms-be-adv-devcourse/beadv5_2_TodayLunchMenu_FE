@@ -50,10 +50,6 @@ function getStatusMeta(status) {
       return { label: "일부 배송 중", className: "bg-sky-100 text-sky-700" };
     case "DELIVERED":
       return { label: "배송 완료", className: "bg-indigo-100 text-indigo-700" };
-      return {
-        label: "주문 완료",
-        className: "bg-blue-100 text-blue-700",
-      };
     case "COMPLETED":
       return { label: "구매 확정", className: "bg-emerald-100 text-emerald-700" };
     case "PARTIAL_CANCELED":
@@ -218,6 +214,75 @@ export default function OrderListPage() {
           {filteredOrders.map((order) => {
             const statusMeta = getStatusMeta(order.status);
             const thumbnailSrc = getThumbnailSrc(order.representativeThumbnailKey);
+            const isPendingAuction = order.orderType === "AUCTION" && order.status === "CREATED";
+
+            const cardContent = (
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-20 overflow-hidden bg-blue-50">
+                    {thumbnailSrc ? (
+                      <img
+                        src={thumbnailSrc}
+                        alt={order.representativeProductName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
+                        {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className={[
+                          "inline-flex rounded-full px-3 py-1 text-xs font-bold",
+                          statusMeta.className,
+                        ].join(" ")}
+                      >
+                        {statusMeta.label}
+                      </span>
+                      <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                        {formatDate(order.createdAt)}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
+                      {order.representativeProductName}
+                      {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
+                    </h3>
+
+                    <p className="mt-1 text-sm font-medium text-gray-500">
+                      주문번호 {order.orderId}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="md:text-right">
+                  <p className="text-sm text-gray-500">총 결제 금액</p>
+                  <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
+                    {formatPrice(order.totalAmount)}원
+                  </p>
+                </div>
+              </div>
+            );
+
+            if (isPendingAuction) {
+              return (
+                <div key={order.orderId} className="bg-white/80 p-5 shadow-sm ring-1 ring-amber-200">
+                  {cardContent}
+                  <div className="mt-4 border-t border-gray-100 pt-4">
+                    <Link
+                      to={`/orders/${order.orderId}`}
+                      className="block w-full rounded-lg bg-violet-600 py-2.5 text-center text-sm font-bold text-white hover:bg-violet-700 transition"
+                    >
+                      주문하기
+                    </Link>
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <Link
@@ -225,55 +290,7 @@ export default function OrderListPage() {
                 to={`/orders/${order.orderId}`}
                 className="block bg-white/80 p-5 shadow-sm ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-md"
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 overflow-hidden bg-blue-50">
-                      {thumbnailSrc ? (
-                        <img
-                          src={thumbnailSrc}
-                          alt={order.representativeProductName}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
-                          {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        <span
-                          className={[
-                            "inline-flex rounded-full px-3 py-1 text-xs font-bold",
-                            statusMeta.className,
-                          ].join(" ")}
-                        >
-                          {statusMeta.label}
-                        </span>
-                        <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                          {formatDate(order.createdAt)}
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
-                        {order.representativeProductName}
-                        {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
-                      </h3>
-
-                      <p className="mt-1 text-sm font-medium text-gray-500">
-                        주문번호 {order.orderId}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="md:text-right">
-                    <p className="text-sm text-gray-500">총 결제 금액</p>
-                    <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
-                      {formatPrice(order.totalAmount)}원
-                    </p>
-                  </div>
-                </div>
+                {cardContent}
               </Link>
             );
           })}
