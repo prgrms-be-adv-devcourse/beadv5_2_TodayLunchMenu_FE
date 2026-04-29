@@ -79,6 +79,8 @@ export default function OrderListPage() {
   const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -91,16 +93,12 @@ export default function OrderListPage() {
         setLoading(true);
         setError("");
 
-        const page = await getOrdersApi();
-        if (!mounted) {
-          return;
-        }
+        const page = await getOrdersApi({ startDate: dateFrom || undefined, endDate: dateTo || undefined });
+        if (!mounted) return;
 
         setOrders(page.content);
       } catch (loadError) {
-        if (!mounted) {
-          return;
-        }
+        if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
           navigate("/login");
@@ -113,18 +111,14 @@ export default function OrderListPage() {
             : "주문 목록을 불러오는 중 오류가 발생했습니다."
         );
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     }
 
     loadOrders();
 
-    return () => {
-      mounted = false;
-    };
-  }, [navigate]);
+    return () => { mounted = false; };
+  }, [navigate, dateFrom, dateTo]);
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
@@ -136,7 +130,7 @@ export default function OrderListPage() {
         order.status === status;
       const normalizedKeyword = keyword.trim().toLowerCase();
       const matchesKeyword = normalizedKeyword
-        ? String(order.orderId || "").toLowerCase().includes(normalizedKeyword) ||
+        ? String(order.orderNumber || "").toLowerCase().includes(normalizedKeyword) ||
           String(order.representativeProductName || "")
             .toLowerCase()
             .includes(normalizedKeyword)
@@ -161,7 +155,7 @@ export default function OrderListPage() {
         {ORDER_TYPE_TABS.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => { setOrderType(tab.value); setStatus("ALL"); setKeyword(""); }}
+            onClick={() => { setOrderType(tab.value); setStatus("ALL"); setKeyword(""); setDateFrom(""); setDateTo(""); }}
             className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
               orderType === tab.value
                 ? "bg-white text-gray-900 shadow-sm"
@@ -192,6 +186,32 @@ export default function OrderListPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          <span className="text-sm text-gray-400">~</span>
+          <input
+            type="date"
+            value={dateTo}
+            min={dateFrom}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              type="button"
+              onClick={() => { setDateFrom(""); setDateTo(""); }}
+              className="text-sm font-medium text-gray-400 hover:text-gray-600"
+            >
+              초기화
+            </button>
+          )}
         </div>
       </section>
 
@@ -254,12 +274,12 @@ export default function OrderListPage() {
                     </h3>
 
                     <p className="mt-1 text-sm font-medium text-gray-500">
-                      주문번호 {order.orderId}
+                      주문번호 {order.orderNumber}
                     </p>
                   </div>
                 </div>
 
-                <div className="md:text-right">
+                <div className="text-left md:text-right">
                   <p className="text-sm text-gray-500">총 결제 금액</p>
                   <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
                     {formatPrice(order.totalAmount)}원

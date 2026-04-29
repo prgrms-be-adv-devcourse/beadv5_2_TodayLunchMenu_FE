@@ -12,6 +12,7 @@ function toUiOrder(order) {
 function toUiOrderSummary(order) {
   return {
     orderId: order?.orderId,
+    orderNumber: order?.orderNumber ?? "",
     totalAmount: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
     orderType: order?.orderType ?? "NORMAL",
@@ -91,7 +92,11 @@ async function createOrderApi({
   return toUiOrder(response.data?.data ?? response.data);
 }
 
-async function getOrdersApi(params = {}) {
+async function getOrdersApi({ startDate, endDate } = {}) {
+  const params = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+
   const response = await apiClient("/api/orders", {
     method: "GET",
     params,
