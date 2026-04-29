@@ -132,7 +132,6 @@ export default function OrderListPage() {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      if (order.status === "CREATED") return false;
       const matchesType = order.orderType === orderType;
       const matchesStatus =
         status === "ALL" ? true :
