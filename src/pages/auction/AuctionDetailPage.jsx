@@ -701,28 +701,10 @@ export default function AuctionDetailPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate("/payments", {
-                      state: {
-                        auctionId: auction.id,
-                        totalPrice: currentPrice,
-                        itemPrice: currentPrice,
-                        shippingFee: 0,
-                        items: [
-                          {
-                            productId: auction.productId,
-                            name: auction.productTitle ?? productName ?? "경매 상품",
-                            price: currentPrice,
-                            quantity: 1,
-                          },
-                        ],
-                        depositLabel: "예치금 결제",
-                      },
-                    })
-                  }
+                  onClick={() => navigate("/orders/checkout")}
                   className="mt-4 h-11 w-full bg-amber-500 text-sm font-bold text-white transition hover:bg-amber-600"
                 >
-                  결제하기
+                  주문하기
                 </button>
               </div>
             )}

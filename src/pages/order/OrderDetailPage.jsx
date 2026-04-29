@@ -66,7 +66,7 @@ function getOrderStatusMeta(status) {
 function getItemStatusMeta(status) {
   switch (status?.toUpperCase()) {
     case "PENDING":   return { label: "주문 접수",   className: "bg-amber-100 text-amber-700" };
-    case "PREPARING": return { label: "상품 준비 중", className: "bg-violet-100 text-violet-700" };
+    case "PREPARING": return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
     case "SHIPPING":  return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
     case "DELIVERED": return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
     case "COMPLETED": return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
