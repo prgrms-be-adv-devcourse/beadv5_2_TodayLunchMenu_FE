@@ -127,12 +127,8 @@ function useAuth() {
   );
 
   useEffect(() => {
-    const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
-
-    if (hasAccessToken && !authState.user && !authState.loading) {
-      initializeAuth().catch(() => {});
-    }
-  }, [authState.loading, authState.user]);
+    initializeAuth().catch(() => {});
+  }, []);
 
   return {
     ...authState,
