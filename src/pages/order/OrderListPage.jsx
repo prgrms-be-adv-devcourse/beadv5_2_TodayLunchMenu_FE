@@ -8,14 +8,11 @@ import { getOrdersApi } from "../../features/order/orderApi";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
-  { value: "CREATED", label: "결제 대기" },
   { value: "CONFIRMED", label: "주문 완료" },
   { value: "SHIPPING", label: "배송 중" },
-  { value: "PARTIAL_SHIPPING", label: "일부 배송 중" },
   { value: "DELIVERED", label: "배송 완료" },
   { value: "COMPLETED", label: "구매 확정" },
-  { value: "PARTIAL_CANCELED", label: "일부 취소" },
-  { value: "CANCELED", label: "취소" },
+  { value: "CANCELED", label: "취소/반품" },
 ];
 
 function formatPrice(value) {
@@ -76,8 +73,14 @@ function getThumbnailSrc(thumbnailKey) {
   return /^https?:\/\//.test(thumbnailKey) ? thumbnailKey : "";
 }
 
+const ORDER_TYPE_TABS = [
+  { value: "NORMAL", label: "일반 주문" },
+  { value: "AUCTION", label: "경매 주문" },
+];
+
 export default function OrderListPage() {
   const navigate = useNavigate();
+  const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
   const [orders, setOrders] = useState([]);
@@ -129,7 +132,12 @@ export default function OrderListPage() {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const matchesStatus = status === "ALL" ? true : order.status === status;
+      const matchesType = order.orderType === orderType;
+      const matchesStatus =
+        status === "ALL" ? true :
+        status === "SHIPPING" ? ["SHIPPING", "PARTIAL_SHIPPING"].includes(order.status) :
+        status === "CANCELED" ? ["CANCELED", "PARTIAL_CANCELED"].includes(order.status) :
+        order.status === status;
       const normalizedKeyword = keyword.trim().toLowerCase();
       const matchesKeyword = normalizedKeyword
         ? String(order.orderId || "").toLowerCase().includes(normalizedKeyword) ||
@@ -138,9 +146,9 @@ export default function OrderListPage() {
             .includes(normalizedKeyword)
         : true;
 
-      return matchesStatus && matchesKeyword;
+      return matchesType && matchesStatus && matchesKeyword;
     });
-  }, [keyword, orders, status]);
+  }, [keyword, orderType, orders, status]);
 
   return (
     <PageContainer>
@@ -152,6 +160,22 @@ export default function OrderListPage() {
           </span>
         }
       />
+
+      <div className="mb-5 flex rounded-xl bg-gray-100 p-1">
+        {ORDER_TYPE_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => { setOrderType(tab.value); setStatus("ALL"); setKeyword(""); }}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+              orderType === tab.value
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       <section className="mb-6 bg-white/80 p-4 shadow-sm ring-1 ring-gray-200">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.5fr_1fr]">

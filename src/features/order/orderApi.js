@@ -14,6 +14,7 @@ function toUiOrderSummary(order) {
     orderId: order?.orderId,
     totalAmount: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
+    orderType: order?.orderType ?? "NORMAL",
     createdAt: order?.createdAt ?? null,
     representativeProductName:
       order?.representativeProductName ?? "상품명 없음",
