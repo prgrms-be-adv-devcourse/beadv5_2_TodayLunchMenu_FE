@@ -9,7 +9,7 @@ import {
   loadTossPaymentsSdk,
   savePendingOrderPayment,
 } from "../../features/payment/paymentApi";
-import { createOrderApi } from "../../features/order/orderApi";
+import { acceptAuctionOrderApi, createOrderApi } from "../../features/order/orderApi";
 
 const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY;
 
@@ -78,6 +78,8 @@ export default function PaymentPage() {
   const [walletLoading, setWalletLoading] = useState(true);
   const [walletError, setWalletError] = useState("");
 
+  const isAuction = location.state?.isAuction === true;
+  const auctionOrderId = location.state?.auctionOrderId ?? null;
   const payment = useMemo(() => buildPaymentModel(location.state), [location.state]);
   const hasPaymentItems = payment.items.length > 0;
   const isCardPayment =
@@ -231,6 +233,18 @@ export default function PaymentPage() {
           return;
         }
 
+        if (isAuction) {
+          await acceptAuctionOrderApi({
+            orderId: auctionOrderId,
+            method: "PG",
+            address: payment.shipping?.address,
+            addressDetail: payment.shipping?.addressDetail,
+            zipCode: payment.shipping?.zipCode,
+            receiver: payment.shipping?.receiver,
+            receiverPhone: payment.shipping?.receiverPhone,
+          });
+        }
+
         const orderId = String(createdOrder.orderId);
         if (!orderId || orderId === "null" || orderId.startsWith("pending-")) {
           setSubmitError(
@@ -273,6 +287,26 @@ export default function PaymentPage() {
           customerName: payment.shipping?.receiver || "주문자",
         });
 
+        return;
+      }
+
+      if (isAuction) {
+        await acceptAuctionOrderApi({
+          orderId: auctionOrderId,
+          method: "DEPOSIT",
+          address: payment.shipping?.address,
+          addressDetail: payment.shipping?.addressDetail,
+          zipCode: payment.shipping?.zipCode,
+          receiver: payment.shipping?.receiver,
+          receiverPhone: payment.shipping?.receiverPhone,
+        });
+        navigate(`/payments/${auctionOrderId}/success`, {
+          state: {
+            ...payment,
+            orderId: auctionOrderId,
+            paidAt: new Date().toISOString(),
+          },
+        });
         return;
       }
 

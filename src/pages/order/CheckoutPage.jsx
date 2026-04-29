@@ -6,7 +6,6 @@ import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
-import { acceptAuctionOrderApi } from "../../features/order/orderApi";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
@@ -118,12 +117,33 @@ export default function CheckoutPage() {
       setOpenConfirmModal(false);
 
       if (isAuction) {
-        await acceptAuctionOrderApi({
-          orderId: auctionOrderId,
-          method: selectedPaymentMethod,
-          ...shippingInfo,
+        navigate("/payments", {
+          state: {
+            isAuction: true,
+            auctionOrderId,
+            orderId: auctionOrderId,
+            status: "CREATED",
+            createdAt: new Date().toISOString(),
+            shipping: shippingInfo,
+            memo: form.memo.trim(),
+            items: checkoutItems.map((item) => ({
+              cartId: item.cartId,
+              productId: item.productId,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              image: item.image,
+              category: item.category,
+            })),
+            itemPrice: summary.subtotal,
+            shippingFee: summary.shippingFee,
+            totalPrice: summary.total,
+            paymentMethod: paymentMethodLabel,
+            paymentMethodCode: selectedPaymentMethod,
+            depositLabel: "Deposit / Vivid Pay",
+            selectedPaymentMethod,
+          },
         });
-        navigate("/orders", { replace: true });
         return;
       }
 
