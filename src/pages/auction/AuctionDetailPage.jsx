@@ -701,7 +701,7 @@ export default function AuctionDetailPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => navigate("/orders/checkout")}
+                  onClick={() => navigate("/orders")}
                   className="mt-4 h-11 w-full bg-amber-500 text-sm font-bold text-white transition hover:bg-amber-600"
                 >
                   주문하기

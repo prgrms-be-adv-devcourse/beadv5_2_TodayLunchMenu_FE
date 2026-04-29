@@ -274,7 +274,17 @@ export default function OrderListPage() {
                   {cardContent}
                   <div className="mt-4 border-t border-gray-100 pt-4">
                     <Link
-                      to={`/orders/${order.orderId}`}
+                      to="/orders/checkout"
+                      state={{
+                        isAuction: true,
+                        orderId: order.orderId,
+                        items: [{
+                          name: order.representativeProductName,
+                          quantity: 1,
+                          price: order.totalAmount,
+                          image: order.representativeThumbnailKey,
+                        }],
+                      }}
                       className="block w-full rounded-lg bg-violet-600 py-2.5 text-center text-sm font-bold text-white hover:bg-violet-700 transition"
                     >
                       주문하기

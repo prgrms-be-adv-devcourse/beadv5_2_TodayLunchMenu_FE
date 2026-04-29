@@ -187,4 +187,13 @@ async function confirmOrderApi(orderId) {
   return response.data?.data ?? response.data;
 }
 
-export { cancelOrderApi, confirmOrderApi, confirmOrderItemApi, createOrderApi, getDeliveryTrackingApi, getOrderDetailApi, getOrderPaymentApi, getOrdersApi };
+async function acceptAuctionOrderApi({ orderId, method, address, addressDetail, zipCode, receiver, receiverPhone }) {
+  const endpoint = method === "DEPOSIT" ? "/api/orders/auction/deposit" : "/api/orders/auction/pg";
+  const response = await apiClient(endpoint, {
+    method: "POST",
+    body: { orderId, address, addressDetail, zipCode, receiver, receiverPhone },
+  });
+  return response.data?.data ?? response.data;
+}
+
+export { acceptAuctionOrderApi, cancelOrderApi, confirmOrderApi, confirmOrderItemApi, createOrderApi, getDeliveryTrackingApi, getOrderDetailApi, getOrderPaymentApi, getOrdersApi };

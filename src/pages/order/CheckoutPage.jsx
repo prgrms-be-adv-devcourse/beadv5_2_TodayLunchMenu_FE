@@ -6,6 +6,7 @@ import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
+import { acceptAuctionOrderApi } from "../../features/order/orderApi";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
@@ -14,6 +15,8 @@ function formatPrice(value) {
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const isAuction = location.state?.isAuction === true;
+  const auctionOrderId = location.state?.orderId ?? null;
   const checkoutItems = Array.isArray(location.state?.items)
     ? location.state.items
     : [];
@@ -104,23 +107,33 @@ export default function CheckoutPage() {
         return;
       }
 
-      const paymentState = {
-        orderId: null,
-        status: "CREATED",
-        createdAt: new Date().toISOString(),
+      const shippingInfo = {
         address: form.address.trim(),
         addressDetail: form.addressDetail.trim(),
         zipCode: form.zipCode.trim(),
         receiver: form.receiver.trim(),
         receiverPhone: form.receiverPhone.trim(),
+      };
+
+      setOpenConfirmModal(false);
+
+      if (isAuction) {
+        await acceptAuctionOrderApi({
+          orderId: auctionOrderId,
+          method: selectedPaymentMethod,
+          ...shippingInfo,
+        });
+        navigate("/orders", { replace: true });
+        return;
+      }
+
+      const paymentState = {
+        orderId: null,
+        status: "CREATED",
+        createdAt: new Date().toISOString(),
+        ...shippingInfo,
         memo: form.memo.trim(),
-        shipping: {
-          receiver: form.receiver.trim(),
-          receiverPhone: form.receiverPhone.trim(),
-          address: form.address.trim(),
-          addressDetail: form.addressDetail.trim(),
-          zipCode: form.zipCode.trim(),
-        },
+        shipping: shippingInfo,
         items: checkoutItems.map((item) => ({
           cartId: item.cartId,
           productId: item.productId,
@@ -140,10 +153,9 @@ export default function CheckoutPage() {
         pendingOrder: true,
       };
 
-      setOpenConfirmModal(false);
       navigate("/payments", { state: paymentState });
     } catch {
-      setSubmitError("결제 페이지로 이동하는 중 오류가 발생했습니다.");
+      setSubmitError("결제 처리 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
