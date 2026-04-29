@@ -34,6 +34,38 @@ function toUiPartialSettlementExecution(result) {
   };
 }
 
+function toUiSellerSettlement(item) {
+  return {
+    settlementId: item?.settlementId ?? null,
+    sellerId: item?.sellerId ?? null,
+    settlementType: item?.settlementType ?? "MONTHLY",
+    settlementYear: toNumber(item?.settlementYear, null),
+    settlementMonth: toNumber(item?.settlementMonth, null),
+    totalSalesAmount: toNumber(item?.totalSalesAmount),
+    feeAmount: toNumber(item?.feeAmount),
+    finalSettlementAmount: toNumber(item?.finalSettlementAmount),
+    settledAmount: toNumber(item?.settledAmount),
+    settlementStatus: item?.settlementStatus ?? "PENDING",
+    settledAt: item?.settledAt ?? null,
+    lastFailureReason: item?.lastFailureReason ?? null,
+    requestedAt: item?.requestedAt ?? null,
+    updatedAt: item?.updatedAt ?? null,
+  };
+}
+
+function toPagedResult(page, mapper) {
+  const items = Array.isArray(page?.items) ? page.items : [];
+
+  return {
+    items: items.map(mapper),
+    page: page?.page ?? 0,
+    size: page?.size ?? items.length,
+    totalElements: page?.totalElements ?? items.length,
+    totalPages: page?.totalPages ?? 1,
+    hasNext: page?.hasNext ?? false,
+  };
+}
+
 async function getPartialSettlementAvailableItemsApi() {
   const response = await apiClient(
     "/api/settlements/seller/partial-settlements/available",
@@ -57,7 +89,17 @@ async function executePartialSettlementApi(settlementItemIds) {
   return toUiPartialSettlementExecution(getApiPayload(response.data));
 }
 
+async function getSellerSettlementsApi(params = {}) {
+  const response = await apiClient("/api/settlements/seller", {
+    method: "GET",
+    params,
+  });
+
+  return toPagedResult(getApiPayload(response.data), toUiSellerSettlement);
+}
+
 export {
   executePartialSettlementApi,
   getPartialSettlementAvailableItemsApi,
+  getSellerSettlementsApi,
 };

@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { ApiError } from "../../api/client";
+import PageContainer from "../../components/common/PageContainer";
 import EscrowTransactionDrawer from "../../components/seller/settlement/EscrowTransactionDrawer";
+import MonthlySettlementTable from "../../components/seller/settlement/MonthlySettlementTable";
 import PartialSettlementTable from "../../components/seller/settlement/PartialSettlementTable";
 import PendingEscrowTable from "../../components/seller/settlement/PendingEscrowTable";
 import SellerSettlementSummary from "../../components/seller/settlement/SellerSettlementSummary";
-import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
+import { useAuth } from "../../features/auth/useAuth";
 import {
   getPendingSellerIncomesApi,
   getSellerOrderEscrowTransactionsApi,
@@ -17,17 +19,18 @@ import {
 import {
   executePartialSettlementApi,
   getPartialSettlementAvailableItemsApi,
+  getSellerSettlementsApi,
 } from "../../features/settlement/settlementApi";
-import { useAuth } from "../../features/auth/useAuth";
 
 const TABS = [
-  { value: "escrow", label: "정산 대기" },
-  { value: "partial", label: "부분 정산 가능" },
-  { value: "transactions", label: "거래 내역" },
+  { value: "escrow", label: "\uC815\uC0B0 \uB300\uAE30" },
+  { value: "partial", label: "\uBD80\uBD84 \uC815\uC0B0 \uAC00\uB2A5" },
+  { value: "monthly", label: "\uC6D4 \uC815\uC0B0 \uB0B4\uC5ED" },
+  { value: "transactions", label: "\uAC70\uB798 \uB0B4\uC5ED" },
 ];
 
 function formatKRW(value) {
-  return `${new Intl.NumberFormat("ko-KR").format(Number(value) || 0)}원`;
+  return `${new Intl.NumberFormat("ko-KR").format(Number(value) || 0)}\uC6D0`;
 }
 
 function formatDate(value) {
@@ -44,28 +47,32 @@ function getErrorMessage(error, fallback) {
 
 function getTransactionLabel(transaction) {
   if (transaction.referenceType === "PARTIAL_SETTLEMENT") {
-    return "부분 정산";
+    return "\uBD80\uBD84 \uC815\uC0B0";
   }
   if (transaction.referenceType === "MONTHLY_SETTLEMENT") {
-    return "월 정산";
+    return "\uC6D4 \uC815\uC0B0";
   }
   switch (transaction.type) {
     case "WITHDRAWAL":
-      return "출금";
+      return "\uCD9C\uAE08";
     case "CHARGE":
-      return "충전";
+      return "\uCDA9\uC804";
     case "ORDER_PAYMENT":
-      return "주문 결제";
+      return "\uC8FC\uBB38 \uACB0\uC81C";
     case "ORDER_REFUND":
-      return "주문 환불";
+      return "\uC8FC\uBB38 \uD658\uBD88";
     default:
-      return transaction.description || transaction.type || "거래";
+      return transaction.description || transaction.type || "\uAC70\uB798";
   }
 }
 
 function TransactionHistory({ items, loading, error }) {
   if (loading) {
-    return <p className="py-12 text-center text-sm text-gray-500">거래 내역을 불러오는 중입니다...</p>;
+    return (
+      <p className="py-12 text-center text-sm text-gray-500">
+        {"\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4..."}
+      </p>
+    );
   }
 
   if (error) {
@@ -73,7 +80,11 @@ function TransactionHistory({ items, loading, error }) {
   }
 
   if (items.length === 0) {
-    return <p className="py-12 text-center text-sm text-gray-500">표시할 거래 내역이 없습니다.</p>;
+    return (
+      <p className="py-12 text-center text-sm text-gray-500">
+        {"\uD45C\uC2DC\uD560 \uAC70\uB798 \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."}
+      </p>
+    );
   }
 
   return (
@@ -92,7 +103,9 @@ function TransactionHistory({ items, loading, error }) {
           </div>
           <div className="text-left md:text-right">
             <p className="text-lg font-black text-gray-900">{formatKRW(item.amount)}</p>
-            <p className="text-xs text-gray-500">잔액 {formatKRW(item.balanceAfter)}</p>
+            <p className="text-xs text-gray-500">
+              {"\uC794\uC561"} {formatKRW(item.balanceAfter)}
+            </p>
           </div>
         </article>
       ))}
@@ -107,17 +120,20 @@ export default function SellerSettlementPage() {
   const [wallet, setWallet] = useState(null);
   const [pendingIncomes, setPendingIncomes] = useState([]);
   const [partialItems, setPartialItems] = useState([]);
+  const [monthlySettlements, setMonthlySettlements] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState({
     wallet: true,
     pending: true,
     partial: true,
+    monthly: true,
     transactions: true,
   });
   const [errors, setErrors] = useState({
     pending: "",
     partial: "",
+    monthly: "",
     transactions: "",
   });
   const [submitState, setSubmitState] = useState({
@@ -138,17 +154,24 @@ export default function SellerSettlementPage() {
       wallet: true,
       pending: true,
       partial: true,
+      monthly: true,
       transactions: true,
     });
-    setErrors({ pending: "", partial: "", transactions: "" });
+    setErrors({ pending: "", partial: "", monthly: "", transactions: "" });
 
-    const [walletResult, pendingResult, partialResult, transactionResult] =
-      await Promise.allSettled([
-        getSellerWalletSummaryApi(),
-        getPendingSellerIncomesApi({ page: 0, size: 50 }),
-        getPartialSettlementAvailableItemsApi(),
-        getSellerTransactionsApi({ page: 0, size: 30 }),
-      ]);
+    const [
+      walletResult,
+      pendingResult,
+      partialResult,
+      monthlyResult,
+      transactionResult,
+    ] = await Promise.allSettled([
+      getSellerWalletSummaryApi(),
+      getPendingSellerIncomesApi({ page: 0, size: 50 }),
+      getPartialSettlementAvailableItemsApi(),
+      getSellerSettlementsApi({ type: "MONTHLY", page: 0, size: 20 }),
+      getSellerTransactionsApi({ page: 0, size: 30 }),
+    ]);
 
     if (walletResult.status === "fulfilled") {
       setWallet(walletResult.value);
@@ -161,7 +184,7 @@ export default function SellerSettlementPage() {
         ...prev,
         pending: getErrorMessage(
           pendingResult.reason,
-          "정산 대기 내역을 불러오지 못했습니다."
+          "\uC815\uC0B0 \uB300\uAE30 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
         ),
       }));
     }
@@ -169,16 +192,26 @@ export default function SellerSettlementPage() {
     if (partialResult.status === "fulfilled") {
       setPartialItems(partialResult.value);
       setSelectedIds((prev) =>
-        prev.filter((id) =>
-          partialResult.value.some((item) => item.settlementItemId === id)
-        )
+        prev.filter((id) => partialResult.value.some((item) => item.settlementItemId === id))
       );
     } else {
       setErrors((prev) => ({
         ...prev,
         partial: getErrorMessage(
           partialResult.reason,
-          "부분 정산 가능 항목을 불러오지 못했습니다."
+          "\uBD80\uBD84 \uC815\uC0B0 \uAC00\uB2A5 \uD56D\uBAA9\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+        ),
+      }));
+    }
+
+    if (monthlyResult.status === "fulfilled") {
+      setMonthlySettlements(monthlyResult.value.items);
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        monthly: getErrorMessage(
+          monthlyResult.reason,
+          "\uC6D4 \uC815\uC0B0 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
         ),
       }));
     }
@@ -190,7 +223,7 @@ export default function SellerSettlementPage() {
         ...prev,
         transactions: getErrorMessage(
           transactionResult.reason,
-          "거래 내역을 불러오지 못했습니다."
+          "\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
         ),
       }));
     }
@@ -199,6 +232,7 @@ export default function SellerSettlementPage() {
       wallet: false,
       pending: false,
       partial: false,
+      monthly: false,
       transactions: false,
     });
   }, []);
@@ -244,7 +278,7 @@ export default function SellerSettlementPage() {
       <PageContainer>
         <section className="py-16 text-center">
           <p className="text-sm font-medium text-gray-500">
-            판매자 권한을 확인하고 있습니다.
+            {"\uD310\uB9E4\uC790 \uAD8C\uD55C\uC744 \uD655\uC778\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4."}
           </p>
         </section>
       </PageContainer>
@@ -265,9 +299,7 @@ export default function SellerSettlementPage() {
 
   const handleToggleAll = () => {
     setSelectedIds((prev) =>
-      prev.length === partialItems.length
-        ? []
-        : partialItems.map((item) => item.settlementItemId)
+      prev.length === partialItems.length ? [] : partialItems.map((item) => item.settlementItemId)
     );
   };
 
@@ -281,9 +313,9 @@ export default function SellerSettlementPage() {
       const result = await executePartialSettlementApi(selectedIds);
       setSubmitState({
         loading: false,
-        message: `${result.settlementItemCount}건, ${formatKRW(
+        message: `${result.settlementItemCount}\uAC74, ${formatKRW(
           result.finalSettlementAmount
-        )} 부분 정산을 요청했습니다.`,
+        )} \uBD80\uBD84 \uC815\uC0B0\uC744 \uC694\uCCAD\uD588\uC2B5\uB2C8\uB2E4.`,
         error: "",
       });
       setSelectedIds([]);
@@ -292,7 +324,10 @@ export default function SellerSettlementPage() {
       setSubmitState({
         loading: false,
         message: "",
-        error: getErrorMessage(error, "부분 정산 요청에 실패했습니다."),
+        error: getErrorMessage(
+          error,
+          "\uBD80\uBD84 \uC815\uC0B0 \uC694\uCCAD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
+        ),
       });
     }
   };
@@ -320,7 +355,10 @@ export default function SellerSettlementPage() {
         open: true,
         orderId,
         loading: false,
-        error: getErrorMessage(error, "에스크로 거래 내역을 불러오지 못했습니다."),
+        error: getErrorMessage(
+          error,
+          "\uC5D0\uC2A4\uD06C\uB85C \uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+        ),
         items: [],
       });
     }
@@ -335,10 +373,12 @@ export default function SellerSettlementPage() {
             Seller Settlement
           </p>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
-            정산 관리
+            {"\uC815\uC0B0 \uAD00\uB9AC"}
           </h1>
           <p className="text-sm leading-6 text-gray-500">
-            정산 대기 금액과 지금 정산 가능한 금액을 한곳에서 확인하세요.
+            {
+              "\uC815\uC0B0 \uB300\uAE30 \uAE08\uC561\uACFC \uC9C0\uAE08 \uC815\uC0B0 \uAC00\uB2A5\uD55C \uAE08\uC561, \uADF8\uB9AC\uACE0 \uC6D4 \uC815\uC0B0 \uC9C0\uAE09 \uC0C1\uD0DC\uB97C \uD55C \uD654\uBA74\uC5D0\uC11C \uD655\uC778\uD558\uC138\uC694."
+            }
           </p>
         </section>
 
@@ -406,6 +446,15 @@ export default function SellerSettlementPage() {
               onToggle={handleToggleSettlement}
               onToggleAll={handleToggleAll}
               onSubmit={handleExecutePartialSettlement}
+            />
+          ) : null}
+
+          {activeTab === "monthly" ? (
+            <MonthlySettlementTable
+              items={monthlySettlements}
+              loading={loading.monthly}
+              error={errors.monthly}
+              totalCount={monthlySettlements.length}
             />
           ) : null}
 
