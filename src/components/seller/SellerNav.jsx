@@ -5,6 +5,7 @@ function SellerNav({ currentPage = "products" }) {
 
   const navItems = [
     { id: "home", label: "대시보드", to: "/seller/me" },
+    { id: "delivery", label: "배송 관리", to: "/seller/delivery" },
     { id: "orders", label: "정산 대기 주문", to: "/seller/orders" },
     { id: "products", label: "상품 관리", to: "/seller/products" },
     { id: "settlements", label: "정산", to: "/seller/settlements" },

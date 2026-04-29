@@ -4,6 +4,7 @@ const REFRESH_TOKEN_KEY = "refreshToken";
 const hasAccessToken = () => Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 
 // 초기 인증 상태
+const hasStoredToken = Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 let authState = {
   user: null,
   isAuthenticated: hasAccessToken(),

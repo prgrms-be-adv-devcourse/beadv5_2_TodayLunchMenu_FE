@@ -8,6 +8,7 @@ import { useAuth } from "../../features/auth/useAuth";
 import { formatKRW, statusLabel } from "../../features/auction/format";
 import { getMemberByIdApi } from "../../features/member/memberApi";
 import { getProductDetailApi } from "../../features/product/productApi";
+import { getOrdersApi } from "../../features/order/orderApi";
 import {
   placeBid,
   useAuction,
@@ -320,6 +321,33 @@ export default function AuctionDetailPage() {
     if (!aiBidRecommendation?.recommendedBidPrice) return;
     setBidInput(String(aiBidRecommendation.recommendedBidPrice));
     setToast({ type: "success", message: "AI 추천가를 입력했습니다." });
+  };
+
+  const handleAuctionCheckout = async () => {
+    try {
+      const page = await getOrdersApi({});
+      const pendingOrder = page.content.find(
+        (o) => o.orderType === "AUCTION" && o.status === "CREATED"
+      );
+      if (pendingOrder) {
+        navigate("/orders/checkout", {
+          state: {
+            isAuction: true,
+            orderId: pendingOrder.orderId,
+            items: [{
+              name: pendingOrder.representativeProductName,
+              quantity: 1,
+              price: pendingOrder.totalAmount,
+              image: pendingOrder.representativeThumbnailKey,
+            }],
+          },
+        });
+      } else {
+        navigate("/orders");
+      }
+    } catch {
+      navigate("/orders");
+    }
   };
 
   const place = async () => {
@@ -701,28 +729,10 @@ export default function AuctionDetailPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() =>
-                    navigate("/payments", {
-                      state: {
-                        auctionId: auction.id,
-                        totalPrice: currentPrice,
-                        itemPrice: currentPrice,
-                        shippingFee: 0,
-                        items: [
-                          {
-                            productId: auction.productId,
-                            name: auction.productTitle ?? productName ?? "경매 상품",
-                            price: currentPrice,
-                            quantity: 1,
-                          },
-                        ],
-                        depositLabel: "예치금 결제",
-                      },
-                    })
-                  }
+                  onClick={handleAuctionCheckout}
                   className="mt-4 h-11 w-full bg-amber-500 text-sm font-bold text-white transition hover:bg-amber-600"
                 >
-                  결제하기
+                  주문하기
                 </button>
               </div>
             )}

@@ -19,7 +19,7 @@ import { useAuth } from "../../features/auth/useAuth";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, loading } = useAuth();
+  const { login } = useAuth();
   const pendingKakaoLink = useMemo(() => getPendingKakaoLink(), []);
   const initialEmail = searchParams.get("email") || pendingKakaoLink?.email || "";
   const redirectTarget = searchParams.get("redirect");
@@ -136,7 +136,7 @@ export default function LoginPage() {
     }
   };
 
-  const submitDisabled = isSubmitting || loading;
+  const submitDisabled = isSubmitting;
 
   return (
     <div className="min-h-screen bg-blue-50 text-gray-900">
