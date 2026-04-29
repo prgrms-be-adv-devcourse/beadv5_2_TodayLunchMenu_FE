@@ -26,6 +26,7 @@ import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestriction
 import MemberEditPage from "./pages/member/MemberEditPage";
 import MemberPasswordPage from "./pages/member/MemberPasswordPage";
 import ExternalAccountConnectionsPage from "./pages/member/ExternalAccountConnectionsPage";
+import MemberSessionsPage from "./pages/member/MemberSessionsPage";
 import HomePage from "./pages/home/HomePage";
 import MemberProfilePage from "./pages/member/MemberProfilePage";
 import MemberReportCreatePage from "./pages/member/MemberReportCreatePage";
@@ -93,6 +94,7 @@ const router = createBrowserRouter([
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
       { path: "me/password", element: <MemberPasswordPage /> },
+      { path: "me/sessions", element: <MemberSessionsPage /> },
       {
         path: "me/external-accounts",
         element: <ExternalAccountConnectionsPage />,
