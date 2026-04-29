@@ -8,7 +8,7 @@ import {
 } from "../../features/seller/sellerDeliveryApi";
 
 const COURIERS = [
-  "CJ대한통운", "롯데택배", "한진택배", "우체국택배", "로젠택배", "카카오택배", "쿠팡로켓",
+  "CJ대한통운", "롯데택배", "한진택배", "우체국택배", "로젠택배",
 ];
 
 const STATUS_META = {
