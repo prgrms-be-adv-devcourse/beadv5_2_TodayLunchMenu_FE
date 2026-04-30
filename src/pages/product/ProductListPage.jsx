@@ -164,7 +164,16 @@ export default function ProductListPage() {
     return result;
   }, [keyword, products, sort, statusFilter, selectedCategoryId, descendantMap]);
 
-  const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
+  const categoryPath = useMemo(() => {
+    if (!selectedCategoryId) return [];
+    const path = [];
+    let cur = categories.find((c) => c.id === selectedCategoryId);
+    while (cur) {
+      path.unshift(cur);
+      cur = cur.parentId ? categories.find((c) => c.id === cur.parentId) : null;
+    }
+    return path;
+  }, [categories, selectedCategoryId]);
 
   const PAGE_SIZE = 12;
   const [currentPage, setCurrentPage] = useState(0);
@@ -250,14 +259,22 @@ export default function ProductListPage() {
                   >
                     전체
                   </button>
-                  {selectedCategory && (
-                    <>
+                  {categoryPath.map((cat) => (
+                    <span key={cat.id} className="flex items-center gap-1">
                       <span className="text-gray-400">›</span>
-                      <span className="font-semibold text-gray-900">
-                        {selectedCategory.name}
-                      </span>
-                    </>
-                  )}
+                      {cat.id === selectedCategoryId ? (
+                        <span className="font-semibold text-gray-900">{cat.name}</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCategoryId(cat.id)}
+                          className="text-gray-500 hover:text-blue-600"
+                        >
+                          {cat.name}
+                        </button>
+                      )}
+                    </span>
+                  ))}
                 </div>
 
                 <span className="text-xs text-gray-400">
