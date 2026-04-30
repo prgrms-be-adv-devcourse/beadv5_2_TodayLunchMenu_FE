@@ -341,7 +341,7 @@ export default function PaymentPage() {
       }
 
       if (isAuction) {
-        await acceptAuctionOrderApi({
+        const auctionResult = await acceptAuctionOrderApi({
           orderId: auctionOrderId,
           method: "DEPOSIT",
           address: payment.shipping?.address,
@@ -355,6 +355,7 @@ export default function PaymentPage() {
           state: {
             ...payment,
             orderId: auctionOrderId,
+            orderNumber: auctionResult?.orderNumber ?? null,
             paidAt: new Date().toISOString(),
           },
         });
@@ -375,6 +376,7 @@ export default function PaymentPage() {
         state: {
           ...payment,
           orderId: createdOrder.orderId,
+          orderNumber: createdOrder.orderNumber ?? null,
           totalPrice: createdOrder.totalPrice || payment.totalPrice,
           status: createdOrder.status,
           paidAt: createdOrder.createdAt,

@@ -116,6 +116,7 @@ export default function PaymentCardSuccessPage() {
             replace: true,
             state: {
               orderId: pendingPayment.orderId,
+              orderNumber: pendingPayment.orderNumber ?? null,
               totalPrice: response.amount,
               paymentMethod: "토스 카드 결제",
               paidAt: response.approvedAt,

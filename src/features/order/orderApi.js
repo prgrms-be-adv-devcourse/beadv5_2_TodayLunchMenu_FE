@@ -3,6 +3,7 @@ import { apiClient } from "../../api/client";
 function toUiOrder(order) {
   return {
     orderId: order?.orderId,
+    orderNumber: order?.orderNumber ?? null,
     totalPrice: order?.totalPrice ?? 0,
     status: order?.status ?? "PENDING",
     createdAt: order?.createdAt ?? null,
