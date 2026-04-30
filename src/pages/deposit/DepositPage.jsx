@@ -57,9 +57,63 @@ function getTransactionLabel(type) {
   }
 }
 
+function translateTransactionText(value) {
+  const text = String(value || "").trim();
+  if (!text) {
+    return "";
+  }
+
+  const normalized = text
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  switch (normalized) {
+    case "auction deposit hold":
+      return "경매 보증금 예치";
+    case "auction deposit refund":
+      return "경매 보증금 환불";
+    case "auction deposit release":
+      return "경매 보증금 정산";
+    case "order purchase":
+    case "order payment":
+      return "주문 결제";
+    case "order refund":
+      return "주문 환불";
+    case "wallet charge":
+    case "wallet chage":
+      return "지갑 충전";
+    case "wallet withdrawal":
+      return "지갑 출금";
+    case "partial settlement":
+      return "부분 정산";
+    case "monthly settlement":
+      return "월 정산";
+    case "withdrawal":
+      return "출금";
+    case "charge":
+      return "충전";
+    default:
+      if (normalized.startsWith("order purchase")) {
+        return "주문 결제";
+      }
+      if (normalized.startsWith("order refund")) {
+        return "주문 환불";
+      }
+      if (normalized.startsWith("wallet charge") || normalized.startsWith("wallet chage")) {
+        return "지갑 충전";
+      }
+      if (normalized.startsWith("wallet withdrawal")) {
+        return "지갑 출금";
+      }
+      return text;
+  }
+}
+
 function getTransactionDescription(transaction) {
   if (transaction.description) {
-    return transaction.description;
+    return translateTransactionText(transaction.description);
   }
 
   switch (transaction.type) {
@@ -74,7 +128,7 @@ function getTransactionDescription(transaction) {
     case "WITHDRAWAL":
       return "출금";
     default:
-      return "거래 내역";
+      return translateTransactionText(transaction.type) || "거래 내역";
   }
 }
 
@@ -329,7 +383,7 @@ export default function DepositPage() {
                     className="bg-blue-50/70 px-4 py-4"
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <div>
+                      <div className="text-left">
                         <p className="text-sm font-bold text-gray-900">
                           {getTransactionDescription(transaction)}
                         </p>
