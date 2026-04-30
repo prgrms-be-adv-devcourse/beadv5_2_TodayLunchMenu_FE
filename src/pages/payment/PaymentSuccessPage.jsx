@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -46,6 +46,10 @@ export default function PaymentSuccessPage() {
   );
 
   const primaryItem = payment.items[0];
+
+  useEffect(() => {
+    sessionStorage.setItem("payment-completed", "1");
+  }, []);
 
   return (
     <PageContainer>

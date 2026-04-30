@@ -11,6 +11,7 @@ import {
   savePendingOrderPayment,
 } from "../../features/payment/paymentApi";
 import { acceptAuctionOrderApi, createOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
+import { pushToast } from "../../features/notification/notificationToastStore";
 
 const TOSS_CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY;
 
@@ -394,8 +395,18 @@ export default function PaymentPage() {
   };
 
   useEffect(() => {
+    if (sessionStorage.getItem("payment-completed")) {
+      sessionStorage.removeItem("payment-completed");
+      pushToast({
+        title: "결제가 완료된 주문입니다.",
+        tone: "info",
+        timeoutMs: 3000,
+      });
+      navigate("/", { replace: true });
+      return;
+    }
     if (!hasPaymentItems) {
-      navigate("/orders", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [hasPaymentItems, navigate]);
 
@@ -444,7 +455,12 @@ export default function PaymentPage() {
               <div className="flex items-start gap-4">
                 <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
                   {primaryItem?.image ? (
-                    <img src={primaryItem.image} alt={primaryItem.name || "상품"} className="h-full w-full object-cover" />
+                    <img
+                      src={primaryItem.image}
+                      alt={primaryItem.name || "상품"}
+                      className="h-full w-full object-cover"
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                    />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
                       {(primaryItem?.name || "P").slice(0, 1).toUpperCase()}
@@ -554,15 +570,13 @@ export default function PaymentPage() {
             onClick={handleCreateOrder}
           >
             {isSubmitting
-              ? isCardPayment
-                ? "주문 생성 및 결제창 준비 중..."
-                : "주문/결제 요청 중..."
+              ? "결제 처리 중..."
               : isCardPayment
                 ? isPreparingCardOrder
-                  ? "카드 결제 주문 준비 중..."
+                  ? "결제 준비 중..."
                   : preparedCardOrder
-                    ? "주문 생성 후 카드 결제하기"
-                    : "카드 결제 준비 중..."
+                    ? `${formatPrice(payment.totalPrice)} 결제하기`
+                    : "결제 준비 중..."
                 : walletLoading
                   ? "예치금 확인 중..."
                   : hasEnoughDeposit

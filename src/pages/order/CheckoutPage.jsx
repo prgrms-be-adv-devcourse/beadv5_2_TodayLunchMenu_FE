@@ -127,6 +127,7 @@ export default function CheckoutPage() {
       setOpenConfirmModal(false);
 
       sessionStorage.removeItem(FORM_STORAGE_KEY);
+      sessionStorage.removeItem("payment-completed");
 
       if (isAuction) {
         navigate("/payments", {
