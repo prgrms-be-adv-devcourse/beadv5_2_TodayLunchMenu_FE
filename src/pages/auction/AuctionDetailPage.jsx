@@ -152,6 +152,7 @@ export default function AuctionDetailPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [bidInput, setBidInput] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [bidError, setBidError] = useState("");
   const [toast, setToast] = useState(null);
   const [aiBidRecommendation, setAiBidRecommendation] = useState(null);
   const [aiBidError, setAiBidError] = useState("");
@@ -328,21 +329,22 @@ export default function AuctionDetailPage() {
 
     const amount = Number(bidInput);
     if (!Number.isFinite(amount) || !Number.isInteger(amount) || amount <= 0) {
-      setToast({ type: "error", message: "올바른 금액을 입력해 주세요." });
+      setBidError("올바른 금액을 입력해 주세요.");
       return;
     }
     if (amount > 999_999_999) {
-      setToast({ type: "error", message: "입찰가는 9억 9천만원을 초과할 수 없습니다." });
+      setBidError("입찰가는 9억 9천만원을 초과할 수 없습니다.");
       return;
     }
     if (bidUnit > 0 && amount % bidUnit !== 0) {
-      setToast({ type: "error", message: `입찰가는 ${formatKRW(bidUnit)}원 단위로 입력해 주세요.` });
+      setBidError(`입찰가는 ${formatKRW(bidUnit)}원 단위로 입력해 주세요.`);
       return;
     }
     if (amount < nextMin) {
-      setToast({ type: "error", message: `${formatKRW(nextMin)}원부터 입찰할 수 있어요.` });
+      setBidError(`${formatKRW(nextMin)}원부터 입찰할 수 있어요.`);
       return;
     }
+    setBidError("");
 
     try {
       setSubmitting(true);
@@ -351,7 +353,7 @@ export default function AuctionDetailPage() {
       reload();
     } catch (nextError) {
       if (nextError?.status === 401) { navigate("/login"); return; }
-      setToast({ type: "error", message: nextError?.message || "입찰에 실패했습니다." });
+      setBidError(nextError?.message || "입찰에 실패했습니다.");
     } finally {
       setSubmitting(false);
     }
@@ -643,20 +645,27 @@ export default function AuctionDetailPage() {
                     min={nextMin}
                     max={999_999_999}
                     step={bidUnit || 1}
-                    onChange={(e) => setBidInput(e.target.value)}
-                    className="h-11 w-full border border-gray-300 pl-3 pr-10 text-base font-bold tabular-nums text-gray-900 outline-none transition focus:border-blue-500"
+                    onChange={(e) => { setBidInput(e.target.value); setBidError(""); }}
+                    className={[
+                      "h-11 w-full border pl-3 pr-10 text-base font-bold tabular-nums text-gray-900 outline-none transition focus:border-blue-500",
+                      bidError ? "border-red-500" : "border-gray-300",
+                    ].join(" ")}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
                     원
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
-                  최소{" "}
-                  <span className="font-semibold text-gray-700">
-                    {formatKRW(nextMin)}원
-                  </span>
-                  부터 입찰 가능
-                </p>
+                {bidError ? (
+                  <p className="mt-1 text-xs font-semibold text-red-600">{bidError}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-400">
+                    최소{" "}
+                    <span className="font-semibold text-gray-700">
+                      {formatKRW(nextMin)}원
+                    </span>
+                    부터 입찰 가능
+                  </p>
+                )}
               </div>
 
               {/* Bid Button */}

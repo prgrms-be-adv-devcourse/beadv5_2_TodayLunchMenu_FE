@@ -501,11 +501,13 @@ export default function SellerProductCreatePage() {
         auctionNext.startPrice = "시작가는 1,000원 이상이어야 합니다.";
       }
       const bu = Number(auctionForm.bidUnit);
-      if (!auctionForm.bidUnit || Number.isNaN(bu) || bu < 100) {
-        auctionNext.bidUnit = "입찰 단위는 100원 이상이어야 합니다.";
+      if (!auctionForm.bidUnit || Number.isNaN(bu) || bu < 500) {
+        auctionNext.bidUnit = "입찰 단위는 500원 이상이어야 합니다.";
       }
       if (!auctionForm.startedAt) {
         auctionNext.startedAt = "경매 시작 시간을 입력해 주세요.";
+      } else if (new Date(auctionForm.startedAt).getTime() < Date.now()) {
+        auctionNext.startedAt = "경매 시작 시간은 현재 시간 이후여야 합니다.";
       }
       const dm = Number(auctionForm.durationMinutes);
       if (!auctionForm.durationMinutes || Number.isNaN(dm) || dm < 1) {
@@ -708,7 +710,6 @@ export default function SellerProductCreatePage() {
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField label="시작가" htmlFor="startPrice" required error={auctionErrors.startPrice} helpText="1,000원 이상">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
                       <Input
                         id="startPrice"
                         type="number"
@@ -718,24 +719,25 @@ export default function SellerProductCreatePage() {
                         value={auctionForm.startPrice}
                         onChange={handleAuctionChange("startPrice")}
                         error={!!auctionErrors.startPrice}
-                        className="pl-10 text-right"
+                        className="pr-10 text-right"
                       />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
                     </div>
                   </FormField>
-                  <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="100원 이상">
+                  <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="500원 이상">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
                       <Input
                         id="bidUnit"
                         type="number"
-                        min="100"
+                        min="500"
                         step="1"
-                        placeholder="100"
+                        placeholder="500"
                         value={auctionForm.bidUnit}
                         onChange={handleAuctionChange("bidUnit")}
                         error={!!auctionErrors.bidUnit}
-                        className="pl-10 text-right"
+                        className="pr-10 text-right"
                       />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
                     </div>
                   </FormField>
                 </div>
@@ -759,6 +761,7 @@ export default function SellerProductCreatePage() {
                   <Input
                     id="startedAt"
                     type="datetime-local"
+                    min={toLocalDatetimeValue(Date.now())}
                     value={auctionForm.startedAt}
                     onChange={handleAuctionChange("startedAt")}
                     error={!!auctionErrors.startedAt}
