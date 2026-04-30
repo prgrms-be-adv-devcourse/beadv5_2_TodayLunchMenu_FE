@@ -72,7 +72,7 @@ function RefundCard({ refund, onInspect }) {
           <p className="text-gray-400">주문번호</p>
           <p className="font-semibold text-gray-900">{refund.orderId}</p>
         </div>
-        <span className={`inline-flex flex-shrink-0 rounded-full px-3 py-1 text-xs font-bold ${status.className}`}>
+        <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-bold ${status.className}`}>
           {status.label}
         </span>
       </div>
