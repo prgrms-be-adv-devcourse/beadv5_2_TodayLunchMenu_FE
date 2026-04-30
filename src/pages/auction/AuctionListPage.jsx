@@ -32,6 +32,7 @@ export default function AuctionListPage() {
   const [filterKey, setFilterKey] = useState("ALL");
   const [page, setPage] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [keyword, setKeyword] = useState("");
 
   const backendStatus = BACKEND_STATUS[filterKey] ?? null;
 
@@ -63,25 +64,35 @@ export default function AuctionListPage() {
   }, [filterKey]);
 
   const visible = useMemo(() => {
+    let result;
     if (filterKey === "ALL") {
-      return auctions.filter((a) => !ENDED_STATUSES.includes(a.status));
-    }
-    if (filterKey === "ENDING_SOON") {
-      return auctions.filter((a) => {
+      result = auctions.filter((a) => !ENDED_STATUSES.includes(a.status));
+    } else if (filterKey === "ENDING_SOON") {
+      result = auctions.filter((a) => {
         if (!a.endsAt) return false;
         const remaining = a.endsAt - now;
         return remaining > 0 && remaining < 10 * 60 * 1000;
       });
+    } else if (filterKey === "ENDED") {
+      result = auctions.filter((a) => ENDED_STATUSES.includes(a.status));
+    } else {
+      result = auctions.filter((a) => a.status === filterKey);
     }
-    if (filterKey === "ENDED") {
-      return auctions.filter((a) => ENDED_STATUSES.includes(a.status));
+
+    if (keyword.trim()) {
+      const lower = keyword.toLowerCase();
+      result = result.filter((a) =>
+        (a.productTitle || "").toLowerCase().includes(lower),
+      );
     }
-    return auctions.filter((a) => a.status === filterKey);
-  }, [auctions, filterKey, now]);
+
+    return result;
+  }, [auctions, filterKey, now, keyword]);
 
   const handleFilterChange = (key) => {
     setFilterKey(key);
     setPage(0);
+    setKeyword("");
   };
 
   return (
@@ -131,7 +142,7 @@ export default function AuctionListPage() {
         <div className="min-w-0 flex-1">
           {/* Top Bar */}
           <div className="mb-4 border-b border-gray-200 pb-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -155,6 +166,24 @@ export default function AuctionListPage() {
                   {pageInfo.totalPages > 1 && ` · ${page + 1}/${pageInfo.totalPages}페이지`}
                 </span>
               </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  value={keyword}
+                  onChange={(e) => { setKeyword(e.target.value); setPage(0); }}
+                  placeholder="상품명 검색"
+                  className="h-8 border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
+                />
+                {keyword && (
+                  <button
+                    type="button"
+                    onClick={() => { setKeyword(""); setPage(0); }}
+                    className="h-8 border border-gray-300 px-2.5 text-xs text-gray-600 transition hover:bg-gray-100"
+                  >
+                    초기화
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -172,11 +201,13 @@ export default function AuctionListPage() {
               {visible.length === 0 ? (
                 <div className="py-20 text-center">
                   <p className="text-sm font-semibold text-gray-700">
-                    조건에 맞는 경매가 없습니다.
+                    {keyword.trim()
+                      ? `"${keyword}"에 해당하는 경매가 없습니다.`
+                      : "조건에 맞는 경매가 없습니다."}
                   </p>
                   <button
                     type="button"
-                    onClick={() => handleFilterChange("ALL")}
+                    onClick={() => { handleFilterChange("ALL"); setKeyword(""); }}
                     className="mt-3 border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100"
                   >
                     전체 보기
