@@ -129,7 +129,9 @@ export default function OrderDetailPage() {
         if (orderResult.status === "fulfilled") {
           setOrder(orderResult.value);
         } else {
-          throw orderResult.reason;
+          throw orderResult.reason instanceof Error
+            ? orderResult.reason
+            : new Error(String(orderResult.reason));
         }
         if (paymentResult.status === "fulfilled") {
           setPayment(paymentResult.value);
@@ -302,6 +304,7 @@ export default function OrderDetailPage() {
                     className="border border-gray-200 bg-white p-5"
                   >
                     <div className="flex items-start gap-4">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-violet-50">
                       <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />

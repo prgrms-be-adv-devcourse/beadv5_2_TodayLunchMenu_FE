@@ -238,6 +238,7 @@ export default function PaymentPage() {
     };
   }, [
     isCardPayment,
+    isAuction,
     payment.orderId,
     payment.totalPrice,
     payment.createdAt,
@@ -454,7 +455,7 @@ export default function PaymentPage() {
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
             <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
               <div className="flex items-start gap-4">
-                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-violet-50">
                   {primaryItem?.image ? (
                     <img
                       src={primaryItem.image}

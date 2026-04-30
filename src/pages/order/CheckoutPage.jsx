@@ -18,9 +18,10 @@ export default function CheckoutPage() {
   const location = useLocation();
   const isAuction = location.state?.isAuction === true;
   const auctionOrderId = location.state?.orderId ?? null;
-  const checkoutItems = Array.isArray(location.state?.items)
-    ? location.state.items
-    : [];
+  const checkoutItems = useMemo(
+    () => (Array.isArray(location.state?.items) ? location.state.items : []),
+    [location.state?.items]
+  );
   const hasCheckoutItems = checkoutItems.length > 0;
 
   const [form, setForm] = useState(() => {
@@ -252,6 +253,7 @@ export default function CheckoutPage() {
                   key={item.cartId || item.productId}
                   className="flex gap-4 border border-gray-100 bg-white p-4"
                 >
+                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-blue-50">
                   <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
                     {item.image ? (
                       <img
