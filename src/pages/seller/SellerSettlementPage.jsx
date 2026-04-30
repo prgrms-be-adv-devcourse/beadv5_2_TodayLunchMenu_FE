@@ -87,7 +87,10 @@ function translateTransactionText(value) {
       if (normalized.startsWith("order refund")) {
         return "\uC8FC\uBB38 \uD658\uBD88";
       }
-      if (normalized.startsWith("wallet charge") || normalized.startsWith("wallet chage")) {
+      if (
+        normalized.startsWith("wallet charge") ||
+        normalized.startsWith("wallet chage")
+      ) {
         return "\uC9C0\uAC11 \uCDA9\uC804";
       }
       if (normalized.startsWith("wallet withdrawal")) {
@@ -126,19 +129,27 @@ function TransactionHistory({ items, loading, error }) {
   if (loading) {
     return (
       <p className="py-12 text-center text-sm text-gray-500">
-        {"\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4..."}
+        {
+          "\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4..."
+        }
       </p>
     );
   }
 
   if (error) {
-    return <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{error}</p>;
+    return (
+      <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+        {error}
+      </p>
+    );
   }
 
   if (items.length === 0) {
     return (
       <p className="py-12 text-center text-sm text-gray-500">
-        {"\uD45C\uC2DC\uD560 \uAC70\uB798 \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."}
+        {
+          "\uD45C\uC2DC\uD560 \uAC70\uB798 \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."
+        }
       </p>
     );
   }
@@ -150,17 +161,21 @@ function TransactionHistory({ items, loading, error }) {
           key={item.id || `${item.referenceId}-${item.createdAt}`}
           className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100 md:flex-row md:items-center md:justify-between"
         >
-          <div>
+          <div className="text-left">
             <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-violet-700">
               {getTransactionLabel(item)}
             </span>
             <p className="mt-2 text-sm text-gray-500">
               {translateTransactionText(item.description)}
             </p>
-            <p className="mt-1 text-xs text-gray-400">{formatDate(item.createdAt)}</p>
+            <p className="mt-1 text-xs text-gray-400">
+              {formatDate(item.createdAt)}
+            </p>
           </div>
           <div className="text-left md:text-right">
-            <p className="text-lg font-black text-gray-900">{formatKRW(item.amount)}</p>
+            <p className="text-lg font-black text-gray-900">
+              {formatKRW(item.amount)}
+            </p>
             <p className="text-xs text-gray-500">
               {"\uC794\uC561"} {formatKRW(item.balanceAfter)}
             </p>
@@ -242,7 +257,7 @@ export default function SellerSettlementPage() {
         ...prev,
         pending: getErrorMessage(
           pendingResult.reason,
-          "\uC815\uC0B0 \uB300\uAE30 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+          "\uC815\uC0B0 \uB300\uAE30 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
         ),
       }));
     }
@@ -250,14 +265,16 @@ export default function SellerSettlementPage() {
     if (partialResult.status === "fulfilled") {
       setPartialItems(partialResult.value);
       setSelectedIds((prev) =>
-        prev.filter((id) => partialResult.value.some((item) => item.settlementItemId === id))
+        prev.filter((id) =>
+          partialResult.value.some((item) => item.settlementItemId === id),
+        ),
       );
     } else {
       setErrors((prev) => ({
         ...prev,
         partial: getErrorMessage(
           partialResult.reason,
-          "\uBD80\uBD84 \uC815\uC0B0 \uAC00\uB2A5 \uD56D\uBAA9\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+          "\uBD80\uBD84 \uC815\uC0B0 \uAC00\uB2A5 \uD56D\uBAA9\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
         ),
       }));
     }
@@ -269,7 +286,7 @@ export default function SellerSettlementPage() {
         ...prev,
         monthly: getErrorMessage(
           monthlyResult.reason,
-          "\uC6D4 \uC815\uC0B0 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+          "\uC6D4 \uC815\uC0B0 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
         ),
       }));
     }
@@ -281,7 +298,7 @@ export default function SellerSettlementPage() {
         ...prev,
         transactions: getErrorMessage(
           transactionResult.reason,
-          "\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+          "\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
         ),
       }));
     }
@@ -317,18 +334,18 @@ export default function SellerSettlementPage() {
 
   const pendingEscrowAmount = useMemo(
     () => pendingIncomes.reduce((sum, item) => sum + item.amount, 0),
-    [pendingIncomes]
+    [pendingIncomes],
   );
   const availableSettlementAmount = useMemo(
     () => partialItems.reduce((sum, item) => sum + item.netAmount, 0),
-    [partialItems]
+    [partialItems],
   );
   const selectedSettlementAmount = useMemo(
     () =>
       partialItems
         .filter((item) => selectedIds.includes(item.settlementItemId))
         .reduce((sum, item) => sum + item.netAmount, 0),
-    [partialItems, selectedIds]
+    [partialItems, selectedIds],
   );
 
   if (authLoading) {
@@ -336,7 +353,9 @@ export default function SellerSettlementPage() {
       <PageContainer>
         <section className="py-16 text-center">
           <p className="text-sm font-medium text-gray-500">
-            {"\uD310\uB9E4\uC790 \uAD8C\uD55C\uC744 \uD655\uC778\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4."}
+            {
+              "\uD310\uB9E4\uC790 \uAD8C\uD55C\uC744 \uD655\uC778\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
+            }
           </p>
         </section>
       </PageContainer>
@@ -351,13 +370,15 @@ export default function SellerSettlementPage() {
     setSelectedIds((prev) =>
       prev.includes(settlementItemId)
         ? prev.filter((id) => id !== settlementItemId)
-        : [...prev, settlementItemId]
+        : [...prev, settlementItemId],
     );
   };
 
   const handleToggleAll = () => {
     setSelectedIds((prev) =>
-      prev.length === partialItems.length ? [] : partialItems.map((item) => item.settlementItemId)
+      prev.length === partialItems.length
+        ? []
+        : partialItems.map((item) => item.settlementItemId),
     );
   };
 
@@ -372,7 +393,7 @@ export default function SellerSettlementPage() {
       setSubmitState({
         loading: false,
         message: `${result.settlementItemCount}\uAC74, ${formatKRW(
-          result.finalSettlementAmount
+          result.finalSettlementAmount,
         )} \uBD80\uBD84 \uC815\uC0B0\uC744 \uC694\uCCAD\uD588\uC2B5\uB2C8\uB2E4.`,
         error: "",
       });
@@ -384,7 +405,7 @@ export default function SellerSettlementPage() {
         message: "",
         error: getErrorMessage(
           error,
-          "\uBD80\uBD84 \uC815\uC0B0 \uC694\uCCAD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
+          "\uBD80\uBD84 \uC815\uC0B0 \uC694\uCCAD\uC5D0 \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4.",
         ),
       });
     }
@@ -415,7 +436,7 @@ export default function SellerSettlementPage() {
         loading: false,
         error: getErrorMessage(
           error,
-          "\uC5D0\uC2A4\uD06C\uB85C \uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4."
+          "\uC5D0\uC2A4\uD06C\uB85C \uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.",
         ),
         items: [],
       });
