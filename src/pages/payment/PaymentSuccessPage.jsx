@@ -1,31 +1,7 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
-
-const MOCK_SUCCESS_PAYMENT = {
-  orderId: "COL-2024-001",
-  orderNumber: null,
-  totalPrice: 1240000,
-  paymentMethod: "예치금 결제",
-  paidAt: "2026-04-01T09:40:00",
-  items: [
-    {
-      productId: "sample-product-1",
-      name: "네온 컬렉터 재킷",
-      quantity: 1,
-      price: 1240000,
-      image: null,
-    },
-  ],
-  shipping: {
-    receiver: "홍길동",
-    receiverPhone: "010-1234-5678",
-    address: "서울특별시 강남구 테헤란로 123",
-    addressDetail: "101동 1001호",
-    zipCode: "06234",
-  },
-};
 
 function formatPrice(value) {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
@@ -45,23 +21,17 @@ function formatDate(value) {
 }
 
 function buildSuccessModel(orderId, state) {
-  const source = state ?? MOCK_SUCCESS_PAYMENT;
-  const items =
-    Array.isArray(source.items) && source.items.length > 0
-      ? source.items
-      : MOCK_SUCCESS_PAYMENT.items;
+  const source = state ?? {};
+  const items = Array.isArray(source.items) ? source.items : [];
 
   return {
-    orderId: source.orderId || orderId || MOCK_SUCCESS_PAYMENT.orderId,
+    orderId: source.orderId || orderId || null,
     orderNumber: source.orderNumber ?? null,
-    totalPrice: source.totalPrice ?? MOCK_SUCCESS_PAYMENT.totalPrice,
-    paymentMethod: source.paymentMethod || source.depositLabel || MOCK_SUCCESS_PAYMENT.paymentMethod,
-    paidAt: source.paidAt || MOCK_SUCCESS_PAYMENT.paidAt,
+    totalPrice: source.totalPrice ?? 0,
+    paymentMethod: source.paymentMethod || source.depositLabel || "예치금 결제",
+    paidAt: source.paidAt || null,
     items,
-    shipping: {
-      ...MOCK_SUCCESS_PAYMENT.shipping,
-      ...(source.shipping || {}),
-    },
+    shipping: source.shipping || {},
   };
 }
 
@@ -76,6 +46,10 @@ export default function PaymentSuccessPage() {
   );
 
   const primaryItem = payment.items[0];
+
+  useEffect(() => {
+    sessionStorage.setItem("payment-completed", "1");
+  }, []);
 
   return (
     <PageContainer>
