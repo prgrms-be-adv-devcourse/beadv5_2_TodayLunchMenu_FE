@@ -41,9 +41,8 @@ function buildPaymentModel(state) {
       (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
       0
     );
-  const shippingFee =
-    source?.shippingFee ?? (itemPrice >= 30000 || itemPrice === 0 ? 0 : 3000);
-  const totalPrice = source?.totalPrice ?? itemPrice + shippingFee;
+  const shippingFee = 0;
+  const totalPrice = source?.totalPrice ?? itemPrice;
 
   return {
     orderId: source?.orderId ?? null,
@@ -239,6 +238,7 @@ export default function PaymentPage() {
     };
   }, [
     isCardPayment,
+    isAuction,
     payment.orderId,
     payment.totalPrice,
     payment.createdAt,
@@ -439,7 +439,9 @@ export default function PaymentPage() {
                     },
                     paymentMethod: payment.selectedPaymentMethod || payment.paymentMethodCode || "DEPOSIT",
                   }));
-                } catch {}
+                } catch {
+                  // sessionStorage 저장 실패는 무시
+                }
                 navigate("/orders/checkout", { state: location.state });
               }}
               className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition"
@@ -453,7 +455,7 @@ export default function PaymentPage() {
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
             <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
               <div className="flex items-start gap-4">
-                <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-violet-50">
                   {primaryItem?.image ? (
                     <img
                       src={primaryItem.image}
@@ -535,7 +537,7 @@ export default function PaymentPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">배송비</span>
-                <span className="font-semibold text-gray-900">{payment.shippingFee === 0 ? "무료" : formatPrice(payment.shippingFee)}</span>
+                <span className="font-semibold text-gray-900">무료</span>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-3">
                 <span className="font-bold text-gray-900">총 결제 금액</span>

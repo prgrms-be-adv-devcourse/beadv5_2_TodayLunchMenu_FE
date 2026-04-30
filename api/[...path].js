@@ -1,3 +1,4 @@
+/* global process, Buffer */
 export default async function handler(req, res) {
   const backendUrl = process.env.BACKEND_URL;
   const targetUrl = backendUrl ? `${backendUrl}${req.url}` : null;
@@ -87,7 +88,9 @@ export default async function handler(req, res) {
       } finally {
         try {
           await reader.cancel();
-        } catch {}
+        } catch {
+          // reader cancel 실패는 무시
+        }
 
         const tail = decoder.decode();
         if (tail) {

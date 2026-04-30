@@ -343,7 +343,7 @@ export default function SellerRefundManagementPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const fetchRefundList = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.memberId) return;
 
     try {
       setLoading(true);
@@ -357,7 +357,7 @@ export default function SellerRefundManagementPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id, activeTab]);
+  }, [user?.memberId, activeTab]);
 
   useEffect(() => {
     void fetchRefundList();
@@ -467,13 +467,13 @@ export default function SellerRefundManagementPage() {
               ))}
             </div>
           ) : refunds.length === 0 ? (
-            <div className="rounded-[20px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
-              <p className="text-lg font-bold text-gray-900">
+            <div className="px-6 py-20 text-center">
+              <p className="text-base font-semibold text-gray-700">
                 {activeTab === "RECEIVED" && "처리할 반품이 없습니다"}
                 {activeTab === "COMPLETED" && "완료된 반품이 없습니다"}
                 {activeTab === "FAILED" && "거절한 반품이 없습니다"}
               </p>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-400">
                 {activeTab === "RECEIVED" && "고객이 반품을 신청하면 이곳에 표시됩니다."}
                 {activeTab === "COMPLETED" && "검수 완료된 반품이 이곳에 기록됩니다."}
                 {activeTab === "FAILED" && "거절한 반품 내역이 이곳에 기록됩니다."}
