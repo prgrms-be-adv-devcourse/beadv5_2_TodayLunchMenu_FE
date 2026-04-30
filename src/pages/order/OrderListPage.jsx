@@ -142,6 +142,7 @@ export default function OrderListPage() {
 
   return (
     <PageContainer>
+      <div className="text-left">
       <PageHeader
         title="주문 내역"
         action={
@@ -322,6 +323,7 @@ export default function OrderListPage() {
           })}
         </section>
       )}
+      </div>
     </PageContainer>
   );
 }
