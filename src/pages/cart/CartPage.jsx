@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import { isSoldOut, useCart } from "../../features/cart/useCart";
+import { useMyRecommendations } from "../../features/ai/useMyRecommendations";
+import ProductRecommendationSection from "../../components/product/ProductRecommendationSection";
 
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
@@ -17,6 +19,7 @@ export default function CartPage() {
     updateQuantity,
     removeCartItems,
   } = useCart();
+  const { recommendations, loading: recLoading, error: recError } = useMyRecommendations();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [pendingCartId, setPendingCartId] = useState(null);
 
@@ -245,6 +248,14 @@ export default function CartPage() {
                 </div>
               </div>
             </section>
+
+            {/* AI 맞춤 추천 */}
+            <ProductRecommendationSection
+              recommendations={recommendations}
+              loading={recLoading}
+              error={recError}
+              description="장바구니 담은 상품을 기반으로 골라봤어요."
+            />
           </div>
         )}
       </div>

@@ -49,4 +49,36 @@ async function getRecommendedProductsApi(productId) {
     .map((result) => result.value);
 }
 
-export { getRecommendedProductRefsApi, getRecommendedProductsApi };
+async function getMyRecommendedProductRefsApi() {
+  const response = await apiClient(`/api/ai/recommendations/me`);
+  const payload = getApiPayload(response.data);
+  const recommendations = Array.isArray(payload) ? payload : [];
+
+  return recommendations.map(toUiRecommendation).filter((item) => item.productId);
+}
+
+async function getMyRecommendedProductsApi() {
+  const recommendations = await getMyRecommendedProductRefsApi();
+
+  const productResults = await Promise.allSettled(
+    recommendations.map(async (recommendation) => {
+      const product = await getProductDetailApi(recommendation.productId);
+
+      return {
+        product,
+        similarityScore: recommendation.similarityScore,
+      };
+    })
+  );
+
+  return productResults
+    .filter((result) => result.status === "fulfilled")
+    .map((result) => result.value);
+}
+
+export {
+  getRecommendedProductRefsApi,
+  getRecommendedProductsApi,
+  getMyRecommendedProductRefsApi,
+  getMyRecommendedProductsApi,
+};

@@ -99,6 +99,7 @@ export default function ProductRecommendationSection({
   recommendations,
   loading,
   error,
+  description = "현재 상품과 비슷한 상품을 골라봤어요.",
 }) {
   return (
     <section className="mt-8 border border-gray-200 bg-white p-5">
@@ -112,7 +113,7 @@ export default function ProductRecommendationSection({
           </h2>
         </div>
         <p className="text-sm font-medium text-gray-500">
-          현재 상품과 비슷한 상품을 골라봤어요.
+          {description}
         </p>
       </div>
 
