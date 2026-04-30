@@ -4,20 +4,11 @@ function AdminSidebar({ currentPage = "dashboard" }) {
   const isActive = (page) => currentPage === page;
 
   const sidebarItems = [
-    { id: "dashboard", label: "개요", icon: "O", to: "#" },
-    {
-      id: "reports",
-      label: "전체 신고",
-      icon: "R",
-      to: "/admin/member-reports",
-    },
-    {
-      id: "sanctions",
-      label: "제재 이력",
-      icon: "S",
-      to: "/admin/member-restrictions",
-    },
+    { id: "dashboard", label: "개요", icon: "O", to: "/admin" },
+    { id: "reports", label: "전체 신고", icon: "R", to: "/admin/member-reports" },
+    { id: "sanctions", label: "제재 이력", icon: "S", to: "/admin/member-restrictions" },
     { id: "categories", label: "카테고리", icon: "C", to: "/admin/categories" },
+    { id: "settlements", label: "정산 운영", icon: "W", to: "/admin/settlements/ops" },
     { id: "embeddings", label: "임베딩", icon: "E", to: "/admin/embeddings" },
   ];
 

@@ -18,6 +18,7 @@ import DepositFailPage from "./pages/deposit/DepositFailPage";
 import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
 import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminEmbeddingPage from "./pages/admin/AdminEmbeddingPage";
 import AdminSettlementOpsPage from "./pages/admin/AdminSettlementOpsPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
@@ -106,18 +107,6 @@ const router = createBrowserRouter([
       { path: "member-reports/new", element: <MemberReportCreatePage /> },
       { path: "member-reports/me", element: <MemberReportHistoryPage /> },
       { path: "notifications", element: <NotificationListPage /> },
-      { path: "admin/categories", element: <AdminCategoryPage /> },
-      { path: "admin/member-reports", element: <AdminMemberReportListPage /> },
-      {
-        path: "admin/member-reports/:reportId",
-        element: <AdminMemberReportDetailPage />,
-      },
-      {
-        path: "admin/member-restrictions",
-        element: <AdminMemberRestrictionListPage />,
-      },
-      { path: "admin/embeddings", element: <AdminEmbeddingPage /> },
-      { path: "admin/settlements/ops", element: <AdminSettlementOpsPage /> },
       { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {
@@ -147,6 +136,7 @@ const router = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
+          { index: true, element: <AdminDashboardPage /> },
           { path: "categories", element: <AdminCategoryPage /> },
           { path: "member-reports", element: <AdminMemberReportListPage /> },
           {
@@ -158,6 +148,7 @@ const router = createBrowserRouter([
             element: <AdminMemberRestrictionListPage />,
           },
           { path: "embeddings", element: <AdminEmbeddingPage /> },
+          { path: "settlements/ops", element: <AdminSettlementOpsPage /> },
         ],
       },
     ],

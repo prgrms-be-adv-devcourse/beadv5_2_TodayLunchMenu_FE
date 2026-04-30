@@ -5,18 +5,11 @@ import AdminNav from "./AdminNav";
 import AdminSidebar from "./AdminSidebar";
 
 function resolveCurrentPage(pathname) {
-  if (pathname.startsWith("/admin/member-reports")) {
-    return "reports";
-  }
-  if (pathname.startsWith("/admin/member-restrictions")) {
-    return "sanctions";
-  }
-  if (pathname.startsWith("/admin/categories")) {
-    return "categories";
-  }
-  if (pathname.startsWith("/admin/embeddings")) {
-    return "embeddings";
-  }
+  if (pathname.startsWith("/admin/member-reports")) return "reports";
+  if (pathname.startsWith("/admin/member-restrictions")) return "sanctions";
+  if (pathname.startsWith("/admin/categories")) return "categories";
+  if (pathname.startsWith("/admin/embeddings")) return "embeddings";
+  if (pathname.startsWith("/admin/settlements")) return "settlements";
   return "dashboard";
 }
 
