@@ -325,6 +325,8 @@ export default function SellerAccountVerificationPage() {
       setAuthTokens({
         accessToken: promotedAuth.accessToken,
         refreshToken: promotedAuth.refreshToken,
+        accessTokenExpiresIn: promotedAuth.accessTokenExpiresIn,
+        refreshTokenExpiresIn: promotedAuth.refreshTokenExpiresIn,
       });
 
       setVerification((prev) =>

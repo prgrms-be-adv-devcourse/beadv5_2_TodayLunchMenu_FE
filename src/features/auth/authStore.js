@@ -1,28 +1,24 @@
-﻿// authStore.js : 인증 상태 관리를 위한 간단한 스토어 구현(외부 store, 프론트엔드 메모리 상태)
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
+const ACCESS_TOKEN_EXPIRES_AT_KEY = "accessTokenExpiresAt";
+const REFRESH_TOKEN_EXPIRES_AT_KEY = "refreshTokenExpiresAt";
+
 const hasAccessToken = () => Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 
-// 초기 인증 상태
-const hasStoredToken = Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 let authState = {
   user: null,
   isAuthenticated: hasAccessToken(),
   loading: hasAccessToken(),
 };
 
-// 구독자 관리 : 인증 상태 변경을 구독하는 리스너들을 관리하는 Set
 const listeners = new Set();
 
-// 변경 알림 함수 : 인증 상태가 변경될 때 구독자들에게 알리는 함수
 const emitChange = () => {
   listeners.forEach((listener) => listener());
 };
 
-// 현재 인증 상태를 반환하는 함수
 const getAuthState = () => authState;
 
-// 구독 함수 : 외부에서 인증 상태 변경을 구독할 수 있도록 하는 함수
 const subscribeAuthStore = (listener) => {
   listeners.add(listener);
 
@@ -31,7 +27,6 @@ const subscribeAuthStore = (listener) => {
   };
 };
 
-// 상태 업데이트 함수 : authState를 업데이트하고 변경을 알리는 함수
 const setAuthState = (updater) => {
   authState =
     typeof updater === "function"
@@ -41,8 +36,12 @@ const setAuthState = (updater) => {
   emitChange();
 };
 
-//  토큰 저장 함수 : 로그인 성공 시 토큰을 로컬 스토리지에 저장
-const setAuthTokens = ({ accessToken, refreshToken }) => {
+const setAuthTokens = ({
+  accessToken,
+  refreshToken,
+  accessTokenExpiresIn,
+  refreshTokenExpiresIn,
+}) => {
   if (accessToken) {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
   }
@@ -50,12 +49,27 @@ const setAuthTokens = ({ accessToken, refreshToken }) => {
   if (refreshToken) {
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
   }
+
+  if (Number.isFinite(accessTokenExpiresIn) && accessTokenExpiresIn > 0) {
+    localStorage.setItem(
+      ACCESS_TOKEN_EXPIRES_AT_KEY,
+      String(Date.now() + accessTokenExpiresIn),
+    );
+  }
+
+  if (Number.isFinite(refreshTokenExpiresIn) && refreshTokenExpiresIn > 0) {
+    localStorage.setItem(
+      REFRESH_TOKEN_EXPIRES_AT_KEY,
+      String(Date.now() + refreshTokenExpiresIn),
+    );
+  }
 };
 
-// 인증 상태 초기화 함수 : 토큰을 제거하고 인증 상태를 초기화
 const clearAuthState = () => {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
+  localStorage.removeItem(ACCESS_TOKEN_EXPIRES_AT_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_EXPIRES_AT_KEY);
 
   authState = {
     user: null,
@@ -67,7 +81,9 @@ const clearAuthState = () => {
 };
 
 export {
+  ACCESS_TOKEN_EXPIRES_AT_KEY,
   ACCESS_TOKEN_KEY,
+  REFRESH_TOKEN_EXPIRES_AT_KEY,
   REFRESH_TOKEN_KEY,
   clearAuthState,
   getAuthState,

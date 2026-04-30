@@ -1,7 +1,11 @@
-﻿import { buildApiError, buildNetworkError, ApiError } from "./apiError";
+import { buildApiError, buildNetworkError, ApiError } from "./apiError";
 import { API_BASE, defaultOptions } from "./apiConfig";
 import { parseResponseBody } from "./apiResponse";
-import { clearAuthenticatedSession, refreshAccessToken } from "./authSession";
+import {
+  clearAuthenticatedSession,
+  isTerminalAuthError,
+  refreshAccessToken,
+} from "./authSession";
 
 const apiClient = async (
   url,
@@ -23,7 +27,8 @@ const apiClient = async (
     normalizedMethod !== "GET" &&
     normalizedMethod !== "HEAD";
 
-  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
   const queryString = params
     ? `?${new URLSearchParams(params).toString()}`
     : "";
@@ -38,7 +43,9 @@ const apiClient = async (
       method: normalizedMethod,
       headers: {
         ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-        ...(!isFormData && hasBody ? { "Content-Type": "application/json" } : {}),
+        ...(!isFormData && hasBody
+          ? { "Content-Type": "application/json" }
+          : {}),
         ...headers,
       },
       body: hasBody ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -58,7 +65,12 @@ const apiClient = async (
     const error = buildApiError({ response, data });
     const isRefreshRequest = url === "/api/auth/refresh";
 
-    if (response.status === 401 && error.code === "TOKEN_EXPIRED" && !retry && !isRefreshRequest) {
+    if (
+      response.status === 401 &&
+      error.code === "TOKEN_EXPIRED" &&
+      !retry &&
+      !isRefreshRequest
+    ) {
       try {
         await refreshAccessToken();
 
@@ -74,12 +86,15 @@ const apiClient = async (
           true
         );
       } catch (refreshError) {
-        clearAuthenticatedSession();
+        if (isTerminalAuthError(refreshError)) {
+          clearAuthenticatedSession();
+        }
+
         throw refreshError;
       }
     }
 
-    if (response.status === 401 && (error.code === "INVALID_TOKEN" || error.code === "UNAUTHORIZED")) {
+    if (isTerminalAuthError(error)) {
       clearAuthenticatedSession();
     }
 
