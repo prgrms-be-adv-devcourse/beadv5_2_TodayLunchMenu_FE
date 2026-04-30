@@ -1,5 +1,7 @@
 ﻿import { apiClient } from "../../api/client";
 
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL || "https://todaylunchmenu.s3.ap-northeast-2.amazonaws.com";
+
 const MAX_PRODUCT_IMAGE_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_PRODUCT_IMAGE_COUNT = 5;
 const MAX_PRODUCT_IMAGE_TOTAL_SIZE = 30 * 1024 * 1024;
@@ -37,7 +39,7 @@ const toNumber = (value) => {
 const toUiImage = (image) => ({
   id: image.imageId,
   s3Key: image.s3Key,
-  url: image.presignedUrl || null,
+  url: image.s3Key ? `${S3_BASE_URL}/${image.s3Key}` : null,
   sortOrder: image.sortOrder ?? 0,
   isThumbnail: Boolean(image.isThumbnail),
   createdAt: image.createdAt,
