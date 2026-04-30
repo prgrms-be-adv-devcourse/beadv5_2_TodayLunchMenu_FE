@@ -8,7 +8,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const soldOut = product.status === "SOLD_OUT" || product.stockCount <= 0;
 
   return (
-    <article className="group border border-gray-200 bg-white transition-shadow hover:shadow-md">
+    <article className="group flex flex-col border border-gray-200 bg-white transition-shadow hover:shadow-md">
       <Link to={`/products/${product.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
@@ -26,32 +26,34 @@ export default function ProductCard({ product, onAddToCart }) {
         </div>
       </Link>
 
-      <div className="p-2.5">
-        <p className="mb-0.5 text-xs text-gray-400">{product.category}</p>
+      <div className="flex flex-1 flex-col p-3">
+        <p className="mb-1 truncate text-xs text-gray-400">{product.category}</p>
 
         <Link to={`/products/${product.id}`}>
-          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-gray-900 hover:text-blue-600">
+          <h3 className="line-clamp-2 text-sm font-medium leading-snug text-gray-800 hover:text-blue-600">
             {product.name}
           </h3>
         </Link>
 
-        <p className="mt-1 text-sm font-bold text-red-600">
-          {formatPrice(product.price)}원
-        </p>
+        <div className="mt-auto pt-2">
+          <p className="text-base font-bold text-gray-900">
+            {formatPrice(product.price)}원
+          </p>
 
-        <button
-          type="button"
-          onClick={() => onAddToCart?.(product)}
-          disabled={soldOut}
-          className={[
-            "mt-2 w-full border py-1.5 text-xs font-semibold transition",
-            soldOut
-              ? "cursor-not-allowed border-gray-200 text-gray-400"
-              : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white",
-          ].join(" ")}
-        >
-          {soldOut ? "품절" : "장바구니 담기"}
-        </button>
+          <button
+            type="button"
+            onClick={() => onAddToCart?.(product)}
+            disabled={soldOut}
+            className={[
+              "mt-2 w-full py-2 text-sm font-semibold transition",
+              soldOut
+                ? "cursor-not-allowed bg-gray-100 text-gray-400"
+                : "bg-blue-600 text-white hover:bg-blue-700",
+            ].join(" ")}
+          >
+            {soldOut ? "품절" : "장바구니 담기"}
+          </button>
+        </div>
       </div>
     </article>
   );
