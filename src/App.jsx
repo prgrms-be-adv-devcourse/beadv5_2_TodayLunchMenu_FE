@@ -36,6 +36,7 @@ import MemberReportHistoryPage from "./pages/member/MemberReportHistoryPage";
 import MyPage from "./pages/member/MyPage";
 import NotificationListPage from "./pages/notification/NotificationListPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
+import OrderCancellationPage from "./pages/order/OrderCancellationPage";
 import OrderDetailPage from "./pages/order/OrderDetailPage";
 import OrderListPage from "./pages/order/OrderListPage";
 import PaymentCardFailPage from "./pages/payment/PaymentCardFailPage";
@@ -94,6 +95,7 @@ const router = createBrowserRouter([
       { path: "payments/:orderId/fail", element: <PaymentFailPage /> },
       { path: "orders", element: <OrderListPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
+      { path: "orders/:orderId/cancellation", element: <OrderCancellationPage /> },
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
       { path: "me/password", element: <MemberPasswordPage /> },
