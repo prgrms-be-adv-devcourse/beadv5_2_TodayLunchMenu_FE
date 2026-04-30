@@ -106,7 +106,7 @@ export default function MonthlySettlementTable({
       <div className="flex items-center justify-between rounded-2xl bg-violet-50 px-4 py-3 ring-1 ring-violet-100">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-700">
-            Monthly Settlements
+            월 정산 내역
           </p>
           <p className="mt-1 text-sm text-gray-600">
             {
@@ -143,7 +143,7 @@ export default function MonthlySettlementTable({
                   {formatSettlementMonth(item.settlementYear, item.settlementMonth)}
                 </h3>
                 <p className="mt-1 text-xs text-gray-400">
-                  settlement {item.settlementId?.slice?.(0, 8) || "-"}
+                  정산 ID {item.settlementId?.slice?.(0, 8) || "-"}
                 </p>
               </div>
 

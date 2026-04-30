@@ -94,7 +94,7 @@ export default function PartialSettlementTable({
                   </td>
                   <td className="px-4 py-4">
                     <p className="font-mono text-xs font-bold text-gray-800">{shortId(item.orderId)}</p>
-                    <p className="mt-1 font-mono text-[11px] text-gray-400">item {shortId(item.settlementItemId)}</p>
+                    <p className="mt-1 font-mono text-[11px] text-gray-400">항목 {shortId(item.settlementItemId)}</p>
                   </td>
                   <td className="px-4 py-4 text-gray-700">{formatKRW(item.grossAmount)}</td>
                   <td className="px-4 py-4 text-gray-500">-{formatKRW(item.feeAmount)}</td>

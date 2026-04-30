@@ -45,6 +45,58 @@ function getErrorMessage(error, fallback) {
   return error instanceof ApiError ? error.message : fallback;
 }
 
+function translateTransactionText(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+
+  const normalized = text
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  switch (normalized) {
+    case "auction deposit hold":
+      return "\uACBD\uB9E4 \uBCF4\uC99D\uAE08 \uC608\uCE58";
+    case "auction deposit refund":
+      return "\uACBD\uB9E4 \uBCF4\uC99D\uAE08 \uD658\uBD88";
+    case "auction deposit release":
+      return "\uACBD\uB9E4 \uBCF4\uC99D\uAE08 \uC815\uC0B0";
+    case "order purchase":
+    case "order payment":
+      return "\uC8FC\uBB38 \uACB0\uC81C";
+    case "order refund":
+      return "\uC8FC\uBB38 \uD658\uBD88";
+    case "wallet charge":
+    case "wallet chage":
+      return "\uC9C0\uAC11 \uCDA9\uC804";
+    case "wallet withdrawal":
+      return "\uC9C0\uAC11 \uCD9C\uAE08";
+    case "partial settlement":
+      return "\uBD80\uBD84 \uC815\uC0B0";
+    case "monthly settlement":
+      return "\uC6D4 \uC815\uC0B0";
+    case "withdrawal":
+      return "\uCD9C\uAE08";
+    case "charge":
+      return "\uCDA9\uC804";
+    default:
+      if (normalized.startsWith("order purchase")) {
+        return "\uC8FC\uBB38 \uACB0\uC81C";
+      }
+      if (normalized.startsWith("order refund")) {
+        return "\uC8FC\uBB38 \uD658\uBD88";
+      }
+      if (normalized.startsWith("wallet charge") || normalized.startsWith("wallet chage")) {
+        return "\uC9C0\uAC11 \uCDA9\uC804";
+      }
+      if (normalized.startsWith("wallet withdrawal")) {
+        return "\uC9C0\uAC11 \uCD9C\uAE08";
+      }
+      return text;
+  }
+}
+
 function getTransactionLabel(transaction) {
   if (transaction.referenceType === "PARTIAL_SETTLEMENT") {
     return "\uBD80\uBD84 \uC815\uC0B0";
@@ -62,7 +114,11 @@ function getTransactionLabel(transaction) {
     case "ORDER_REFUND":
       return "\uC8FC\uBB38 \uD658\uBD88";
     default:
-      return transaction.description || transaction.type || "\uAC70\uB798";
+      return (
+        translateTransactionText(transaction.description) ||
+        translateTransactionText(transaction.type) ||
+        "\uAC70\uB798"
+      );
   }
 }
 
@@ -98,7 +154,9 @@ function TransactionHistory({ items, loading, error }) {
             <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-violet-700">
               {getTransactionLabel(item)}
             </span>
-            <p className="mt-2 text-sm text-gray-500">{item.description}</p>
+            <p className="mt-2 text-sm text-gray-500">
+              {translateTransactionText(item.description)}
+            </p>
             <p className="mt-1 text-xs text-gray-400">{formatDate(item.createdAt)}</p>
           </div>
           <div className="text-left md:text-right">
@@ -370,7 +428,7 @@ export default function SellerSettlementPage() {
       <PageContainer>
         <section className="space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
-            Seller Settlement
+            판매자 정산
           </p>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
             {"\uC815\uC0B0 \uAD00\uB9AC"}
