@@ -161,10 +161,10 @@ export default function AdminMemberReportListPage() {
               !
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 검토 대기
               </p>
-              <p className="text-2xl font-black text-gray-900">
+              <p className="text-2xl font-bold text-gray-900">
                 {pendingCount}
               </p>
             </div>
@@ -174,10 +174,10 @@ export default function AdminMemberReportListPage() {
               OK
             </div>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 처리 완료
               </p>
-              <p className="text-2xl font-black text-gray-900">
+              <p className="text-2xl font-bold text-gray-900">
                 {processedCount}
               </p>
             </div>
@@ -188,7 +188,7 @@ export default function AdminMemberReportListPage() {
       <section className="mb-8 flex flex-col gap-4 bg-blue-50 p-6 shadow-sm ring-1 ring-gray-200 xl:flex-row xl:items-end xl:justify-between">
         <div className="grid flex-1 gap-4 md:grid-cols-[1.2fr_0.6fr_0.6fr]">
           <div>
-            <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               검색
             </label>
             <input
@@ -199,7 +199,7 @@ export default function AdminMemberReportListPage() {
             />
           </div>
           <div>
-            <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               상태
             </label>
             <select
@@ -215,7 +215,7 @@ export default function AdminMemberReportListPage() {
             </select>
           </div>
           <div>
-            <label className="mb-2 block text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               유형
             </label>
             <select
@@ -242,7 +242,7 @@ export default function AdminMemberReportListPage() {
       <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-[1180px] text-left">
-            <thead className="bg-blue-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+            <thead className="bg-blue-50/70 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
               <tr>
                 <th className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-4">
                   신고 ID
@@ -332,7 +332,7 @@ export default function AdminMemberReportListPage() {
                     <td className="px-6 py-5 align-top">
                       <span
                         className={[
-                          "inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.14em]",
+                          "inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.14em]",
                           statusStyles[report.status] ||
                             "bg-slate-100 text-slate-600",
                         ].join(" ")}

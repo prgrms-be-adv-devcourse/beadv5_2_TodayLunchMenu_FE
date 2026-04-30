@@ -304,7 +304,7 @@ export default function OrderDetailPage() {
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-600">
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-600">
                             {(item.productName || "O").slice(0, 1).toUpperCase()}
                           </div>
                         )}

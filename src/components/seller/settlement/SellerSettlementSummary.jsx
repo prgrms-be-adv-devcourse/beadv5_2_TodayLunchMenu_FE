@@ -15,7 +15,7 @@ function SummaryItem({ label, value, helper, tone = "default" }) {
       <p className={tone === "accent" ? "text-xs text-violet-100" : "text-xs text-gray-500"}>
         {label}
       </p>
-      <p className="mt-2 text-2xl font-black tracking-tight">{formatKRW(value)}</p>
+      <p className="mt-2 text-2xl font-bold tracking-tight">{formatKRW(value)}</p>
       {helper ? (
         <p className={tone === "accent" ? "mt-2 text-xs text-violet-100" : "mt-2 text-xs text-gray-500"}>
           {helper}

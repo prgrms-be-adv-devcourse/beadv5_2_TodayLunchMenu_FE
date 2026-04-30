@@ -48,6 +48,11 @@ export default function AuctionCard({ auction, productImage }) {
         </Link>
 
         <div className="mt-auto pt-2">
+          {auction.startPrice && auction.currentPrice > auction.startPrice && (
+            <p className="truncate text-xs text-gray-400 line-through">
+              {formatKRW(auction.startPrice)}원
+            </p>
+          )}
           <p className="text-base font-bold text-gray-900">
             {formatKRW(auction.currentPrice)}원
           </p>

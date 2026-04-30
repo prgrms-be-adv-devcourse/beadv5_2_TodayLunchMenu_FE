@@ -82,7 +82,7 @@ export default function CartPage() {
       <div className="pb-32 text-left">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-xl font-black text-gray-900">장바구니</h1>
+          <h1 className="text-xl font-bold text-gray-900">장바구니</h1>
           <p className="mt-0.5 text-sm text-gray-500">총 {cartItems.length}개 상품</p>
         </div>
 
@@ -144,7 +144,7 @@ export default function CartPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-gray-300">
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">
                           {(item.name || "P").slice(0, 1).toUpperCase()}
                         </div>
                       )}
@@ -224,7 +224,7 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <section className="border border-gray-200 bg-white p-5">
-              <h2 className="mb-3 text-sm font-black text-gray-900">결제 금액</h2>
+              <h2 className="mb-3 text-sm font-bold text-gray-900">결제 금액</h2>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500">상품 금액</span>
@@ -242,7 +242,7 @@ export default function CartPage() {
               <div className="mt-4 border-t border-gray-100 pt-4">
                 <div className="flex items-end justify-between">
                   <span className="text-sm font-bold text-gray-900">총 결제 금액</span>
-                  <span className="text-xl font-black tabular-nums text-blue-600">
+                  <span className="text-xl font-bold tabular-nums text-blue-600">
                     {formatPrice(summary.total)}원
                   </span>
                 </div>

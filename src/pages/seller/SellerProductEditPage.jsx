@@ -368,7 +368,7 @@ export default function SellerProductEditPage() {
             {thumbnailImage?.url ? (
               <img src={thumbnailImage.url} alt={form.title} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl font-black text-gray-300">
+              <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">
                 {(form.title || "P").slice(0, 1).toUpperCase()}
               </div>
             )}

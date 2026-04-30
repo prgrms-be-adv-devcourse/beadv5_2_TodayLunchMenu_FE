@@ -159,7 +159,7 @@ export default function KakaoOAuthCallbackPage() {
     return (
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 text-center text-[#38274c]">
         <div className="w-full rounded-[2rem] bg-white p-8 shadow-[0_24px_70px_rgba(93,63,211,0.12)]">
-          <h1 className="text-2xl font-black tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight">
             잘못된 콜백 요청
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
@@ -179,13 +179,13 @@ export default function KakaoOAuthCallbackPage() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 text-center text-[#38274c]">
       <div className="w-full rounded-[2rem] bg-white p-8 shadow-[0_24px_70px_rgba(93,63,211,0.12)]">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#FEE500] text-xl font-black text-[#3C1E1E]">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#FEE500] text-xl font-bold text-[#3C1E1E]">
           K
         </div>
 
         {error ? (
           <>
-            <h1 className="text-2xl font-black tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight">
               카카오 인증에 실패했어요
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-600">{error}</p>
@@ -198,7 +198,7 @@ export default function KakaoOAuthCallbackPage() {
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-black tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight">
               {isLinkFlow
                 ? "카카오 계정을 연결하고 있어요"
                 : "카카오 로그인 처리 중"}

@@ -20,9 +20,9 @@ export default function AdminNav() {
         <div className="flex items-center gap-8">
           <Link
             to="/admin"
-            className="flex items-center gap-2 text-lg font-black tracking-tight text-white"
+            className="flex items-center gap-2 text-lg font-bold tracking-tight text-white"
           >
-            <span className="rounded bg-white px-1.5 py-0.5 text-xs font-black text-blue-700">
+            <span className="rounded bg-white px-1.5 py-0.5 text-xs font-bold text-blue-700">
               ADMIN
             </span>
             GoodsMall

@@ -181,7 +181,7 @@ export default function PaymentCardSuccessPage() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-4xl text-emerald-600">
               {confirming ? "..." : "✓"}
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-gray-900">
+            <h1 className="mt-5 text-3xl font-bold tracking-tight text-gray-900">
               {confirming ? "카드 결제 승인 중" : "카드 결제 승인 완료"}
             </h1>
             <p className="mt-2 text-sm leading-6 text-gray-500">

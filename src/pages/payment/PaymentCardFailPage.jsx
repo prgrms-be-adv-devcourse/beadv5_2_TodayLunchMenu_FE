@@ -76,7 +76,7 @@ export default function PaymentCardFailPage() {
               !
             </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900">결제에 실패했습니다</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">결제에 실패했습니다</h1>
           <p className="mt-2 text-sm text-gray-500">아래 내용을 확인하고 다시 시도해 주세요</p>
         </div>
 
