@@ -88,7 +88,7 @@ function BidRow({ bid, isTop, isYou, bidderName }) {
       >
         {name}
         {isTop && (
-          <span className="ml-2 text-[10px] font-semibold text-blue-600">
+          <span className="ml-2 text-xs font-semibold text-blue-600">
             최고가
           </span>
         )}
@@ -236,6 +236,15 @@ export default function AuctionDetailPage() {
 
       const bidPrice = Number(payload.bidPrice);
       const endAt = payload.endAt ? new Date(payload.endAt).getTime() : null;
+      const isMyBid = myId && String(payload.bidderId) === String(myId);
+
+      if (!isMyBid) {
+        const name = payload.bidderName || "다른 입찰자";
+        setToast({
+          type: "info",
+          message: `${name}가 ${formatKRW(bidPrice)}원에 입찰했습니다. 재입찰해 보세요!`,
+        });
+      }
 
       setAuction((prev) => {
         if (!prev) return prev;
@@ -257,7 +266,7 @@ export default function AuctionDetailPage() {
         createdAt: endAt ? endAt - 1 : Date.now(),
       });
     },
-    [auctionId, prependBid, setAuction],
+    [auctionId, myId, prependBid, setAuction],
   );
 
   const handleUserMessage = useCallback((message) => {
@@ -626,26 +635,30 @@ export default function AuctionDetailPage() {
             <div className="border border-gray-200 bg-white px-5 py-4">
               {/* Quick Bids */}
               <p className="mb-2 text-xs font-semibold text-gray-600">빠른 입찰</p>
-              <div className="grid grid-cols-2 gap-2">
-                {quicks.map((value) => {
-                  const active = Number(bidInput) === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setBidInput(String(value))}
-                      className={[
-                        "h-10 border text-sm font-semibold tabular-nums transition",
-                        active
-                          ? "border-blue-600 bg-blue-600 text-white"
-                          : "border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600",
-                      ].join(" ")}
-                    >
-                      {formatKRW(value)}원
-                    </button>
-                  );
-                })}
-              </div>
+              {quicks.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2">
+                  {quicks.map((value) => {
+                    const active = Number(bidInput) === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setBidInput(String(value))}
+                        className={[
+                          "h-10 border text-sm font-semibold tabular-nums transition",
+                          active
+                            ? "border-blue-600 bg-blue-600 text-white"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600",
+                        ].join(" ")}
+                      >
+                        {formatKRW(value)}원
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400">아래 입력란에 직접 금액을 입력해 주세요.</p>
+              )}
 
               {/* AI Recommendation */}
               <div className="mt-4">
@@ -692,7 +705,17 @@ export default function AuctionDetailPage() {
                     <span className="font-semibold text-gray-700">
                       {formatKRW(nextMin)}원
                     </span>
-                    부터 입찰 가능
+                    부터
+                    {bidUnit > 0 && (
+                      <>
+                        {" "}·{" "}
+                        <span className="font-semibold text-gray-700">
+                          {formatKRW(bidUnit)}원
+                        </span>{" "}
+                        단위로
+                      </>
+                    )}{" "}
+                    입찰 가능
                   </p>
                 )}
               </div>
@@ -761,7 +784,7 @@ export default function AuctionDetailPage() {
         <div
           className={[
             "fixed left-1/2 top-20 z-[200] -translate-x-1/2 px-5 py-3 text-sm font-semibold text-white shadow-lg",
-            toast.type === "error" ? "bg-red-600" : "bg-gray-900",
+            toast.type === "error" ? "bg-red-600" : toast.type === "info" ? "bg-blue-600" : "bg-gray-900",
           ].join(" ")}
         >
           {toast.message}

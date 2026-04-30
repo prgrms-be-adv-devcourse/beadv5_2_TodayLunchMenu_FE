@@ -24,7 +24,7 @@ export default function CountdownPill({ endsAt, status }) {
   return (
     <span
       className={[
-        "absolute right-2 top-2 px-2 py-0.5 text-[10px] font-bold tabular-nums tracking-wide",
+        "absolute right-2 top-2 px-2 py-0.5 text-xs font-bold tabular-nums tracking-wide",
         tone,
       ].join(" ")}
     >

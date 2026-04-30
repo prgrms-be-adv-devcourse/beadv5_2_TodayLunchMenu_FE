@@ -97,6 +97,27 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Sold-out Cleanup Banner */}
+            {summary.soldOutCount > 0 && (
+              <div className="flex items-center justify-between border border-red-100 bg-red-50 px-4 py-3">
+                <p className="text-sm text-red-700">
+                  품절 상품 <span className="font-bold">{summary.soldOutCount}개</span>는 주문에서 제외됩니다.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const soldOutIds = cartItems
+                      .filter((item) => isSoldOut(item))
+                      .map((item) => item.cartId);
+                    removeCartItems(soldOutIds);
+                  }}
+                  className="ml-4 shrink-0 border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-100"
+                >
+                  품절 상품 모두 삭제
+                </button>
+              </div>
+            )}
+
             {/* Cart Items */}
             <section className="space-y-2">
               {cartItems.map((item) => {
@@ -223,11 +244,6 @@ export default function CartPage() {
                   </span>
                 </div>
               </div>
-              {summary.soldOutCount > 0 && (
-                <p className="mt-3 text-xs text-red-500">
-                  품절 상품 {summary.soldOutCount}개는 결제 대상에서 제외됩니다.
-                </p>
-              )}
             </section>
           </div>
         )}

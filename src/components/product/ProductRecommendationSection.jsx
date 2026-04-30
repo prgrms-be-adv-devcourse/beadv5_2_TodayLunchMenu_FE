@@ -38,9 +38,9 @@ function RecommendationSkeleton() {
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}
-          className="overflow-hidden rounded-2xl bg-white/75 shadow-sm ring-1 ring-purple-100"
+          className="overflow-hidden border border-gray-200 bg-white"
         >
-          <div className="aspect-[4/3] animate-pulse bg-purple-100" />
+          <div className="aspect-square animate-pulse bg-purple-100" />
           <div className="space-y-2 p-3">
             <div className="h-3 w-16 animate-pulse rounded-full bg-purple-100" />
             <div className="h-4 w-full animate-pulse rounded-full bg-purple-100" />
@@ -57,18 +57,18 @@ function RecommendedProductCard({ recommendation }) {
   const soldOut = product.status === "SOLD_OUT" || product.stockCount <= 0;
 
   return (
-    <article className="overflow-hidden rounded-2xl bg-white/75 shadow-sm ring-1 ring-purple-100 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md">
+    <article className="group overflow-hidden border border-gray-200 bg-white transition-shadow hover:shadow-md">
       <Link to={`/products/${product.id}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden bg-purple-50">
+        <div className="relative aspect-square overflow-hidden bg-purple-50">
           <RecommendedProductImage product={product} />
 
-          <span className="absolute left-2.5 top-2.5 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+          <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-xs font-bold text-white">
             {formatSimilarity(similarityScore)}
           </span>
 
           {soldOut ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/35">
-              <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold text-gray-900">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+              <span className="bg-white/90 px-3 py-1 text-xs font-bold text-gray-900">
                 품절
               </span>
             </div>
@@ -76,18 +76,18 @@ function RecommendedProductCard({ recommendation }) {
         </div>
       </Link>
 
-      <div className="space-y-2 p-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-500">
+      <div className="p-2.5">
+        <p className="mb-0.5 text-xs text-violet-500">
           {product.category}
         </p>
 
         <Link to={`/products/${product.id}`}>
-          <h3 className="line-clamp-2 min-h-9 text-[13px] font-extrabold leading-snug tracking-tight text-gray-900">
+          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-gray-900 hover:text-blue-600">
             {product.name}
           </h3>
         </Link>
 
-        <p className="text-sm font-extrabold text-violet-700">
+        <p className="mt-1 text-sm font-bold text-red-600">
           {formatPrice(product.price)}원
         </p>
       </div>
@@ -101,7 +101,7 @@ export default function ProductRecommendationSection({
   error,
 }) {
   return (
-    <section className="mt-8 rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
+    <section className="mt-8 border border-gray-200 bg-white p-5">
       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-500">

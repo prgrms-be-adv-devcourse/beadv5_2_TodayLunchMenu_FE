@@ -41,7 +41,7 @@ export default function AuctionCard({ auction, productImage }) {
         <div className="mb-1">
           <span
             className={[
-              "border px-1.5 py-0.5 text-[10px] font-semibold",
+              "border px-1.5 py-0.5 text-xs font-semibold",
               statusClass,
             ].join(" ")}
           >
@@ -50,7 +50,7 @@ export default function AuctionCard({ auction, productImage }) {
         </div>
 
         <Link to={`/auctions/${auction.id}`}>
-          <h3 className="line-clamp-2 text-[12px] font-medium leading-snug text-gray-900 hover:text-blue-600">
+          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-gray-900 hover:text-blue-600">
             {title}
           </h3>
         </Link>
@@ -60,13 +60,13 @@ export default function AuctionCard({ auction, productImage }) {
         </p>
 
         {!isWaiting && !ended && (
-          <p className="mt-0.5 text-[10px] text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-400">
             입찰 단위 {formatKRW(auction.bidUnit)}원
           </p>
         )}
 
         {isWaiting && auction.startedAt && (
-          <p className="mt-0.5 text-[10px] text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-400">
             {new Date(auction.startedAt).toLocaleString("ko-KR", {
               month: "numeric",
               day: "numeric",
@@ -81,7 +81,7 @@ export default function AuctionCard({ auction, productImage }) {
           <button
             type="button"
             className={[
-              "mt-2 w-full border py-1.5 text-[11px] font-semibold transition",
+              "mt-2 w-full border py-1.5 text-xs font-semibold transition",
               actionClass,
             ].join(" ")}
           >

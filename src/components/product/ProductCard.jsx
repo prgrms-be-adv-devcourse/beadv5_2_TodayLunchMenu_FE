@@ -27,10 +27,10 @@ export default function ProductCard({ product, onAddToCart }) {
       </Link>
 
       <div className="p-2.5">
-        <p className="mb-0.5 text-[10px] text-gray-400">{product.category}</p>
+        <p className="mb-0.5 text-xs text-gray-400">{product.category}</p>
 
         <Link to={`/products/${product.id}`}>
-          <h3 className="line-clamp-2 text-[12px] font-medium leading-snug text-gray-900 hover:text-blue-600">
+          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-gray-900 hover:text-blue-600">
             {product.name}
           </h3>
         </Link>
@@ -44,7 +44,7 @@ export default function ProductCard({ product, onAddToCart }) {
           onClick={() => onAddToCart?.(product)}
           disabled={soldOut}
           className={[
-            "mt-2 w-full border py-1.5 text-[11px] font-semibold transition",
+            "mt-2 w-full border py-1.5 text-xs font-semibold transition",
             soldOut
               ? "cursor-not-allowed border-gray-200 text-gray-400"
               : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white",

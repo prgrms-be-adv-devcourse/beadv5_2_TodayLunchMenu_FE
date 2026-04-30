@@ -245,10 +245,16 @@ export default function ProductListPage() {
                 <button
                   type="button"
                   onClick={() => setSidebarOpen((v) => !v)}
-                  className="flex h-8 w-8 items-center justify-center border border-gray-300 text-gray-500 transition hover:bg-gray-100"
+                  className={[
+                    "flex h-8 items-center gap-1.5 border px-2 text-xs font-semibold transition",
+                    sidebarOpen
+                      ? "border-gray-300 text-gray-500 hover:bg-gray-100"
+                      : "border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100",
+                  ].join(" ")}
                   title="카테고리 열기/닫기"
                 >
                   <Menu className="h-4 w-4" />
+                  {!sidebarOpen && <span>카테고리</span>}
                 </button>
 
                 <div className="flex items-center gap-1 text-sm">

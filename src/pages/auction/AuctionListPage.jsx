@@ -11,7 +11,7 @@ const FILTERS = [
   { key: "ALL", label: "전체 경매" },
   { key: "WAITING", label: "시작 전" },
   { key: "ONGOING", label: "진행 중" },
-  { key: "ENDING_SOON", label: "마감 임박" },
+  { key: "ENDING_SOON", label: "마감 임박 (10분 이하)" },
   { key: "ENDED", label: "종료" },
 ];
 
@@ -136,40 +136,25 @@ export default function AuctionListPage() {
                 <button
                   type="button"
                   onClick={() => setSidebarOpen((v) => !v)}
-                  className="flex h-8 w-8 items-center justify-center border border-gray-300 text-gray-500 transition hover:bg-gray-100"
+                  className={[
+                    "flex h-8 items-center gap-1.5 border px-2 text-xs font-semibold transition",
+                    sidebarOpen
+                      ? "border-gray-300 text-gray-500 hover:bg-gray-100"
+                      : "border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100",
+                  ].join(" ")}
                   title="사이드바 열기/닫기"
                 >
                   <Menu className="h-4 w-4" />
+                  {!sidebarOpen && <span>필터</span>}
                 </button>
                 <h2 className="text-sm font-bold text-gray-900">
                   {FILTERS.find((f) => f.key === filterKey)?.label}
                 </h2>
-                <span className="text-xs text-gray-400">{visible.length}개</span>
+                <span className="text-xs text-gray-400">
+                  {visible.length}개
+                  {pageInfo.totalPages > 1 && ` · ${page + 1}/${pageInfo.totalPages}페이지`}
+                </span>
               </div>
-
-              {pageInfo.totalPages > 1 && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    disabled={page === 0}
-                    onClick={() => setPage((p) => Math.max(0, p - 1))}
-                    className="border border-gray-300 px-3 py-1 text-xs text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    이전
-                  </button>
-                  <span className="text-xs text-gray-500">
-                    {page + 1} / {pageInfo.totalPages}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={!pageInfo.hasNext}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="border border-gray-300 px-3 py-1 text-xs text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    다음
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
