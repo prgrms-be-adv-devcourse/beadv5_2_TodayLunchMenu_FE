@@ -57,7 +57,7 @@ export default function DepositSuccessPage() {
           <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/deposits", { replace: true })}
               className="flex h-10 w-10 items-center justify-center rounded-full text-blue-700 transition hover:bg-blue-100/60"
               aria-label="뒤로 가기"
             >
