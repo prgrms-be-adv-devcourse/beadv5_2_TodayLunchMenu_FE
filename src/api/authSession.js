@@ -7,6 +7,7 @@ let refreshPromise = null;
 
 const TERMINAL_AUTH_ERROR_CODES = new Set([
   "INVALID_TOKEN",
+  "MEMBER_WITHDRAWN",
   "REFRESH_TOKEN_EXPIRED",
   "SESSION_NOT_FOUND",
   "SESSION_EXPIRED",

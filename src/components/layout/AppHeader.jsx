@@ -93,9 +93,8 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
 export default function AppHeader() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
-  const { formattedRemaining, isExpiringSoon } = useAccessTokenRemaining(
-    isAuthenticated,
-  );
+  const { formattedRemaining, isExpiringSoon } =
+    useAccessTokenRemaining(isAuthenticated);
   const { unreadCount } = useNotification();
   const { cartCount } = useCart();
   const isLoggedIn = isAuthenticated && Boolean(user);
@@ -125,7 +124,10 @@ export default function AppHeader() {
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-xl font-bold tracking-tight text-gray-900">
+          <Link
+            to="/"
+            className="text-xl font-bold tracking-tight text-gray-900"
+          >
             GoodsMall
           </Link>
 
