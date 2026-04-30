@@ -198,14 +198,14 @@ export default function HomePage() {
 
         {/* Live Auctions */}
         <section>
-          <SectionHeader title="마감 임박 경매" to="/auctions" />
+          <SectionHeader title="진행 중인 경매" to="/auctions" />
           {loadingAuctions ? (
             <EmptyState message="경매 목록을 불러오는 중입니다..." />
           ) : ongoingAuctions.length === 0 ? (
             <EmptyState message="현재 진행 중인 경매가 없습니다." />
           ) : (
             <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-              {ongoingAuctions.map((auction) => (
+              {[...ongoingAuctions].sort((a, b) => (a.endsAt ?? 0) - (b.endsAt ?? 0)).map((auction) => (
                 <div key={auction.id} className="w-44 flex-none sm:w-52">
                   <AuctionCard auction={auction} productImage={auctionImageMap[auction.productId] ?? null} />
                 </div>
