@@ -147,7 +147,8 @@ function useAuctionBids(auctionId, { size = 20 } = {}) {
 
   const prependBid = useCallback((bid) => {
     setBids((prev) => {
-      if (prev.some((b) => b.id === bid.id)) {
+      // 같은 id 또는 같은 금액(경매 특성상 금액은 단조증가)이면 중복
+      if (prev.some((b) => b.id === bid.id || b.amount === bid.amount)) {
         return prev;
       }
 

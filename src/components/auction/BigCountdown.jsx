@@ -37,7 +37,7 @@ export default function BigCountdown({ endsAt }) {
   );
 
   return (
-    <div className="flex items-start gap-2">
+    <div className="flex items-start justify-center gap-2">
       <TimeUnit value={h} label="시간" urgent={urgent} />
       {sep}
       <TimeUnit value={m} label="분" urgent={urgent} />

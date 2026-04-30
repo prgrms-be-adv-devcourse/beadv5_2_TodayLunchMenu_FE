@@ -248,12 +248,13 @@ export default function AuctionDetailPage() {
       });
 
       prependBid({
-        id: `live-${payload.bidderId}-${endAt ?? Date.now()}`,
+        id: `live-${bidPrice}`,
         auctionId,
         bidderId: payload.bidderId,
+        bidderName: payload.bidderName || null,
         amount: bidPrice,
         status: "ACTIVE",
-        createdAt: Date.now(),
+        createdAt: endAt ? endAt - 1 : Date.now(),
       });
     },
     [auctionId, prependBid, setAuction],
@@ -585,7 +586,7 @@ export default function AuctionDetailPage() {
             </p>
 
             {!ended && (
-              <div className="mt-4 border-t border-gray-100 pt-4">
+              <div className="mt-4 border-t border-gray-100 pt-4 text-center">
                 <p className="mb-2 text-xs text-gray-500">남은 시간</p>
                 <BigCountdown endsAt={auction.endsAt} />
               </div>
