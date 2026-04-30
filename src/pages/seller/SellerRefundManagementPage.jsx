@@ -351,6 +351,11 @@ export default function SellerRefundManagementPage() {
       const data = await getSellerReturnRequestsApi({ status: activeTab });
       setRefunds(Array.isArray(data) ? data : []);
     } catch (err) {
+      // 404는 "내역 없음"의 정상 케이스로 간주
+      if (err instanceof ApiError && err.status === 404) {
+        setRefunds([]);
+        return;
+      }
       console.error("Failed to fetch refunds:", err);
       setError(getErrorMessage(err, "반품 목록을 불러올 수 없습니다."));
       setRefunds([]);
