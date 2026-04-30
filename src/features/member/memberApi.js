@@ -1,7 +1,6 @@
 ﻿import { ApiError, apiClient } from "../../api/client";
 
-// const unwrapResponse = (response) => response?.data?.data ?? null;
-const unwrapResponse = (response) => response?.data ?? response.data ?? null;
+const unwrapResponse = (response) => response?.data?.data ?? null;
 
 export async function getMemberByIdApi(memberId) {
   if (!memberId) {
