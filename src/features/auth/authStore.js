@@ -5,6 +5,7 @@ const REFRESH_TOKEN_EXPIRES_AT_KEY = "refreshTokenExpiresAt";
 
 const hasAccessToken = () => Boolean(localStorage.getItem(ACCESS_TOKEN_KEY));
 
+// 초기 인증 상태
 let authState = {
   user: null,
   isAuthenticated: hasAccessToken(),

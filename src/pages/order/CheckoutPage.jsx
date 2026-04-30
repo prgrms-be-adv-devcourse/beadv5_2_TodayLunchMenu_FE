@@ -253,8 +253,7 @@ export default function CheckoutPage() {
                   key={item.cartId || item.productId}
                   className="flex gap-4 border border-gray-100 bg-white p-4"
                 >
-                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-blue-50">
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
+                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
                     {item.image ? (
                       <img
                         src={item.image}

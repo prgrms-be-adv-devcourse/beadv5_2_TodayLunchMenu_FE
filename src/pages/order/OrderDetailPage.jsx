@@ -304,8 +304,7 @@ export default function OrderDetailPage() {
                     className="border border-gray-200 bg-white p-5"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-violet-50">
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
@@ -320,11 +319,9 @@ export default function OrderDetailPage() {
                           {normalizedOrder.orderType === "AUCTION" ? (
                             <span className="font-bold text-gray-900">{item.productName}</span>
                           ) : (
-                            <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-violet-700 transition-colors">{item.productName}</Link>
+                            <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
                           )}
                           <span className={`shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
-                          <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
-                          <span className={`flex-shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                             {statusMeta.label}
                           </span>
                         </div>
