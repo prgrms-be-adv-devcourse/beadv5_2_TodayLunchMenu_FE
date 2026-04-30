@@ -84,7 +84,6 @@ function findCategoryName(categories, categoryId) {
   const allCategories = [
     ...categories.depth0,
     ...categories.depth1,
-    ...categories.depth2,
   ];
   const category = allCategories.find((item) => item.id === categoryId);
 
@@ -95,7 +94,6 @@ function getCategoryPathText(categories, categorySelection) {
   return [
     findCategoryName(categories, categorySelection.depth0Id),
     findCategoryName(categories, categorySelection.depth1Id),
-    findCategoryName(categories, categorySelection.depth2Id),
   ]
     .filter(Boolean)
     .join(" > ");
@@ -117,21 +115,17 @@ export default function SellerProductCreatePage() {
   const [categorySelection, setCategorySelection] = useState({
     depth0Id: "",
     depth1Id: "",
-    depth2Id: "",
   });
   const [errors, setErrors] = useState({});
   const [categories, setCategories] = useState({
     depth0: [],
     depth1: [],
-    depth2: [],
   });
   const [categoriesLoading, setCategoriesLoading] = useState({
     depth0: true,
     depth1: false,
-    depth2: false,
   });
   const [categoryError, setCategoryError] = useState("");
-  const [categoryNotice, setCategoryNotice] = useState("");
   const [auctionForm, setAuctionForm] = useState({
     startPrice: "",
     bidUnit: "",
@@ -172,7 +166,6 @@ export default function SellerProductCreatePage() {
       try {
         setCategoriesLoading((prev) => ({ ...prev, depth0: true }));
         setCategoryError("");
-        setCategoryNotice("");
         const data = await getCategoriesApi({ depth: 0 });
 
         if (cancelled) {
@@ -180,12 +173,6 @@ export default function SellerProductCreatePage() {
         }
 
         setCategories((prev) => ({ ...prev, depth0: data }));
-
-        if (data.length === 0) {
-          setCategoryNotice(
-            "등록된 대분류 카테고리가 없습니다. 관리자에게 문의해 주세요."
-          );
-        }
       } catch (error) {
         if (cancelled) {
           return;
@@ -193,9 +180,6 @@ export default function SellerProductCreatePage() {
 
         setCategories((prev) => ({ ...prev, depth0: [] }));
         setCategoryError(error?.message || "카테고리 목록을 불러오지 못했습니다.");
-        setCategoryNotice(
-          "카테고리를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
-        );
       } finally {
         if (!cancelled) {
           setCategoriesLoading((prev) => ({ ...prev, depth0: false }));
@@ -373,14 +357,6 @@ export default function SellerProductCreatePage() {
     try {
       const children = await getChildCategoriesApi(parentId);
       setCategories((prev) => ({ ...prev, [depthKey]: children }));
-
-      if (children.length === 0) {
-        setCategoryNotice(
-          "선택한 상위 카테고리에 연결된 하위 카테고리가 없습니다."
-        );
-      } else {
-        setCategoryNotice("");
-      }
     } catch (error) {
       setCategories((prev) => ({ ...prev, [depthKey]: [] }));
       setCategoryError(error?.message || "하위 카테고리를 불러오지 못했습니다.");
@@ -391,65 +367,25 @@ export default function SellerProductCreatePage() {
     setSubmitError("");
     setErrors((prev) => ({ ...prev, categoryId: "" }));
     setCategoryError("");
-    setCategoryNotice("");
 
     if (depthKey === "depth0Id") {
-      setCategorySelection({
-        depth0Id: nextCategoryId,
-        depth1Id: "",
-        depth2Id: "",
-      });
-      setCategories((prev) => ({ ...prev, depth1: [], depth2: [] }));
+      setCategorySelection({ depth0Id: nextCategoryId, depth1Id: "" });
+      setCategories((prev) => ({ ...prev, depth1: [] }));
       setForm((prev) => ({ ...prev, categoryId: nextCategoryId }));
 
-      if (!nextCategoryId) {
-        return;
-      }
+      if (!nextCategoryId) return;
 
-      setCategoriesLoading((prev) => ({
-        ...prev,
-        depth1: true,
-        depth2: false,
-      }));
+      setCategoriesLoading((prev) => ({ ...prev, depth1: true }));
       await loadChildCategories(nextCategoryId, "depth1");
-      setCategoriesLoading((prev) => ({
-        ...prev,
-        depth1: false,
-        depth2: false,
-      }));
+      setCategoriesLoading((prev) => ({ ...prev, depth1: false }));
       return;
     }
 
     if (depthKey === "depth1Id") {
-      setCategorySelection((prev) => ({
-        ...prev,
-        depth1Id: nextCategoryId,
-        depth2Id: "",
-      }));
-      setCategories((prev) => ({ ...prev, depth2: [] }));
+      setCategorySelection((prev) => ({ ...prev, depth1Id: nextCategoryId }));
       setForm((prev) => ({
         ...prev,
         categoryId: nextCategoryId || categorySelection.depth0Id,
-      }));
-
-      if (!nextCategoryId) {
-        return;
-      }
-
-      setCategoriesLoading((prev) => ({ ...prev, depth2: true }));
-      await loadChildCategories(nextCategoryId, "depth2");
-      setCategoriesLoading((prev) => ({ ...prev, depth2: false }));
-      return;
-    }
-
-    if (depthKey === "depth2Id") {
-      setCategorySelection((prev) => ({ ...prev, depth2Id: nextCategoryId }));
-      setForm((prev) => ({
-        ...prev,
-        categoryId:
-          nextCategoryId ||
-          categorySelection.depth1Id ||
-          categorySelection.depth0Id,
       }));
     }
   };
@@ -503,6 +439,8 @@ export default function SellerProductCreatePage() {
       const bu = Number(auctionForm.bidUnit);
       if (!auctionForm.bidUnit || Number.isNaN(bu) || bu < 500) {
         auctionNext.bidUnit = "입찰 단위는 500원 이상이어야 합니다.";
+      } else if (bu % 500 !== 0) {
+        auctionNext.bidUnit = "입찰 단위는 500원 단위로 입력해 주세요. (예: 500, 1000, 1500)";
       }
       if (!auctionForm.startedAt) {
         auctionNext.startedAt = "경매 시작 시간을 입력해 주세요.";
@@ -674,12 +612,6 @@ export default function SellerProductCreatePage() {
         </span>
       </div>
 
-      {categoryNotice ? (
-        <section className="mb-4 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-          {categoryNotice}
-        </section>
-      ) : null}
-
       {submitError ? (
         <section className="mb-6 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
           {submitError}
@@ -726,7 +658,7 @@ export default function SellerProductCreatePage() {
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
                     </div>
                   </FormField>
-                  <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="500원 이상">
+                  <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="500원 단위로 입력">
                     <div className="relative">
                       <Input
                         id="bidUnit"

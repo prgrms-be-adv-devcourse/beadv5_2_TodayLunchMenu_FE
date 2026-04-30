@@ -167,7 +167,7 @@ export default function SellerProductForm({
             />
           </FormField>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               label="대분류"
               htmlFor="categoryDepth0"
@@ -194,6 +194,7 @@ export default function SellerProductForm({
             <FormField
               label="중분류"
               htmlFor="categoryDepth1"
+              error={categoryError || undefined}
               helpText={
                 !categorySelection.depth0Id
                   ? "대분류를 먼저 선택해 주세요."
@@ -213,36 +214,6 @@ export default function SellerProductForm({
               >
                 <option value="">중분류 선택</option>
                 {categories.depth1.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </FormField>
-
-            <FormField
-              label="소분류"
-              htmlFor="categoryDepth2"
-              error={categoryError || undefined}
-              helpText={
-                !categorySelection.depth1Id
-                  ? "중분류를 먼저 선택해 주세요."
-                  : categoriesLoading.depth2
-                    ? "소분류를 불러오는 중입니다."
-                    : categories.depth2.length === 0
-                      ? "등록된 소분류가 없어 건너뜁니다."
-                      : "선택 사항입니다."
-              }
-            >
-              <select
-                id="categoryDepth2"
-                value={categorySelection.depth2Id}
-                onChange={(event) => onCategoryChange("depth2Id", event.target.value)}
-                disabled={!categorySelection.depth1Id || categoriesLoading.depth2 || categories.depth2.length === 0}
-                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <option value="">소분류 선택</option>
-                {categories.depth2.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
