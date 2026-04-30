@@ -121,20 +121,15 @@ export default function OrderDetailPage() {
       try {
         setLoading(true);
         setError("");
-        const [orderResult, paymentResult] = await Promise.allSettled([
-          getOrderDetailApi(orderId),
-          getOrderPaymentApi(orderId),
-        ]);
+        const orderResult = await getOrderDetailApi(orderId);
         if (!mounted) return;
-        if (orderResult.status === "fulfilled") {
-          setOrder(orderResult.value);
-        } else {
-          throw orderResult.reason instanceof Error
-            ? orderResult.reason
-            : new Error(String(orderResult.reason));
-        }
-        if (paymentResult.status === "fulfilled") {
-          setPayment(paymentResult.value);
+        setOrder(orderResult);
+
+        try {
+          const paymentResult = await getOrderPaymentApi(orderId);
+          if (mounted) setPayment(paymentResult);
+        } catch {
+          // 결제 정보 조회 실패는 무시 (주문 상세는 이미 표시 가능)
         }
       } catch (loadError) {
         if (!mounted) return;
@@ -256,7 +251,6 @@ export default function OrderDetailPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/orders/${normalizedOrder.orderId}/cancellation`)}
-                  className="text-sm font-extrabold text-rose-600 hover:text-rose-800 transition"
                   className="text-sm font-bold text-red-600 hover:text-red-700 transition"
                 >
                   취소/반품 신청
