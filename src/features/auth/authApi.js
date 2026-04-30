@@ -2,8 +2,6 @@ import { apiClient } from "../../api/client";
 
 const unwrapResponse = (response) => response?.data?.data ?? null;
 
-const API_BASE = import.meta.env.VITE_SERVER_URL ?? "";
-
 async function fetchKakaoAuthorizeUrlApi() {
   const response = await apiClient("/api/auth/oauth/kakao/authorize");
   return unwrapResponse(response);
@@ -74,6 +72,15 @@ async function confirmEmailVerificationApi({ token }) {
   return unwrapResponse(response);
 }
 
+async function emailVerificationAutoLoginApi({ autoLoginToken }) {
+  const response = await apiClient("/api/auth/email-verifications/auto-login", {
+    method: "POST",
+    body: { autoLoginToken },
+  });
+
+  return unwrapResponse(response);
+}
+
 async function requestPasswordResetApi({ email }) {
   const response = await apiClient("/api/auth/password-resets", {
     method: "POST",
@@ -120,8 +127,9 @@ async function linkKakaoAccountApi({ linkToken }) {
 }
 
 export {
-  confirmPasswordResetApi,
   confirmEmailVerificationApi,
+  confirmPasswordResetApi,
+  emailVerificationAutoLoginApi,
   fetchKakaoAuthorizeUrlApi,
   fetchKakaoLinkAuthorizeUrlApi,
   fetchKakaoOAuthResultApi,
