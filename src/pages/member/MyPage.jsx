@@ -182,11 +182,11 @@ export default function MyPage() {
         </Link>
 
         <Link
-          to="/me/privacy"
+          to="/me/sessions"
           className="flex items-center gap-4 p-4 transition hover:bg-white/60"
         >
           <span>🔒</span>
-          <span className="flex-1 text-sm font-semibold">개인정보 / 보안</span>
+          <span className="flex-1 text-sm font-semibold">세션 관리</span>
           <span className="text-gray-400">›</span>
         </Link>
 
