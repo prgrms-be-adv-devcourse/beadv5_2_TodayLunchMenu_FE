@@ -127,15 +127,7 @@ export default function DepositSuccessPage() {
               className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
               onClick={() => navigate("/deposits")}
             >
-              거래내역 보기
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="h-14 w-full rounded-full text-base font-extrabold"
-              onClick={() => navigate("/deposits")}
-            >
-              예치금 페이지로 돌아가기
+              예치금 페이지로 이동
             </Button>
           </section>
         </main>
