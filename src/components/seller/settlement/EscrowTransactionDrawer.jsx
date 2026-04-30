@@ -43,7 +43,7 @@ export default function EscrowTransactionDrawer({
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">
               에스크로 기록
             </p>
-            <h2 className="mt-1 text-xl font-black text-gray-900">에스크로 거래 내역</h2>
+            <h2 className="mt-1 text-xl font-bold text-gray-900">에스크로 거래 내역</h2>
             <p className="mt-1 font-mono text-xs text-gray-400">{orderId || "-"}</p>
           </div>
           <button
@@ -74,7 +74,7 @@ export default function EscrowTransactionDrawer({
                       <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-violet-700">
                         {typeLabel(item.transactionType)}
                       </span>
-                      <p className="mt-3 text-lg font-black text-gray-900">
+                      <p className="mt-3 text-lg font-bold text-gray-900">
                         {formatKRW(item.amount)}
                       </p>
                     </div>

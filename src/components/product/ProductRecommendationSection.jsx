@@ -17,7 +17,7 @@ function RecommendedProductImage({ product }) {
 
   if (!product.image) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 text-4xl font-black text-violet-700">
+      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-100 via-fuchsia-50 to-amber-50 text-4xl font-bold text-violet-700">
         {initial}
       </div>
     );

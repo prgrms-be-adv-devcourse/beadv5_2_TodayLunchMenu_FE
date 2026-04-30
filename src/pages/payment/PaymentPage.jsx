@@ -462,7 +462,7 @@ export default function PaymentPage() {
                       onError={(e) => { e.currentTarget.style.display = "none"; }}
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-violet-700">
                       {(primaryItem?.name || "P").slice(0, 1).toUpperCase()}
                     </div>
                   )}
@@ -590,7 +590,7 @@ export default function PaymentPage() {
             <Button
               variant="secondary"
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold"
+              className="h-14 w-full rounded text-base font-extrabold"
               onClick={() =>
                 navigate(`/payments/${payment.orderId || "pending"}/fail`, {
                   state: {

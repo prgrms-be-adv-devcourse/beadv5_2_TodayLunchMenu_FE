@@ -725,7 +725,7 @@ export default function AuctionDetailPage() {
                 type="button"
                 disabled={submitting}
                 onClick={place}
-                className="mt-4 h-12 w-full bg-blue-600 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 h-14 w-full bg-blue-600 text-base font-bold text-white transition hover:bg-blue-700 active:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting
                   ? "입찰 처리 중..."

@@ -10,7 +10,7 @@ import {
 
 function DecorativeFoodIcon({ label }) {
   return (
-    <div className="flex h-12 w-12 items-center justify-center border border-blue-200/70 bg-white/70 text-lg font-black text-blue-400 shadow-sm">
+    <div className="flex h-12 w-12 items-center justify-center border border-blue-200/70 bg-white/70 text-lg font-bold text-blue-400 shadow-sm">
       {label}
     </div>
   );
@@ -58,7 +58,7 @@ export default function KakaoLinkRequiredPage() {
             {"<"}
           </button>
 
-          <h1 className="text-xl font-black tracking-tight">GoodsMall</h1>
+          <h1 className="text-xl font-bold tracking-tight">GoodsMall</h1>
 
           <Link
             to="/login"
@@ -78,14 +78,14 @@ export default function KakaoLinkRequiredPage() {
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative flex h-48 w-48 flex-col items-center justify-center bg-white p-8 text-center shadow-[0_24px_70px_rgba(37,99,235,0.18)]">
-                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#FEE500] text-3xl font-black text-[#3C1E1E] shadow-sm">
+                <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-[#FEE500] text-3xl font-bold text-[#3C1E1E] shadow-sm">
                   K
                 </div>
 
                 <div className="flex items-center gap-3 text-blue-700">
-                  <span className="text-xl font-black">Kakao</span>
+                  <span className="text-xl font-bold">Kakao</span>
                   <span className="h-1.5 w-10 rounded-full bg-blue-200" />
-                  <span className="text-xl font-black text-slate-700">Me</span>
+                  <span className="text-xl font-bold text-slate-700">Me</span>
                 </div>
               </div>
 
@@ -98,10 +98,10 @@ export default function KakaoLinkRequiredPage() {
 
         <section className="space-y-6">
           <div className="space-y-3">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-blue-600">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-blue-600">
               카카오 계정 연동
             </p>
-            <h2 className="text-3xl font-black leading-tight tracking-tight">
+            <h2 className="text-3xl font-bold leading-tight tracking-tight">
               카카오 계정 연동이
               <br />
               필요해요
@@ -114,7 +114,7 @@ export default function KakaoLinkRequiredPage() {
 
           {pendingLink.nickname ? (
             <div className="border border-blue-200/80 bg-white/70 p-4 shadow-sm backdrop-blur">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-600">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600">
                 카카오 계정
               </p>
               <p className="mt-2 text-xs font-medium text-gray-500">

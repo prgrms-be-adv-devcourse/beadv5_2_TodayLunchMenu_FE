@@ -99,7 +99,7 @@ export default function AuctionListPage() {
     <div className="text-left">
       {/* Page Header */}
       <div className="mb-5">
-        <h1 className="text-xl font-black text-gray-900">경매장</h1>
+        <h1 className="text-xl font-bold text-gray-900">경매장</h1>
         <p className="mt-0.5 text-sm text-gray-500">실시간으로 진행되는 경매에 참여해보세요</p>
       </div>
 

@@ -87,13 +87,13 @@ function ProviderCard({
                 <path d="M12 3C6.477 3 2 6.48 2 10.78c0 2.76 1.83 5.19 4.6 6.59l-.9 3.32c-.05.18.15.34.28.23l4.03-2.68c.63.09 1.29.14 1.99.14 5.523 0 10-3.48 10-7.78S17.523 3 12 3z" />
               </svg>
             ) : (
-              <span className="text-xl font-black text-blue-700">{name.slice(0, 1)}</span>
+              <span className="text-xl font-bold text-blue-700">{name.slice(0, 1)}</span>
             )}
           </div>
 
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-black tracking-tight text-slate-950">{name}</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-950">{name}</h2>
               <span
                 className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
                   connected ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-500"
@@ -159,7 +159,7 @@ function UnlinkConfirmModal({
                   </p>
                   <h2
                     id="unlink-modal-title"
-                    className="mt-2 text-2xl font-black tracking-tight text-slate-950"
+                    className="mt-2 text-2xl font-bold tracking-tight text-slate-950"
                   >
                     카카오 연동을 해제할까요?
                   </h2>
@@ -390,7 +390,7 @@ export default function ExternalAccountConnectionsPage() {
     return (
       <PageContainer>
         <div className="bg-white px-6 py-12 text-center shadow-sm ring-1 ring-gray-200">
-          <h1 className="text-2xl font-black tracking-tight text-slate-950">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950">
             로그인 후 이용할 수 있어요
           </h1>
           <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
@@ -417,7 +417,7 @@ export default function ExternalAccountConnectionsPage() {
             <p className="text-sm font-bold uppercase tracking-[0.24em] text-blue-600">
               Account Security
             </p>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
               외부 계정 연동 관리
             </h1>
             <p className="mt-3 text-base font-medium leading-7 text-slate-600 sm:text-lg">
@@ -493,7 +493,7 @@ export default function ExternalAccountConnectionsPage() {
             i
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight text-slate-950">연동 정책 안내</h2>
+            <h2 className="text-lg font-bold tracking-tight text-slate-950">연동 정책 안내</h2>
             <p className="mt-2 text-sm font-medium leading-6 text-slate-600">
               비밀번호가 설정되어 있지 않으면 마지막 외부 계정은 해제할 수 없어요. 계정
               보안을 위해 최소 하나 이상의 로그인 수단을 유지해야 합니다.

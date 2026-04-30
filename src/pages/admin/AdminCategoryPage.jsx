@@ -274,7 +274,7 @@ export default function AdminCategoryPage() {
           <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
             <div className="overflow-x-auto">
               <table className="min-w-full text-left">
-                <thead className="bg-blue-50/70 text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                <thead className="bg-blue-50/70 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
                   <tr>
                     <th className="px-6 py-4">카테고리명</th>
                     <th className="px-4 py-4 text-center w-20">순서</th>
@@ -323,7 +323,7 @@ export default function AdminCategoryPage() {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
+                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
                   카테고리명 <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -337,7 +337,7 @@ export default function AdminCategoryPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">설명</label>
+                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">설명</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => { setForm((p) => ({ ...p, description: e.target.value })); setFormErrors((p) => ({ ...p, description: '' })); }}
@@ -350,7 +350,7 @@ export default function AdminCategoryPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">정렬 순서</label>
+                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">정렬 순서</label>
                 <input
                   type="number"
                   value={form.sortOrder}
@@ -360,7 +360,7 @@ export default function AdminCategoryPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">상위 카테고리</label>
+                <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">상위 카테고리</label>
                 <select
                   value={form.parentId}
                   onChange={(e) => setForm((p) => ({ ...p, parentId: e.target.value }))}

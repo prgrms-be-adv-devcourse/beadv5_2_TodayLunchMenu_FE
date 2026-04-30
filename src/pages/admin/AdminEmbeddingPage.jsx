@@ -129,11 +129,11 @@ function AdminEmbeddingPage() {
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <div className="border border-gray-200 bg-gray-50 p-3 text-center">
                     <p className="text-xs text-gray-500">인덱싱 성공</p>
-                    <p className="text-2xl font-black text-blue-600">{esResult.indexed ?? 0}</p>
+                    <p className="text-2xl font-bold text-blue-600">{esResult.indexed ?? 0}</p>
                   </div>
                   <div className="border border-gray-200 bg-gray-50 p-3 text-center">
                     <p className="text-xs text-gray-500">실패</p>
-                    <p className="text-2xl font-black text-red-500">{esResult.failed ?? 0}</p>
+                    <p className="text-2xl font-bold text-red-500">{esResult.failed ?? 0}</p>
                   </div>
                 </div>
               )}
@@ -160,23 +160,23 @@ function AdminEmbeddingPage() {
 
                 {result && lastCompletedAction === 'backfill' && (
                   <div className="mt-6 rounded bg-gradient-to-br from-emerald-50 to-teal-50 p-4 ring-1 ring-emerald-200">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-600 mb-4">완료됨</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600 mb-4">완료됨</p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">처리됨</p>
-                        <p className="text-xl font-black text-gray-900 mt-1">{result.processedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-gray-900 mt-1">{result.processedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">성공</p>
-                        <p className="text-xl font-black text-emerald-600 mt-1">{result.successCount ?? 0}</p>
+                        <p className="text-xl font-bold text-emerald-600 mt-1">{result.successCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">스킵</p>
-                        <p className="text-xl font-black text-amber-600 mt-1">{result.skippedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-amber-600 mt-1">{result.skippedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">실패</p>
-                        <p className="text-xl font-black text-rose-600 mt-1">{result.failedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-rose-600 mt-1">{result.failedCount ?? 0}</p>
                       </div>
                     </div>
                   </div>
@@ -202,23 +202,23 @@ function AdminEmbeddingPage() {
 
                 {result && lastCompletedAction === 'reindex' && (
                   <div className="mt-6 rounded bg-gradient-to-br from-blue-50 to-cyan-50 p-4 ring-1 ring-blue-200">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600 mb-4">완료됨</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600 mb-4">완료됨</p>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">처리됨</p>
-                        <p className="text-xl font-black text-gray-900 mt-1">{result.processedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-gray-900 mt-1">{result.processedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">성공</p>
-                        <p className="text-xl font-black text-blue-600 mt-1">{result.successCount ?? 0}</p>
+                        <p className="text-xl font-bold text-blue-600 mt-1">{result.successCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">스킵</p>
-                        <p className="text-xl font-black text-amber-600 mt-1">{result.skippedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-amber-600 mt-1">{result.skippedCount ?? 0}</p>
                       </div>
                       <div className="rounded-lg bg-white p-3">
                         <p className="text-xs text-slate-500 font-medium">실패</p>
-                        <p className="text-xl font-black text-rose-600 mt-1">{result.failedCount ?? 0}</p>
+                        <p className="text-xl font-bold text-rose-600 mt-1">{result.failedCount ?? 0}</p>
                       </div>
                     </div>
                   </div>

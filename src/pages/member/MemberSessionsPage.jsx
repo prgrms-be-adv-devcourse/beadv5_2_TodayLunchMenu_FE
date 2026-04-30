@@ -288,7 +288,7 @@ export default function MemberSessionsPage() {
             <p className="text-sm font-bold uppercase tracking-[0.24em] text-blue-600">
               Session Security
             </p>
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
               로그인이 필요합니다
             </h1>
             <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
@@ -317,7 +317,7 @@ export default function MemberSessionsPage() {
               <p className="text-sm font-bold uppercase tracking-[0.24em] text-amber-700">
                 Session Security
               </p>
-              <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
                 로그인된 기기 관리
               </h1>
               <p className="mt-3 text-sm font-medium leading-7 text-slate-600 sm:text-base">
@@ -360,7 +360,7 @@ export default function MemberSessionsPage() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-amber-700">
                   Current Session
                 </p>
-                <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
                   {summarizeUserAgent(currentSession.userAgent)}
                 </h2>
                 <p className="mt-2 text-sm font-medium text-slate-600">

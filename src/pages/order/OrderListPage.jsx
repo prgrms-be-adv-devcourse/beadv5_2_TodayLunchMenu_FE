@@ -248,7 +248,7 @@ export default function OrderListPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-700">
                         {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
                       </div>
                     )}

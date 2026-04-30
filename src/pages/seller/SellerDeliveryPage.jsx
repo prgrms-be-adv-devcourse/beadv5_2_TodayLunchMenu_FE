@@ -162,7 +162,7 @@ export default function SellerDeliveryPage() {
       <div className="py-8">
         <div className="mb-6">
           <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">Seller Delivery</p>
-          <h1 className="mt-1 text-2xl font-black text-gray-900">배송 관리</h1>
+          <h1 className="mt-1 text-2xl font-bold text-gray-900">배송 관리</h1>
         </div>
 
         {/* 요약 카드 */}
@@ -179,7 +179,7 @@ export default function SellerDeliveryPage() {
               className={`rounded-2xl p-8 text-left shadow-sm ring-1 transition hover:opacity-80 ${item.bg} ${statusFilter === item.status ? "ring-2" : ""}`}
             >
               <p className="text-sm font-semibold text-gray-500">{item.label}</p>
-              <p className={`mt-3 text-5xl font-black ${item.color}`}>
+              <p className={`mt-3 text-5xl font-bold ${item.color}`}>
                 {counts[item.key]}<span className="text-2xl">건</span>
               </p>
             </button>
@@ -377,7 +377,7 @@ export default function SellerDeliveryPage() {
             <div className="mb-4 flex items-start justify-between">
               <div>
                 <p className="font-mono text-xs text-gray-400">{detailModal.orderNumber || detailModal.orderId}</p>
-                <h2 className="mt-0.5 text-base font-black text-gray-900 leading-snug">{detailModal.productName}</h2>
+                <h2 className="mt-0.5 text-base font-bold text-gray-900 leading-snug">{detailModal.productName}</h2>
               </div>
               <button type="button" onClick={() => setDetailModal(null)} className="ml-4 text-gray-300 hover:text-gray-500 text-xl leading-none">✕</button>
             </div>
@@ -422,7 +422,7 @@ export default function SellerDeliveryPage() {
       {shipModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-1 text-lg font-black text-gray-900">송장 입력</h2>
+            <h2 className="mb-1 text-lg font-bold text-gray-900">송장 입력</h2>
             <p className="mb-1 truncate text-sm font-semibold text-gray-700">{shipModal.productName}</p>
             <p className="mb-5 text-xs text-gray-400">수령인: {shipModal.receiver || "-"}</p>
             <div className="space-y-3">

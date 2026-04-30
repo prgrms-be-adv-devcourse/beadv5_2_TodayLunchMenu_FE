@@ -168,7 +168,7 @@ export default function DepositFailPage() {
           <section className="flex flex-col space-y-4 pt-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
+              className="h-14 w-full rounded text-base font-extrabold"
               onClick={() => navigate("/deposits")}
             >
               다시 시도하기

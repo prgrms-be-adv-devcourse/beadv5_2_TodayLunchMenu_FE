@@ -173,7 +173,7 @@ function TransactionHistory({ items, loading, error }) {
             </p>
           </div>
           <div className="text-left md:text-right">
-            <p className="text-lg font-black text-gray-900">
+            <p className="text-lg font-bold text-gray-900">
               {formatKRW(item.amount)}
             </p>
             <p className="text-xs text-gray-500">

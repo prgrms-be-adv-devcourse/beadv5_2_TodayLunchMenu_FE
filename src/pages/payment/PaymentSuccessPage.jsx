@@ -63,7 +63,7 @@ export default function PaymentSuccessPage() {
               ✓
             </div>
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-gray-900">결제가 완료되었습니다</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">결제가 완료되었습니다</h1>
           <p className="mt-2 text-sm text-gray-500">주문이 정상적으로 접수되었습니다</p>
           <span className="mt-4 inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-bold text-blue-700">
             주문번호 {payment.orderNumber || payment.orderId}
@@ -81,7 +81,7 @@ export default function PaymentSuccessPage() {
                   {primaryItem?.image ? (
                     <img src={primaryItem.image} alt={primaryItem.name} className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-violet-700">
                       {(primaryItem?.name || "P").slice(0, 1).toUpperCase()}
                     </div>
                   )}

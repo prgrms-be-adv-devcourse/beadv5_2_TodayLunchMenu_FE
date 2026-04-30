@@ -214,34 +214,42 @@ export default function CheckoutPage() {
 
         <PageHeader title="주문서" />
 
-        <section className="mb-6 bg-blue-700 p-5 text-white shadow-xl">
-          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-            <div className="bg-white/10 px-3 py-3">
-              <p className="text-xs font-bold text-blue-200">STEP 1</p>
-              <p className="mt-1 text-sm font-extrabold">장바구니</p>
-            </div>
-            <div className="bg-white px-3 py-3 text-blue-700">
-              <p className="text-xs font-bold">STEP 2</p>
-              <p className="mt-1 text-sm font-extrabold">주문서</p>
-            </div>
-            <div className="bg-white/10 px-3 py-3">
-              <p className="text-xs font-bold text-blue-200">STEP 3</p>
-              <p className="mt-1 text-sm font-extrabold">결제</p>
-            </div>
+        <section className="mb-6 border-b border-gray-200">
+          <div className="flex items-center justify-center gap-0">
+            {[
+              { step: 1, label: "장바구니" },
+              { step: 2, label: "주문서" },
+              { step: 3, label: "결제" },
+            ].map(({ step, label }, idx) => {
+              const active = step === 2;
+              return (
+                <div key={step} className="flex items-center">
+                  {idx > 0 && <div className="h-px w-8 bg-gray-200" />}
+                  <div className={["flex flex-col items-center px-4 pb-3 pt-2", active ? "border-b-2 border-blue-600" : ""].join(" ")}>
+                    <span className={["flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold", active ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-400"].join(" ")}>
+                      {step}
+                    </span>
+                    <span className={["mt-1 text-xs font-semibold", active ? "text-blue-600" : "text-gray-400"].join(" ")}>
+                      {label}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
         <div className="space-y-7 pb-32">
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
-          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+          <section className="border border-gray-200 bg-white p-6">
             <div className="space-y-4">
               {checkoutItems.map((item) => (
                 <article
                   key={item.cartId || item.productId}
-                  className="flex gap-4 bg-blue-50/60 p-4"
+                  className="flex gap-4 border border-gray-100 bg-white p-4"
                 >
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-blue-50">
+                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -249,7 +257,7 @@ export default function CheckoutPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-600">
                         {(item.name || "P").slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -278,7 +286,7 @@ export default function CheckoutPage() {
 
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
-          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+          <section className="border border-gray-200 bg-white p-6">
             <div className="space-y-4">
               <FormField
                 label="수령인"
@@ -369,7 +377,7 @@ export default function CheckoutPage() {
 
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제수단 선택</h2>
-          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+          <section className="border border-gray-200 bg-white p-6">
             <div className="space-y-3">
               {[
                 { value: "DEPOSIT", label: "예치금 결제" },
@@ -395,7 +403,7 @@ export default function CheckoutPage() {
 
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제 요약</h2>
-          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+          <section className="border border-gray-200 bg-white p-6">
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">상품 금액</span>

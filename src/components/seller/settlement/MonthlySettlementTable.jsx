@@ -139,7 +139,7 @@ export default function MonthlySettlementTable({
                       : "\uBD80\uBD84 \uC815\uC0B0"}
                   </span>
                 </div>
-                <h3 className="mt-3 text-xl font-black tracking-tight text-gray-900">
+                <h3 className="mt-3 text-xl font-bold tracking-tight text-gray-900">
                   {formatSettlementMonth(item.settlementYear, item.settlementMonth)}
                 </h3>
                 <p className="mt-1 text-xs text-gray-400">

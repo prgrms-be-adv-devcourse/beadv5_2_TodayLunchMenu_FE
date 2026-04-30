@@ -47,7 +47,7 @@ export default function PartialSettlementTable({
       <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-xs text-gray-500">선택한 실지급 예정 금액</p>
-          <p className="text-xl font-black text-gray-900">{formatKRW(selectedAmount)}</p>
+          <p className="text-xl font-bold text-gray-900">{formatKRW(selectedAmount)}</p>
         </div>
         <Button
           size="md"

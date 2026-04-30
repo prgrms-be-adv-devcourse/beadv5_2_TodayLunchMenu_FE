@@ -134,7 +134,7 @@ export default function DepositConfirmPage() {
             <div className="absolute inset-0 rounded-full border-4 border-violet-200/40" />
             <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-violet-700 border-r-fuchsia-500" />
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl ring-1 ring-purple-100">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-xl font-black text-violet-700">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
                 ₩
               </div>
             </div>

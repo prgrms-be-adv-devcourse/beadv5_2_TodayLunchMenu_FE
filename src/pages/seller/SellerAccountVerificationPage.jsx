@@ -575,7 +575,7 @@ export default function SellerAccountVerificationPage() {
               {verificationDigits.map((digit, index) => (
                 <div
                   key={`verification-digit-${index}`}
-                  className="flex h-16 items-center justify-center bg-blue-50 text-2xl font-black text-gray-900 shadow-inner ring-1 ring-gray-200"
+                  className="flex h-16 items-center justify-center bg-blue-50 text-2xl font-bold text-gray-900 shadow-inner ring-1 ring-gray-200"
                 >
                   {digit.trim() || "-"}
                 </div>
@@ -595,7 +595,7 @@ export default function SellerAccountVerificationPage() {
                   value={code}
                   onChange={handleCodeChange}
                   placeholder="인증 코드 6자리"
-                  className="text-center text-2xl font-black tracking-[0.45em]"
+                  className="text-center text-2xl font-bold tracking-[0.45em]"
                   disabled={!hasSession || cancelling || loadingCurrent}
                 />
               </FormField>

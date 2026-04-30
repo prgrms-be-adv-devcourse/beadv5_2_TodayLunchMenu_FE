@@ -206,7 +206,7 @@ export default function MemberReportHistoryPage() {
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
                       <span className={[
-                        'inline-flex rounded-full px-2.5 py-1 text-[11px] font-black tracking-[0.18em]',
+                        'inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold tracking-[0.18em]',
                         statusMeta.badge,
                       ].join(' ')}>
                         {statusMeta.label}
@@ -233,7 +233,7 @@ export default function MemberReportHistoryPage() {
 
                   <div className="mt-5 bg-blue-50 p-4 ring-1 ring-gray-200">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-700">
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
                         검토 코멘트
                       </p>
                       <span className="text-[11px] font-semibold text-gray-400">
