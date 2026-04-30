@@ -22,7 +22,7 @@ export default function AuctionCard({ auction, productImage }) {
     : "bg-blue-600 text-white hover:bg-blue-700";
 
   return (
-    <article className="group flex flex-col border border-gray-200 bg-white transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col border border-gray-200 bg-white transition-shadow hover:shadow-md">
       <Link to={`/auctions/${auction.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
@@ -42,7 +42,7 @@ export default function AuctionCard({ auction, productImage }) {
         </div>
 
         <Link to={`/auctions/${auction.id}`}>
-          <h3 className="line-clamp-2 text-sm font-medium leading-snug text-gray-800 hover:text-blue-600">
+          <h3 className="truncate text-sm font-medium leading-snug text-gray-800 hover:text-blue-600">
             {title}
           </h3>
         </Link>
