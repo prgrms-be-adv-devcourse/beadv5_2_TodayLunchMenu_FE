@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Menu } from "lucide-react";
 
 import AuctionCard from "../../components/auction/AuctionCard";
 import { useAuctions } from "../../features/auction/useAuctions";
-import { getProductsByIdsApi } from "../../features/product/productApi";
 
 const ENDED_STATUSES = ["COMPLETED", "PENDING_PAYMENT", "FAILED"];
 
@@ -41,20 +40,6 @@ export default function AuctionListPage() {
     page,
     size: 12,
   });
-
-  const [productImageMap, setProductImageMap] = useState({});
-
-  useEffect(() => {
-    if (!auctions.length) return;
-    const ids = [...new Set(auctions.map((a) => a.productId).filter(Boolean))];
-    if (!ids.length) return;
-    getProductsByIdsApi(ids)
-      .then((products) => {
-        const map = Object.fromEntries(products.map((p) => [p.id, p.image]));
-        setProductImageMap((prev) => ({ ...prev, ...map }));
-      })
-      .catch(() => {});
-  }, [auctions]);
 
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -220,7 +205,6 @@ export default function AuctionListPage() {
                       <AuctionCard
                         key={auction.id}
                         auction={auction}
-                        productImage={productImageMap[auction.productId] ?? null}
                       />
                     ))}
                   </div>
