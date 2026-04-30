@@ -127,7 +127,7 @@ export default function SellerMyPage() {
 			<SellerNav currentPage="home" />
 			<PageContainer>
 				<section className="mb-6">
-					<p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">Seller Dashboard</p>
+					<p className="text-[10px] font-bold uppercase tracking-widest text-blue-600">Seller Dashboard</p>
 					<h1 className="mt-1 text-2xl font-black text-gray-900">판매자 대시보드</h1>
 					<p className="mt-2 text-sm text-gray-500">
 						주문, 상품, 정산, 환불 업무를 한 화면에서 빠르게 확인하고 이동할 수 있습니다.
@@ -135,31 +135,31 @@ export default function SellerMyPage() {
 				</section>
 
 				{error && (
-					<div className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
+					<div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
 						{error}
 					</div>
 				)}
 
 				<section className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-					<article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
+					<article className="border border-gray-200 bg-white p-4">
 						<p className="text-xs font-semibold text-gray-500">사용 가능 잔액</p>
-						<p className="mt-2 text-lg font-black text-violet-700">
+						<p className="mt-2 text-lg font-black text-blue-700">
 							{loading ? "-" : formatKRW(wallet?.availableBalance ?? wallet?.balance ?? 0)}
 						</p>
 					</article>
-					<article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
+					<article className="border border-gray-200 bg-white p-4">
 						<p className="text-xs font-semibold text-gray-500">정산 대기 주문 건수</p>
 						<p className="mt-2 text-lg font-black text-gray-900">
 							{loading ? "-" : `${pendingIncomes.length}건`}
 						</p>
 					</article>
-					<article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
+					<article className="border border-gray-200 bg-white p-4">
 						<p className="text-xs font-semibold text-gray-500">부분 정산 가능</p>
 						<p className="mt-2 text-lg font-black text-gray-900">
 							{loading ? "-" : `${partialItems.length}건`}
 						</p>
 					</article>
-					<article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-violet-100">
+					<article className="border border-gray-200 bg-white p-4">
 						<p className="text-xs font-semibold text-gray-500">계좌 인증 상태</p>
 						<p className="mt-2 text-lg font-black text-gray-900">
 							{loading ? "-" : getVerificationText(verification?.status)}
@@ -167,12 +167,12 @@ export default function SellerMyPage() {
 					</article>
 				</section>
 
-				<section className="mb-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-violet-100">
+				<section className="mb-6 border border-gray-200 bg-white p-5">
 					<h2 className="text-sm font-black text-gray-900">정산 스냅샷</h2>
 					<div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-						<div className="rounded-xl bg-violet-50 px-4 py-3">
+						<div className="bg-blue-50 px-4 py-3">
 							<p className="text-xs font-semibold text-gray-500">정산 대기 금액 합계</p>
-							<p className="mt-1 text-base font-black text-violet-700">{formatKRW(pendingIncomeTotal)}</p>
+							<p className="mt-1 text-base font-black text-blue-700">{formatKRW(pendingIncomeTotal)}</p>
 						</div>
 						<div className="rounded-xl bg-blue-50 px-4 py-3">
 							<p className="text-xs font-semibold text-gray-500">부분 정산 예상 건수</p>
@@ -213,7 +213,7 @@ export default function SellerMyPage() {
 							key={item.title}
 							type="button"
 							onClick={() => navigate(item.to)}
-							className="rounded-2xl bg-white px-5 py-4 text-left shadow-sm ring-1 ring-violet-100 transition hover:-translate-y-0.5 hover:ring-violet-200"
+							className="border border-gray-200 bg-white px-5 py-4 text-left transition hover:border-blue-300 hover:shadow-sm"
 						>
 							<p className="text-base font-black text-gray-900">{item.title}</p>
 							<p className="mt-1 text-sm text-gray-500">{item.description}</p>
