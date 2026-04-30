@@ -25,7 +25,7 @@ function NotificationBadge({ count }) {
   );
 }
 
-function UserMenu({ displayName, isSeller, onLogout }) {
+function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
   return (
     <div className="group relative hidden sm:block">
       <button
@@ -36,12 +36,21 @@ function UserMenu({ displayName, isSeller, onLogout }) {
       </button>
 
       <div className="invisible absolute right-0 top-full z-50 w-44 -translate-y-1 rounded-2xl border border-gray-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
-        <Link
-          to="/me"
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
-        >
-          마이페이지
-        </Link>
+        {isAdmin ? (
+          <Link
+            to="/admin/member-reports"
+            className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          >
+            관리자 페이지
+          </Link>
+        ) : (
+          <Link
+            to="/me"
+            className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          >
+            마이페이지
+          </Link>
+        )}
         <Link
           to="/orders"
           className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
@@ -162,7 +171,7 @@ export default function AppHeader() {
 
           {isLoggedIn ? (
             <>
-              <UserMenu displayName={displayName} isSeller={isSeller} onLogout={handleLogout} />
+              <UserMenu displayName={displayName} isAdmin={isAdmin} isSeller={isSeller} onLogout={handleLogout} />
             </>
           ) : (
             <>
