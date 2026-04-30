@@ -126,13 +126,18 @@ async function getOrderDetailApi(orderId) {
   return toUiOrderDetail(payload);
 }
 
-async function cancelOrderApi(orderId, { reason, detailReason }) {
+async function cancelOrderApi(orderId, { items, requesterType = "BUYER" }) {
   const response = await apiClient(`/api/orders/${orderId}/cancel`, {
     method: "POST",
     body: {
-      reason,
-      detailReason: detailReason ?? null,
-      requesterType: "BUYER",
+      items: Array.isArray(items)
+        ? items.map((item) => ({
+            orderItemId: item.orderItemId,
+            reason: item.reason,
+            detailReason: item.detailReason ?? null,
+          }))
+        : [],
+      requesterType,
     },
   });
 
@@ -140,7 +145,9 @@ async function cancelOrderApi(orderId, { reason, detailReason }) {
   return {
     orderId: payload?.orderId,
     refundedAmount: payload?.refundedAmount ?? 0,
-    canceledAt: payload?.canceledAt ?? null,
+    canceledItemCount: payload?.canceledItemCount ?? 0,
+    returnRequestedItemCount: payload?.returnRequestedItemCount ?? 0,
+    processedAt: payload?.processedAt ?? null,
   };
 }
 

@@ -18,6 +18,7 @@ import DepositFailPage from "./pages/deposit/DepositFailPage";
 import DepositPage from "./pages/deposit/DepositPage";
 import DepositSuccessPage from "./pages/deposit/DepositSuccessPage";
 import AdminCategoryPage from "./pages/admin/AdminCategoryPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminEmbeddingPage from "./pages/admin/AdminEmbeddingPage";
 import AdminSettlementOpsPage from "./pages/admin/AdminSettlementOpsPage";
 import AdminMemberReportDetailPage from "./pages/admin/AdminMemberReportDetailPage";
@@ -35,6 +36,7 @@ import MemberReportHistoryPage from "./pages/member/MemberReportHistoryPage";
 import MyPage from "./pages/member/MyPage";
 import NotificationListPage from "./pages/notification/NotificationListPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
+import OrderCancellationPage from "./pages/order/OrderCancellationPage";
 import OrderDetailPage from "./pages/order/OrderDetailPage";
 import OrderListPage from "./pages/order/OrderListPage";
 import PaymentCardFailPage from "./pages/payment/PaymentCardFailPage";
@@ -93,6 +95,7 @@ const router = createBrowserRouter([
       { path: "payments/:orderId/fail", element: <PaymentFailPage /> },
       { path: "orders", element: <OrderListPage /> },
       { path: "orders/:orderId", element: <OrderDetailPage /> },
+      { path: "orders/:orderId/cancellation", element: <OrderCancellationPage /> },
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
       { path: "me/password", element: <MemberPasswordPage /> },
@@ -106,18 +109,6 @@ const router = createBrowserRouter([
       { path: "member-reports/new", element: <MemberReportCreatePage /> },
       { path: "member-reports/me", element: <MemberReportHistoryPage /> },
       { path: "notifications", element: <NotificationListPage /> },
-      { path: "admin/categories", element: <AdminCategoryPage /> },
-      { path: "admin/member-reports", element: <AdminMemberReportListPage /> },
-      {
-        path: "admin/member-reports/:reportId",
-        element: <AdminMemberReportDetailPage />,
-      },
-      {
-        path: "admin/member-restrictions",
-        element: <AdminMemberRestrictionListPage />,
-      },
-      { path: "admin/embeddings", element: <AdminEmbeddingPage /> },
-      { path: "admin/settlements/ops", element: <AdminSettlementOpsPage /> },
       { path: "seller/categories", element: <SellerCategoryPage /> },
       { path: "seller/register", element: <SellerRegisterPage /> },
       {
@@ -147,6 +138,7 @@ const router = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
+          { index: true, element: <AdminDashboardPage /> },
           { path: "categories", element: <AdminCategoryPage /> },
           { path: "member-reports", element: <AdminMemberReportListPage /> },
           {
@@ -158,6 +150,7 @@ const router = createBrowserRouter([
             element: <AdminMemberRestrictionListPage />,
           },
           { path: "embeddings", element: <AdminEmbeddingPage /> },
+          { path: "settlements/ops", element: <AdminSettlementOpsPage /> },
         ],
       },
     ],

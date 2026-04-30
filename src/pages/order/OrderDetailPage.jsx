@@ -236,6 +236,10 @@ export default function OrderDetailPage() {
     0
   );
 
+  const hasCancelable = normalizedOrder.items.some((item) =>
+    ["PENDING", "CONFIRMED", "PREPARING", "DELIVERED"].includes(item.status?.toUpperCase())
+  );
+
   return (
     <>
       <PageContainer>
@@ -243,9 +247,18 @@ export default function OrderDetailPage() {
 
           {/* 헤더 */}
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900" style={{ marginBottom: '0.875rem' }}>
-              주문 상세
-            </h1>
+            <div className="flex items-center justify-between" style={{ marginBottom: '0.875rem' }}>
+              <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">주문 상세</h1>
+              {hasCancelable && (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/orders/${normalizedOrder.orderId}/cancellation`)}
+                  className="text-sm font-bold text-violet-700 hover:text-violet-900 transition"
+                >
+                  취소/반품 신청
+                </button>
+              )}
+            </div>
             <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">주문번호</span>
@@ -280,7 +293,6 @@ export default function OrderDetailPage() {
                 const itemStatus = item.status?.toUpperCase();
                 const showTracking = item.deliveryId && ["SHIPPING", "DELIVERED", "COMPLETED"].includes(itemStatus);
                 const showConfirm = itemStatus === "DELIVERED";
-                const showReturn = ["SHIPPING", "DELIVERED"].includes(itemStatus);
 
                 return (
                   <div
@@ -312,7 +324,7 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
 
-                    {(showTracking || showConfirm || showReturn) && (
+                    {(showTracking || showConfirm) && (
                       <div className="mt-3 flex gap-2 border-t border-gray-100 pt-3">
                         {showTracking && (
                           <button
@@ -330,15 +342,6 @@ export default function OrderDetailPage() {
                             className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700 transition"
                           >
                             구매 확정
-                          </button>
-                        )}
-                        {showReturn && !showConfirm && (
-                          <button
-                            type="button"
-                            onClick={() => openItemAction("return", item)}
-                            className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-bold text-red-400 hover:bg-red-50 transition"
-                          >
-                            반품 신청
                           </button>
                         )}
                       </div>

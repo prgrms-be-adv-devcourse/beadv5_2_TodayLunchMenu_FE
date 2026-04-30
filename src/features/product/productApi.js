@@ -51,6 +51,12 @@ const toUiProduct = (product) => {
     : [];
   const thumbnail = images.find((image) => image.isThumbnail) || images[0] || null;
 
+  // 목록 API는 images 배열 없이 thumbnailKey만 반환하므로 fallback 처리
+  let imageUrl = thumbnail?.url ?? null;
+  if (!imageUrl && product.thumbnailKey) {
+    imageUrl = `${S3_BASE_URL}/${product.thumbnailKey}`;
+  }
+
   return {
     id: product.productId,
     sellerId: product.sellerId ?? null,
@@ -63,7 +69,7 @@ const toUiProduct = (product) => {
     createdAt: product.createdAt,
     categoryId: product.categoryId ?? null,
     category: product.categoryName || "미분류",
-    image: thumbnail?.url ?? null,
+    image: imageUrl,
     badge: null,
     images,
   };

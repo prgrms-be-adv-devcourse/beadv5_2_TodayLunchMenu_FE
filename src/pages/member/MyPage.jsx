@@ -1,13 +1,13 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Button from '../../components/common/Button';
 import PageContainer from '../../components/common/PageContainer';
 import { useAuth } from '../../features/auth/useAuth';
+import { getWalletSummaryApi } from '../../features/payment/paymentApi';
+import { getOrdersApi } from '../../features/order/orderApi';
 
-const DEFAULT_DEPOSIT_BALANCE = 0;
-const DEFAULT_ACTIVE_ORDERS = 0;
-const DEFAULT_COUPONS = 0;
-const DEFAULT_ADDRESS_COUNT = 0;
+const ACTIVE_ORDER_STATUSES = new Set(['PENDING', 'PREPARING', 'SHIPPING', 'PARTIAL_SHIPPING']);
 
 function formatPrice(value) {
   return new Intl.NumberFormat('ko-KR').format(value);
@@ -30,14 +30,30 @@ export default function MyPage() {
   const { user } = useAuth();
   const isSeller = user?.role === 'SELLER';
 
+  const [depositBalance, setDepositBalance] = useState(0);
+  const [activeOrders, setActiveOrders] = useState(0);
+
+  useEffect(() => {
+    getWalletSummaryApi()
+      .then((wallet) => setDepositBalance(wallet?.balance ?? 0))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    getOrdersApi()
+      .then(({ content }) => {
+        const count = content.filter((o) => ACTIVE_ORDER_STATUSES.has(o.status)).length;
+        setActiveOrders(count);
+      })
+      .catch(() => {});
+  }, []);
+
   const me = {
     name: user?.nickname ?? '게스트',
     email: user?.email ?? '',
     joinedAt: formatJoinedAt(user?.createdAt),
-    depositBalance: DEFAULT_DEPOSIT_BALANCE,
-    activeOrders: DEFAULT_ACTIVE_ORDERS,
-    coupons: DEFAULT_COUPONS,
-    addressCount: DEFAULT_ADDRESS_COUNT,
+    depositBalance,
+    activeOrders,
     profileImageUrl: user?.profileImageUrl ?? '',
   };
 
