@@ -218,18 +218,6 @@ export default function SellerOrderListPage() {
                 className="rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-violet-100"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div className="text-left">
-                    <p className="text-xs font-semibold text-gray-500">
-                      orderId
-                    </p>
-                    <p className="font-mono text-sm font-bold text-gray-900">
-                      {item.orderId || "-"}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      생성일 {formatDate(item.createdAt)}
-                    </p>
-                  </div>
-
                   <div className="text-left md:text-right">
                     <p className="text-xs font-semibold text-gray-500">
                       정산 대기 금액
@@ -249,6 +237,18 @@ export default function SellerOrderListPage() {
                         주문 상세
                       </button>
                     </div>
+                  </div>
+
+                  <div className="text-left">
+                    <p className="text-xs font-semibold text-gray-500">
+                      orderId
+                    </p>
+                    <p className="font-mono text-sm font-bold text-gray-900">
+                      {item.orderId || "-"}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      생성일 {formatDate(item.createdAt)}
+                    </p>
                   </div>
                 </div>
               </article>

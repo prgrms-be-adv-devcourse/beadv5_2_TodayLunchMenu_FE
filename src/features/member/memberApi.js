@@ -45,6 +45,17 @@ export async function changeCurrentMemberPasswordApi({
   return unwrapResponse(response);
 }
 
+export async function withdrawCurrentMemberApi({ currentPassword }) {
+  const response = await apiClient("/api/members/me", {
+    method: "DELETE",
+    body: {
+      currentPassword,
+    },
+  });
+
+  return unwrapResponse(response);
+}
+
 export async function getMyOauthAccountsApi() {
   const response = await apiClient("/api/members/me/oauth-accounts");
   return unwrapResponse(response);

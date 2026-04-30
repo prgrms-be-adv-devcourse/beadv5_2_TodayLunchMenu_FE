@@ -166,17 +166,25 @@ export default function MemberEditPage() {
               Profile Edit
             </p>
             <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
-              프로필 수정
+              회원 정보 수정
             </h1>
-            <Link
-              to="/me/password"
-              className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-blue-100 px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
-            >
-              비밀번호 변경으로 이동
-            </Link>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Link
+                to="/me/password"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-blue-100 px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
+              >
+                비밀번호 변경으로 이동
+              </Link>
+              <Link
+                to="/me/withdraw"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-red-100 px-5 text-sm font-semibold text-red-700 transition hover:bg-red-200"
+              >
+                회원탈퇴 폼으로 이동
+              </Link>
+            </div>
           </div>
           <Link to="/me">
-            <Button variant="secondary">뒤로가기</Button>
+            <Button variant="secondary">뒤로 가기</Button>
           </Link>
         </div>
 
@@ -204,7 +212,7 @@ export default function MemberEditPage() {
                 />
                 {profileImage ? (
                   <p className="mt-2 text-xs font-medium text-gray-500">
-                    새 파일: {profileImage.name}
+                    선택한 파일: {profileImage.name}
                   </p>
                 ) : (
                   <p className="mt-2 text-xs font-medium text-gray-500">
@@ -223,7 +231,7 @@ export default function MemberEditPage() {
             <FormField
               label="이메일"
               htmlFor="email"
-              helpText="이메일 주소는 현재 이 화면에서 변경할 수 없습니다."
+              helpText="이메일 주소는 현재 화면에서 변경할 수 없습니다."
             >
               <Input id="email" type="email" value={form.email} disabled readOnly />
             </FormField>
