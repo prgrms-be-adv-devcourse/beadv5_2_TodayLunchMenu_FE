@@ -3,30 +3,37 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
 
-const MOCK_FAILED_PAYMENT = {
-  orderId: "COL-8829-XP",
-  totalPrice: 1240000,
-  paymentMethod: "Vivid Pay (예치금)",
-  errorCode: "INSUFFICIENT_BALANCE",
-  errorTitle: "잔액 부족",
-  errorMessage:
-    "현재 보유한 예치금이 결제 금액보다 부족합니다. 예치금을 충전한 뒤 다시 결제를 시도해 주세요.",
-};
-
 function formatPrice(value) {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
 }
 
 function buildFailureModel(orderId, state) {
-  const source = state ?? MOCK_FAILED_PAYMENT;
+  const source = state ?? {};
+  const isCardPayment =
+    source.paymentMethodCode === "CARD" ||
+    source.selectedPaymentMethod === "CARD" ||
+    source.paymentMethod === "카드 결제";
 
   return {
-    orderId: source.orderId || orderId || MOCK_FAILED_PAYMENT.orderId,
-    totalPrice: source.totalPrice ?? MOCK_FAILED_PAYMENT.totalPrice,
-    paymentMethod: source.paymentMethod || source.depositLabel || MOCK_FAILED_PAYMENT.paymentMethod,
-    errorCode: source.errorCode || MOCK_FAILED_PAYMENT.errorCode,
-    errorTitle: source.errorTitle || MOCK_FAILED_PAYMENT.errorTitle,
-    errorMessage: source.errorMessage || MOCK_FAILED_PAYMENT.errorMessage,
+    orderId: source.orderId || orderId || null,
+    orderNumber: source.orderNumber ?? null,
+    totalPrice: source.totalPrice ?? 0,
+    paymentMethod: source.paymentMethod || source.depositLabel || "예치금 결제",
+    errorCode: source.errorCode || "PAYMENT_FAILED",
+    errorTitle: source.errorTitle || "결제 실패",
+    errorMessage: source.errorMessage || "결제 처리 중 오류가 발생했습니다.",
+    isCardPayment,
+    isInsufficientBalance: source.errorCode === "INSUFFICIENT_BALANCE",
+    items: Array.isArray(source.items) ? source.items : [],
+    shipping: source.shipping ?? null,
+    selectedPaymentMethod: source.selectedPaymentMethod ?? null,
+    paymentMethodCode: source.paymentMethodCode ?? null,
+    paymentMethod_: source.paymentMethod ?? null,
+    depositLabel: source.depositLabel ?? null,
+    itemPrice: source.itemPrice ?? null,
+    shippingFee: source.shippingFee ?? null,
+    totalPrice_: source.totalPrice ?? null,
+    memo: source.memo ?? null,
   };
 }
 
@@ -40,94 +47,94 @@ export default function PaymentFailPage() {
     [location.state, orderId]
   );
 
+  const retryState = {
+    items: payment.items,
+    shipping: payment.shipping,
+    selectedPaymentMethod: payment.selectedPaymentMethod,
+    paymentMethodCode: payment.paymentMethodCode,
+    paymentMethod: payment.paymentMethod_,
+    depositLabel: payment.depositLabel,
+    itemPrice: payment.itemPrice,
+    shippingFee: payment.shippingFee,
+    totalPrice: payment.totalPrice_,
+    memo: payment.memo,
+  };
+
   return (
     <PageContainer>
-      <section className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-lg flex-col justify-center pb-12 pt-4">
-        <div className="mb-8 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-blue-700 transition hover:bg-blue-100/60"
-            aria-label="뒤로 가기"
-          >
-            ←
-          </button>
-          <span className="text-lg font-black tracking-tight text-gray-900">The Collector</span>
+      <div className="mx-auto max-w-2xl pb-16 pt-8 text-left">
+
+        {/* 실패 아이콘 */}
+        <div className="mb-10 flex flex-col items-center text-center">
+          <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-rose-100">
+            <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500 text-4xl text-white shadow-[0_10px_30px_-5px_rgba(244,63,94,0.4)]">
+              !
+            </div>
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-gray-900">결제에 실패했습니다</h1>
+          <p className="mt-2 text-sm text-gray-500">아래 내용을 확인하고 다시 시도해 주세요</p>
         </div>
 
-        <div className="space-y-12">
-          <div className="relative flex justify-center">
-            <div className="absolute inset-0 scale-150 rounded-full bg-rose-400/10 blur-3xl" />
-            <div className="relative flex h-48 w-48 items-center justify-center rounded-full bg-white shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
-              <div className="flex h-32 w-32 items-center justify-center rounded-full bg-rose-100 text-6xl text-rose-600">
-                !
-              </div>
+        <div className="space-y-7">
+
+          {/* 오류 내용 */}
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>실패 사유</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-rose-100 space-y-3 text-sm">
+              <p className="font-bold text-gray-900">{payment.errorTitle}</p>
+              <p className="whitespace-pre-line leading-6 text-gray-500">{payment.errorMessage}</p>
+              {payment.totalPrice > 0 && (
+                <div className="mt-2 space-y-3 border-t border-gray-100 pt-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">결제 수단</span>
+                    <span className="font-semibold text-gray-900">{payment.paymentMethod}</span>
+                  </div>
+                  {payment.itemPrice > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">상품 금액</span>
+                      <span className="font-semibold text-gray-900">{formatPrice(payment.itemPrice)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className="font-bold text-gray-900">총 결제 금액</span>
+                    <span className="font-extrabold text-rose-600">{formatPrice(payment.totalPrice)}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="space-y-6 text-center">
-            <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-[0.24em] text-rose-500">
-                Transaction Failed
-              </span>
-              <h1 className="text-4xl font-black tracking-tight text-gray-900">결제가 중단되었습니다</h1>
-            </div>
-
-            <section className="space-y-4 bg-blue-50/80 p-6 text-left ring-1 ring-gray-200">
-              <div className="flex items-start gap-4">
-                <div className="mt-1 bg-white p-3 shadow-sm ring-1 ring-gray-200">
-                  <span className="text-xl text-blue-700">원</span>
-                </div>
-                <div>
-                  <p className="text-lg font-extrabold text-gray-900">{payment.errorTitle}</p>
-                  <p className="mt-2 text-sm leading-6 text-gray-500">{payment.errorMessage}</p>
-                </div>
-              </div>
-              <div className="h-px bg-gray-200" />
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold uppercase tracking-[0.2em] text-gray-500">Transaction ID</span>
-                <span className="font-mono font-semibold text-blue-700">#{payment.orderId}</span>
-              </div>
-            </section>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <Button
-              size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-[0_15px_30px_-10px_rgba(29,78,216,0.5)]"
-              onClick={() => navigate(`/payments`, { state: payment })}
-            >
-              다시 시도하기
-            </Button>
+          {/* 버튼 */}
+          <div className="space-y-3">
+            {payment.isCardPayment ? (
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => navigate("/payments", { state: retryState })}
+              >
+                다시 시도하기
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full"
+                onClick={() => navigate("/deposits")}
+              >
+                예치금 충전하기
+              </Button>
+            )}
             <Button
               variant="secondary"
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold"
-              onClick={() => navigate("/deposits")}
+              className="w-full"
+              onClick={() => navigate("/cart")}
             >
-              예치금 충전하기
+              장바구니 보기
             </Button>
           </div>
 
-          <p className="px-4 text-center text-xs leading-6 text-gray-500">
-            문제가 계속되면 네트워크 상태를 확인하거나 고객센터에 문의해 주세요.
-          </p>
         </div>
-
-        <footer className="mt-12 bg-white p-6 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)]">
-          <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center bg-blue-100 text-2xl text-blue-700">
-              🔒
-            </div>
-            <div>
-              <h4 className="text-sm font-extrabold text-gray-900">Secure Acquisition</h4>
-              <p className="mt-1 text-xs leading-5 text-gray-500">
-                결제 정보는 암호화되어 전송되며, 갤러리 서버에 저장되지 않습니다.
-              </p>
-            </div>
-          </div>
-        </footer>
-      </section>
+      </div>
     </PageContainer>
   );
 }

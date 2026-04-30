@@ -32,16 +32,14 @@ function buildFailureModel(search, state) {
     items: pendingPayment?.items || [],
     shipping: pendingPayment?.shipping || null,
     selectedPaymentMethod: pendingPayment?.selectedPaymentMethod || "CARD",
+    paymentMethodCode: "CARD",
+    paymentMethod: "카드 결제",
   };
 }
 
 function clearPendingCardPayment(result) {
   const candidateIds = [result.pgOrderId, result.orderId].filter(Boolean);
-  const uniqueIds = [...new Set(candidateIds)];
-
-  uniqueIds.forEach((id) => {
-    clearPendingOrderPayment(id);
-  });
+  [...new Set(candidateIds)].forEach((id) => clearPendingOrderPayment(id));
 }
 
 export default function PaymentCardFailPage() {
@@ -52,77 +50,76 @@ export default function PaymentCardFailPage() {
     () => buildFailureModel(location.search, location.state),
     [location.search, location.state]
   );
-  const displayOrderId = result.orderNumber || result.orderId || result.pgOrderId || "-";
 
   useEffect(() => {
     clearPendingCardPayment(result);
   }, [result]);
 
+  const retryState = {
+    orderId: result.orderId,
+    orderNumber: result.orderNumber,
+    items: result.items,
+    shipping: result.shipping,
+    selectedPaymentMethod: result.selectedPaymentMethod,
+    paymentMethodCode: result.paymentMethodCode,
+    paymentMethod: result.paymentMethod,
+    totalPrice: result.amount,
+  };
+
   return (
     <PageContainer>
-      <section className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-lg flex-col justify-center px-4 py-10">
-        <div className="bg-white p-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-gray-200">
-          <div className="mb-6 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-rose-100 text-4xl text-rose-600">
+      <div className="mx-auto max-w-2xl pb-16 pt-8 text-left">
+
+        <div className="mb-10 flex flex-col items-center text-center">
+          <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-rose-100">
+            <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-rose-500 text-4xl text-white shadow-[0_10px_30px_-5px_rgba(244,63,94,0.4)]">
               !
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-gray-900">
-              카드 결제 실패
-            </h1>
-            <p className="mt-2 text-sm leading-6 text-gray-500">
-              카드 결제가 취소되었거나 승인에 실패했습니다. 아래 정보를 확인한 뒤 다시 시도해 주세요.
-            </p>
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-gray-900">결제에 실패했습니다</h1>
+          <p className="mt-2 text-sm text-gray-500">아래 내용을 확인하고 다시 시도해 주세요</p>
+        </div>
+
+        <div className="space-y-7">
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>실패 사유</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-rose-100 space-y-3 text-sm">
+              <p className="font-bold text-gray-900">{result.errorTitle}</p>
+              <p className="whitespace-pre-line leading-6 text-gray-500">{result.errorMessage}</p>
+              {result.amount > 0 && (
+                <div className="mt-2 space-y-3 border-t border-gray-100 pt-4">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">결제 수단</span>
+                    <span className="font-semibold text-gray-900">{result.paymentMethod}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-bold text-gray-900">총 결제 금액</span>
+                    <span className="font-extrabold text-rose-600">{formatPrice(result.amount)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="space-y-3 bg-blue-50/70 p-4 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-500">실패 사유</span>
-              <span className="font-semibold text-gray-900">{result.errorTitle}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-500">에러 코드</span>
-              <span className="font-mono font-semibold text-gray-900">{result.errorCode}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-500">주문번호</span>
-              <span className="font-mono font-semibold text-gray-900">{displayOrderId}</span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-gray-500">결제 금액</span>
-              <span className="font-semibold text-gray-900">{formatPrice(result.amount)}</span>
-            </div>
-          </div>
-
-          <p className="mt-4 text-sm leading-6 text-gray-500">{result.errorMessage}</p>
-
-          <div className="mt-6 space-y-3">
+          <div className="space-y-3">
             <Button
               size="lg"
               className="w-full"
-              onClick={() =>
-                navigate("/payments", {
-                  state: {
-                    items: result.items,
-                    shipping: result.shipping,
-                    selectedPaymentMethod: result.selectedPaymentMethod,
-                    paymentMethod: "카드 결제",
-                  },
-                })
-              }
+              onClick={() => navigate("/payments", { state: retryState })}
             >
-              카드 결제 다시 시도
+              다시 시도하기
             </Button>
             <Button
               variant="secondary"
               size="lg"
               className="w-full"
-              onClick={() => navigate("/orders/checkout")}
+              onClick={() => navigate("/cart")}
             >
-              주문서로 돌아가기
+              장바구니 보기
             </Button>
           </div>
         </div>
-      </section>
+      </div>
     </PageContainer>
   );
 }

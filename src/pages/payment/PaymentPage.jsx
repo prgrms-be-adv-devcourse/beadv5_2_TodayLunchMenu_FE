@@ -82,18 +82,7 @@ export default function PaymentPage() {
 
   const isAuction = location.state?.isAuction === true;
   const auctionOrderId = location.state?.auctionOrderId ?? null;
-  const stateWithMock = location.state ?? (import.meta.env.DEV ? {
-    items: [{ name: "오늘의 점심 도시락", quantity: 2, price: 15000, image: null, cartId: "mock-1", productId: "mock-p1" }],
-    shipping: { receiver: "홍길동", receiverPhone: "01012345678", address: "서울특별시 강남구 테헤란로 123", addressDetail: "4층 401호", zipCode: "06234" },
-    selectedPaymentMethod: "DEPOSIT",
-    paymentMethodCode: "DEPOSIT",
-    paymentMethod: "예치금 결제",
-    depositLabel: "예치금 결제",
-    itemPrice: 30000,
-    shippingFee: 0,
-    totalPrice: 30000,
-  } : null);
-  const payment = useMemo(() => buildPaymentModel(stateWithMock), [stateWithMock]);
+  const payment = useMemo(() => buildPaymentModel(location.state), [location.state]);
   const hasPaymentItems = payment.items.length > 0;
 
   const blocker = useBlocker(({ nextLocation }) => {
@@ -387,15 +376,15 @@ export default function PaymentPage() {
         error instanceof ApiError
           ? error.message
           : isCardPayment
-            ? "주문 생성 또는 카드 결제창 호출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
-            : "주문 요청 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
+            ? "주문 생성 또는 카드 결제창 호출 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요."
+            : "주문 요청 중 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.";
 
       navigate(`/payments/${payment.orderId || "pending"}/fail`, {
         state: {
           ...payment,
           errorCode:
             error instanceof ApiError ? error.code : "ORDER_REQUEST_FAILED",
-          errorTitle: isCardPayment ? "카드 결제 시작 실패" : "주문/결제 요청 실패",
+          errorTitle: "결제 실패",
           errorMessage,
         },
       });
