@@ -63,16 +63,10 @@ function UserMenu({ displayName, isSeller, onLogout }) {
         {isSeller ? (
           <>
             <Link
-              to="/seller/products"
+              to="/seller/me"
               className="block rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
             >
               판매자 메뉴
-            </Link>
-            <Link
-              to="/seller/settlements"
-              className="block rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
-            >
-              정산 관리
             </Link>
           </>
         ) : null}

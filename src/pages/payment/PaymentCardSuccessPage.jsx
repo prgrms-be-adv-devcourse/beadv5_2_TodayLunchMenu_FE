@@ -111,7 +111,19 @@ export default function PaymentCardSuccessPage() {
         });
 
         if (!cancelled) {
-          setConfirmResult(response);
+          clearPendingOrderPayment(result.orderId);
+          navigate(`/payments/${pendingPayment.orderId}/success`, {
+            replace: true,
+            state: {
+              orderId: pendingPayment.orderId,
+              orderNumber: pendingPayment.orderNumber ?? null,
+              totalPrice: response.amount,
+              paymentMethod: "토스 카드 결제",
+              paidAt: response.approvedAt,
+              items: pendingPayment.items,
+              shipping: pendingPayment.shipping,
+            },
+          });
         }
       } catch (error) {
         if (!cancelled) {

@@ -3,6 +3,7 @@ import { apiClient } from "../../api/client";
 function toUiOrder(order) {
   return {
     orderId: order?.orderId,
+    orderNumber: order?.orderNumber ?? null,
     totalPrice: order?.totalPrice ?? 0,
     status: order?.status ?? "PENDING",
     createdAt: order?.createdAt ?? null,
@@ -12,8 +13,10 @@ function toUiOrder(order) {
 function toUiOrderSummary(order) {
   return {
     orderId: order?.orderId,
+    orderNumber: order?.orderNumber ?? "",
     totalAmount: order?.totalPrice ?? 0,
     status: order?.status ?? "CREATED",
+    orderType: order?.orderType ?? "NORMAL",
     createdAt: order?.createdAt ?? null,
     representativeProductName:
       order?.representativeProductName ?? "상품명 없음",
@@ -90,7 +93,11 @@ async function createOrderApi({
   return toUiOrder(response.data?.data ?? response.data);
 }
 
-async function getOrdersApi(params = {}) {
+async function getOrdersApi({ startDate, endDate } = {}) {
+  const params = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+
   const response = await apiClient("/api/orders", {
     method: "GET",
     params,
@@ -186,4 +193,13 @@ async function confirmOrderApi(orderId) {
   return response.data?.data ?? response.data;
 }
 
-export { cancelOrderApi, confirmOrderApi, confirmOrderItemApi, createOrderApi, getDeliveryTrackingApi, getOrderDetailApi, getOrderPaymentApi, getOrdersApi };
+async function acceptAuctionOrderApi({ orderId, method, address, addressDetail, zipCode, receiver, receiverPhone }) {
+  const endpoint = method === "DEPOSIT" ? "/api/orders/auction/deposit" : "/api/orders/auction/pg";
+  const response = await apiClient(endpoint, {
+    method: "POST",
+    body: { orderId, address, addressDetail, zipCode, receiver, receiverPhone },
+  });
+  return response.data?.data ?? response.data;
+}
+
+export { acceptAuctionOrderApi, cancelOrderApi, confirmOrderApi, confirmOrderItemApi, createOrderApi, getDeliveryTrackingApi, getOrderDetailApi, getOrderPaymentApi, getOrdersApi };

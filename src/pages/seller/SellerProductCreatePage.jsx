@@ -634,9 +634,11 @@ export default function SellerProductCreatePage() {
       });
 
       if (form.type === "AUCTION") {
+        const thumbnail = product.images.find((img) => img.isThumbnail) || product.images[0] || null;
         await createAuctionApi({
           productId: product.id,
           productTitle: product.name,
+          thumbnailKey: thumbnail?.s3Key || null,
           startPrice: Number(auctionForm.startPrice),
           bidUnit: Number(auctionForm.bidUnit),
           startedAt: auctionForm.startedAt.length === 16 ? auctionForm.startedAt + ":00" : auctionForm.startedAt,

@@ -8,14 +8,11 @@ import { getOrdersApi } from "../../features/order/orderApi";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
-  { value: "CREATED", label: "결제 대기" },
   { value: "CONFIRMED", label: "주문 완료" },
   { value: "SHIPPING", label: "배송 중" },
-  { value: "PARTIAL_SHIPPING", label: "일부 배송 중" },
   { value: "DELIVERED", label: "배송 완료" },
   { value: "COMPLETED", label: "구매 확정" },
-  { value: "PARTIAL_CANCELED", label: "일부 취소" },
-  { value: "CANCELED", label: "취소" },
+  { value: "CANCELED", label: "취소/반품" },
 ];
 
 function formatPrice(value) {
@@ -53,10 +50,6 @@ function getStatusMeta(status) {
       return { label: "일부 배송 중", className: "bg-sky-100 text-sky-700" };
     case "DELIVERED":
       return { label: "배송 완료", className: "bg-indigo-100 text-indigo-700" };
-      return {
-        label: "주문 완료",
-        className: "bg-blue-100 text-blue-700",
-      };
     case "COMPLETED":
       return { label: "구매 확정", className: "bg-emerald-100 text-emerald-700" };
     case "PARTIAL_CANCELED":
@@ -76,10 +69,18 @@ function getThumbnailSrc(thumbnailKey) {
   return /^https?:\/\//.test(thumbnailKey) ? thumbnailKey : "";
 }
 
+const ORDER_TYPE_TABS = [
+  { value: "NORMAL", label: "일반 주문" },
+  { value: "AUCTION", label: "경매 주문" },
+];
+
 export default function OrderListPage() {
   const navigate = useNavigate();
+  const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -92,16 +93,12 @@ export default function OrderListPage() {
         setLoading(true);
         setError("");
 
-        const page = await getOrdersApi();
-        if (!mounted) {
-          return;
-        }
+        const page = await getOrdersApi({ startDate: dateFrom || undefined, endDate: dateTo || undefined });
+        if (!mounted) return;
 
         setOrders(page.content);
       } catch (loadError) {
-        if (!mounted) {
-          return;
-        }
+        if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
           navigate("/login");
@@ -114,33 +111,34 @@ export default function OrderListPage() {
             : "주문 목록을 불러오는 중 오류가 발생했습니다."
         );
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     }
 
     loadOrders();
 
-    return () => {
-      mounted = false;
-    };
-  }, [navigate]);
+    return () => { mounted = false; };
+  }, [navigate, dateFrom, dateTo]);
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const matchesStatus = status === "ALL" ? true : order.status === status;
+      const matchesType = order.orderType === orderType;
+      const matchesStatus =
+        status === "ALL" ? true :
+        status === "SHIPPING" ? ["SHIPPING", "PARTIAL_SHIPPING"].includes(order.status) :
+        status === "CANCELED" ? ["CANCELED", "PARTIAL_CANCELED"].includes(order.status) :
+        order.status === status;
       const normalizedKeyword = keyword.trim().toLowerCase();
       const matchesKeyword = normalizedKeyword
-        ? String(order.orderId || "").toLowerCase().includes(normalizedKeyword) ||
+        ? String(order.orderNumber || "").toLowerCase().includes(normalizedKeyword) ||
           String(order.representativeProductName || "")
             .toLowerCase()
             .includes(normalizedKeyword)
         : true;
 
-      return matchesStatus && matchesKeyword;
+      return matchesType && matchesStatus && matchesKeyword;
     });
-  }, [keyword, orders, status]);
+  }, [keyword, orderType, orders, status]);
 
   return (
     <PageContainer>
@@ -152,6 +150,22 @@ export default function OrderListPage() {
           </span>
         }
       />
+
+      <div className="mb-5 flex rounded-xl bg-gray-100 p-1">
+        {ORDER_TYPE_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => { setOrderType(tab.value); setStatus("ALL"); setKeyword(""); setDateFrom(""); setDateTo(""); }}
+            className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
+              orderType === tab.value
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       <section className="mb-6 bg-white/80 p-4 shadow-sm ring-1 ring-gray-200">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.5fr_1fr]">
@@ -172,6 +186,32 @@ export default function OrderListPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2">
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          <span className="text-sm text-gray-400">~</span>
+          <input
+            type="date"
+            value={dateTo}
+            min={dateFrom}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              type="button"
+              onClick={() => { setDateFrom(""); setDateTo(""); }}
+              className="text-sm font-medium text-gray-400 hover:text-gray-600"
+            >
+              초기화
+            </button>
+          )}
         </div>
       </section>
 
@@ -194,6 +234,81 @@ export default function OrderListPage() {
           {filteredOrders.map((order) => {
             const statusMeta = getStatusMeta(order.status);
             const thumbnailSrc = getThumbnailSrc(order.representativeThumbnailKey);
+            const isPendingAuction = order.orderType === "AUCTION" && order.status === "CREATED";
+
+            const cardContent = (
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-20 overflow-hidden bg-blue-50">
+                    {thumbnailSrc ? (
+                      <img
+                        src={thumbnailSrc}
+                        alt={order.representativeProductName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
+                        {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className={[
+                          "inline-flex rounded-full px-3 py-1 text-xs font-bold",
+                          statusMeta.className,
+                        ].join(" ")}
+                      >
+                        {statusMeta.label}
+                      </span>
+                      <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                        {formatDate(order.createdAt)}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
+                      {order.representativeProductName}
+                      {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
+                    </h3>
+
+                    <p className="mt-1 text-sm font-medium text-gray-500">
+                      주문번호 {order.orderNumber}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-left md:text-right">
+                  <p className="text-sm text-gray-500">총 결제 금액</p>
+                  <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
+                    {formatPrice(order.totalAmount)}원
+                  </p>
+                </div>
+              </div>
+            );
+
+            if (isPendingAuction) {
+              return (
+                <Link
+                  key={order.orderId}
+                  to="/orders/checkout"
+                  state={{
+                    isAuction: true,
+                    orderId: order.orderId,
+                    items: [{
+                      name: order.representativeProductName,
+                      quantity: 1,
+                      price: order.totalAmount,
+                      image: order.representativeThumbnailKey,
+                    }],
+                  }}
+                  className="block bg-white/80 p-5 shadow-sm ring-1 ring-amber-300 transition hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  {cardContent}
+                </Link>
+              );
+            }
 
             return (
               <Link
@@ -201,55 +316,7 @@ export default function OrderListPage() {
                 to={`/orders/${order.orderId}`}
                 className="block bg-white/80 p-5 shadow-sm ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-md"
               >
-                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 overflow-hidden bg-blue-50">
-                      {thumbnailSrc ? (
-                        <img
-                          src={thumbnailSrc}
-                          alt={order.representativeProductName}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
-                          {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        <span
-                          className={[
-                            "inline-flex rounded-full px-3 py-1 text-xs font-bold",
-                            statusMeta.className,
-                          ].join(" ")}
-                        >
-                          {statusMeta.label}
-                        </span>
-                        <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
-                          {formatDate(order.createdAt)}
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
-                        {order.representativeProductName}
-                        {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
-                      </h3>
-
-                      <p className="mt-1 text-sm font-medium text-gray-500">
-                        주문번호 {order.orderId}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="md:text-right">
-                    <p className="text-sm text-gray-500">총 결제 금액</p>
-                    <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
-                      {formatPrice(order.totalAmount)}원
-                    </p>
-                  </div>
-                </div>
+                {cardContent}
               </Link>
             );
           })}

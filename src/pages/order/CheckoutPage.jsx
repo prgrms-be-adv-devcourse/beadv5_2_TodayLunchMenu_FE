@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
@@ -7,6 +7,8 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 
+const FORM_STORAGE_KEY = "checkout-form-state";
+
 function formatPrice(value) {
   return new Intl.NumberFormat("ko-KR").format(value);
 }
@@ -14,30 +16,40 @@ function formatPrice(value) {
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const isAuction = location.state?.isAuction === true;
+  const auctionOrderId = location.state?.orderId ?? null;
   const checkoutItems = Array.isArray(location.state?.items)
     ? location.state.items
     : [];
   const hasCheckoutItems = checkoutItems.length > 0;
 
-  const [form, setForm] = useState({
-    receiver: "",
-    receiverPhone: "",
-    address: "",
-    addressDetail: "",
-    zipCode: "",
-    memo: "",
+  const [form, setForm] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
+      if (saved) return JSON.parse(saved).form ?? {};
+    } catch {}
+    return { receiver: "", receiverPhone: "", address: "", addressDetail: "", zipCode: "", memo: "" };
   });
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("DEPOSIT");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
+      if (saved) return JSON.parse(saved).paymentMethod ?? "DEPOSIT";
+    } catch {}
+    return "DEPOSIT";
+  });
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ form, paymentMethod: selectedPaymentMethod }));
+    } catch {}
+  }, [form, selectedPaymentMethod]);
 
   const isDepositPayment = selectedPaymentMethod === "DEPOSIT";
   const paymentMethodLabel = isDepositPayment ? "예치금 결제" : "카드 결제";
-  const paymentMethodDescription = isDepositPayment
-    ? "보유한 예치금으로 즉시 결제합니다."
-    : "카드 결제를 선택하면 주문을 먼저 생성한 뒤 PG 결제창으로 이동합니다.";
 
   const summary = useMemo(() => {
     const subtotal = checkoutItems.reduce(
@@ -104,23 +116,57 @@ export default function CheckoutPage() {
         return;
       }
 
-      const paymentState = {
-        orderId: null,
-        status: "CREATED",
-        createdAt: new Date().toISOString(),
+      const shippingInfo = {
         address: form.address.trim(),
         addressDetail: form.addressDetail.trim(),
         zipCode: form.zipCode.trim(),
         receiver: form.receiver.trim(),
         receiverPhone: form.receiverPhone.trim(),
+      };
+
+      setOpenConfirmModal(false);
+
+      sessionStorage.removeItem(FORM_STORAGE_KEY);
+
+      if (isAuction) {
+        navigate("/payments", {
+          replace: true,
+          state: {
+            isAuction: true,
+            auctionOrderId,
+            orderId: auctionOrderId,
+            status: "CREATED",
+            createdAt: new Date().toISOString(),
+            shipping: shippingInfo,
+            memo: form.memo.trim(),
+            items: checkoutItems.map((item) => ({
+              cartId: item.cartId,
+              productId: item.productId,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              image: item.image,
+              category: item.category,
+            })),
+            itemPrice: summary.subtotal,
+            shippingFee: summary.shippingFee,
+            totalPrice: summary.total,
+            paymentMethod: paymentMethodLabel,
+            paymentMethodCode: selectedPaymentMethod,
+            depositLabel: "Deposit / Vivid Pay",
+            selectedPaymentMethod,
+          },
+        });
+        return;
+      }
+
+      const paymentState = {
+        orderId: null,
+        status: "CREATED",
+        createdAt: new Date().toISOString(),
+        ...shippingInfo,
         memo: form.memo.trim(),
-        shipping: {
-          receiver: form.receiver.trim(),
-          receiverPhone: form.receiverPhone.trim(),
-          address: form.address.trim(),
-          addressDetail: form.addressDetail.trim(),
-          zipCode: form.zipCode.trim(),
-        },
+        shipping: shippingInfo,
         items: checkoutItems.map((item) => ({
           cartId: item.cartId,
           productId: item.productId,
@@ -140,10 +186,9 @@ export default function CheckoutPage() {
         pendingOrder: true,
       };
 
-      setOpenConfirmModal(false);
-      navigate("/payments", { state: paymentState });
+      navigate("/payments", { replace: true, state: paymentState });
     } catch {
-      setSubmitError("결제 페이지로 이동하는 중 오류가 발생했습니다.");
+      setSubmitError("결제 처리 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -152,6 +197,7 @@ export default function CheckoutPage() {
   return (
     <>
       <PageContainer>
+        <div className="text-left">
         {!hasCheckoutItems ? (
           <section className="mb-6 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
             주문할 상품 정보가 없습니다. 장바구니에서 상품을 선택한 뒤 다시
@@ -184,114 +230,54 @@ export default function CheckoutPage() {
           </div>
         </section>
 
-        <div className="space-y-6 pb-32">
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
-            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-              결제수단 선택
-            </h2>
-
-            <div className="space-y-3">
-              <button
-                type="button"
-                onClick={() => setSelectedPaymentMethod("DEPOSIT")}
-                className={[
-                  "w-full border p-4 text-left transition",
-                  selectedPaymentMethod === "DEPOSIT"
-                    ? "border-blue-200 bg-blue-50 ring-2 ring-blue-200"
-                    : "border-gray-100 bg-white hover:bg-blue-50/70",
-                ].join(" ")}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-lg font-extrabold text-gray-900">
-                      예치금 결제
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      보유한 예치금으로 즉시 결제합니다.
+        <div className="space-y-7 pb-32">
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
+          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+            <div className="space-y-4">
+              {checkoutItems.map((item) => (
+                <article
+                  key={item.cartId || item.productId}
+                  className="flex gap-4 bg-blue-50/60 p-4"
+                >
+                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-blue-50">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
+                        {(item.name || "P").slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-extrabold text-gray-900">
+                        {item.name}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-500">
+                        {item.category}
+                      </p>
+                      <p className="mt-2 text-sm text-gray-500">
+                        수량 {item.quantity}개
+                      </p>
+                    </div>
+                    <p className="text-lg font-extrabold text-blue-700">
+                      {formatPrice(item.price * item.quantity)}원
                     </p>
                   </div>
-                  <span
-                    className={[
-                      "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
-                      selectedPaymentMethod === "DEPOSIT"
-                        ? "bg-blue-700 text-white"
-                        : "bg-gray-100 text-blue-700",
-                    ].join(" ")}
-                  >
-                    {selectedPaymentMethod === "DEPOSIT" ? "선택됨" : "사용 가능"}
-                  </span>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedPaymentMethod("CARD")}
-                className={[
-                  "w-full border p-4 text-left transition",
-                  selectedPaymentMethod === "CARD"
-                    ? "border-amber-300 bg-amber-50 ring-2 ring-amber-200"
-                    : "border-gray-100 bg-white hover:bg-blue-50/70",
-                ].join(" ")}
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-lg font-extrabold text-gray-900">
-                      카드 결제
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      PG 결제창으로 이동합니다.
-                    </p>
-                  </div>
-                  <span
-                    className={[
-                      "inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em]",
-                      selectedPaymentMethod === "CARD"
-                        ? "bg-amber-500 text-white"
-                        : "bg-amber-100 text-amber-700",
-                    ].join(" ")}
-                  >
-                    {selectedPaymentMethod === "CARD" ? "선택됨" : "선택 가능"}
-                  </span>
-                </div>
-              </button>
-
-              {selectedPaymentMethod === "CARD" ? (
-                <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-                  카드 결제를 선택하면 다음 화면에서 주문 생성 후 결제창이
-                  열립니다.
-                </div>
-              ) : null}
+                </article>
+              ))}
             </div>
           </section>
+          </div>
 
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
-            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-              {isDepositPayment ? "예치금 결제" : "결제 안내"}
-            </h2>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">선택된 결제수단</span>
-                <span className="font-extrabold text-blue-700">
-                  {paymentMethodLabel}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">결제 예정 금액</span>
-                <span className="font-extrabold text-gray-900">
-                  {formatPrice(summary.total)}원
-                </span>
-              </div>
-              <div className="bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
-                {paymentMethodDescription}
-              </div>
-            </div>
-          </section>
-
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
-            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-              배송 정보
-            </h2>
-
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
+          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
             <div className="space-y-4">
               <FormField
                 label="수령인"
@@ -378,60 +364,42 @@ export default function CheckoutPage() {
               </FormField>
             </div>
           </section>
+          </div>
 
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
-            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-              주문 상품
-            </h2>
-            <div className="space-y-4">
-              {checkoutItems.map((item) => (
-                <article
-                  key={item.cartId || item.productId}
-                  className="flex gap-4 bg-blue-50/60 p-4"
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제수단 선택</h2>
+          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
+            <div className="space-y-3">
+              {[
+                { value: "DEPOSIT", label: "예치금 결제" },
+                { value: "CARD", label: "카드 결제" },
+              ].map((method) => (
+                <button
+                  key={method.value}
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod(method.value)}
+                  className={[
+                    "w-full border p-4 text-left transition",
+                    selectedPaymentMethod === method.value
+                      ? "border-blue-200 bg-blue-50 ring-2 ring-blue-200"
+                      : "border-gray-100 bg-white hover:bg-blue-50/70",
+                  ].join(" ")}
                 >
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-blue-50">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-black text-blue-700">
-                        {(item.name || "P").slice(0, 1).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-1 items-center justify-between gap-4">
-                    <div>
-                      <h3 className="text-base font-extrabold text-gray-900">
-                        {item.name}
-                      </h3>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-500">
-                        {item.category}
-                      </p>
-                      <p className="mt-2 text-sm text-gray-500">
-                        수량 {item.quantity}개
-                      </p>
-                    </div>
-                    <p className="text-lg font-extrabold text-blue-700">
-                      {formatPrice(item.price * item.quantity)}원
-                    </p>
-                  </div>
-                </article>
+                  <p className="text-lg font-extrabold text-gray-900">{method.label}</p>
+                </button>
               ))}
             </div>
           </section>
+          </div>
 
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
-            <h2 className="mb-4 text-xl font-extrabold tracking-tight text-gray-900">
-              결제 요약
-            </h2>
+          <div>
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제 요약</h2>
+          <section className="bg-white/80 p-6 shadow-sm ring-1 ring-gray-200">
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">상품 금액</span>
                 <span className="font-bold text-gray-900">
-                  {formatPrice(summary.subtotal)}원
+                  {formatPrice(summary.subtotal)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -439,7 +407,7 @@ export default function CheckoutPage() {
                 <span className="font-bold text-gray-900">
                   {summary.shippingFee === 0
                     ? "무료"
-                    : `${formatPrice(summary.shippingFee)}원`}
+                    : formatPrice(summary.shippingFee)}
                 </span>
               </div>
               <div className="border-t border-gray-200 pt-4">
@@ -448,12 +416,14 @@ export default function CheckoutPage() {
                     총 결제 금액
                   </span>
                   <span className="text-2xl font-extrabold tracking-tight text-blue-700">
-                    {formatPrice(summary.total)}원
+                    {formatPrice(summary.total)}
                   </span>
                 </div>
               </div>
             </div>
           </section>
+          </div>
+        </div>
         </div>
       </PageContainer>
 

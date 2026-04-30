@@ -41,7 +41,7 @@ export default function EscrowTransactionDrawer({
         <div className="flex items-start justify-between border-b border-purple-100 px-6 py-5">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">
-              Escrow Log
+              에스크로 기록
             </p>
             <h2 className="mt-1 text-xl font-black text-gray-900">에스크로 거래 내역</h2>
             <p className="mt-1 font-mono text-xs text-gray-400">{orderId || "-"}</p>

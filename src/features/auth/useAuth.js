@@ -122,14 +122,14 @@ async function logout() {
 // useAuth 훅 : 인증 상태와 관련된 로직을 제공
 function useAuth() {
   const authState = useSyncExternalStore(
-    subscribeAuthStore,   // 구독 함수 (데이터가 변했을 때 실행할 콜백을 등록하는 함수) 
-    getAuthState,         // 현재 상태를 반환하는 함수 (현재 외부 저장소의 최신 값을 반환하는 함수)
+    subscribeAuthStore, // 구독 함수 (데이터가 변했을 때 실행할 콜백을 등록하는 함수)
+    getAuthState, // 현재 상태를 반환하는 함수 (현재 외부 저장소의 최신 값을 반환하는 함수)
   );
 
   useEffect(() => {
     const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
 
-    if (hasAccessToken && !authState.user && !authState.loading) {
+    if (hasAccessToken && !authState.user) {
       initializeAuth().catch(() => {});
     }
   }, [authState.loading, authState.user]);

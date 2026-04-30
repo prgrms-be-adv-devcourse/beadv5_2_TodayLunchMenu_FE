@@ -26,6 +26,7 @@ import AdminMemberRestrictionListPage from "./pages/admin/AdminMemberRestriction
 import MemberEditPage from "./pages/member/MemberEditPage";
 import MemberPasswordPage from "./pages/member/MemberPasswordPage";
 import ExternalAccountConnectionsPage from "./pages/member/ExternalAccountConnectionsPage";
+import MemberSessionsPage from "./pages/member/MemberSessionsPage";
 import HomePage from "./pages/home/HomePage";
 import MemberProfilePage from "./pages/member/MemberProfilePage";
 import MemberReportCreatePage from "./pages/member/MemberReportCreatePage";
@@ -52,6 +53,7 @@ import SellerProductEditPage from "./pages/seller/SellerProductEditPage";
 import SellerProductListPage from "./pages/seller/SellerProductListPage";
 import SellerSettlementPage from "./pages/seller/SellerSettlementPage";
 import SellerRefundManagementPage from "./pages/seller/SellerRefundManagementPage";
+import SellerDeliveryPage from "./pages/seller/SellerDeliveryPage";
 import AuctionListPage from "./pages/auction/AuctionListPage";
 import AuctionDetailPage from "./pages/auction/AuctionDetailPage";
 import WithdrawalPage from "./pages/withdrawal/WithdrawalPage";
@@ -93,6 +95,7 @@ const router = createBrowserRouter([
       { path: "me", element: <MyPage /> },
       { path: "me/edit", element: <MemberEditPage /> },
       { path: "me/password", element: <MemberPasswordPage /> },
+      { path: "me/sessions", element: <MemberSessionsPage /> },
       {
         path: "me/external-accounts",
         element: <ExternalAccountConnectionsPage />,
@@ -130,6 +133,7 @@ const router = createBrowserRouter([
       },
       { path: "seller/settlements", element: <SellerSettlementPage /> },
       { path: "seller/refunds", element: <SellerRefundManagementPage /> },
+      { path: "seller/delivery", element: <SellerDeliveryPage /> },
       { path: "auctions", element: <AuctionListPage /> },
       { path: "auctions/:auctionId", element: <AuctionDetailPage /> },
     ],
