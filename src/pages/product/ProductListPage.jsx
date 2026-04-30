@@ -1,18 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import ProductCard from "../../components/product/ProductCard";
 import { useCart } from "../../features/cart/useCart";
 import { useCartToast } from "../../features/cart/useCartToast";
 import { useCategories, useProducts } from "../../features/product/useProducts";
 
-const STATUS_OPTIONS = ["전체", "판매중", "품절"];
+const STATUS_OPTIONS = ["전체", "판매중"];
 const SORT_OPTIONS = [
   { value: "latest", label: "최신순" },
   { value: "priceAsc", label: "가격 낮은순" },
   { value: "priceDesc", label: "가격 높은순" },
   { value: "name", label: "이름순" },
 ];
+const SORT_MAP = {
+  latest: "createdAt,desc",
+  priceAsc: "price,asc",
+  priceDesc: "price,desc",
+  name: "createdAt,desc",
+};
+const PAGE_SIZE = 12;
 
 function CategoryTree({ tree, selectedId, onSelect }) {
   return (
@@ -85,18 +92,34 @@ function CategoryTree({ tree, selectedId, onSelect }) {
 
 export default function ProductListPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialCategoryId = new URLSearchParams(location.search).get("categoryId");
+
   const [keyword, setKeyword] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
   const [statusFilter, setStatusFilter] = useState("전체");
   const [sort, setSort] = useState("latest");
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(initialCategoryId);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedKeyword(keyword.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [keyword]);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [debouncedKeyword, selectedCategoryId, sort, statusFilter]);
 
   const { addToCart } = useCart({ autoLoad: false });
   const { toast, showToast } = useCartToast();
-  const { products, loading, fetching, error } = useProducts({
-    page: 0,
-    size: 50,
-    sort: "createdAt,desc",
+  const { products, pageInfo, loading, fetching, error } = useProducts({
+    page: currentPage,
+    size: PAGE_SIZE,
+    sort: SORT_MAP[sort],
+    keyword: debouncedKeyword || undefined,
+    categoryId: selectedCategoryId || undefined,
   });
   const { categories } = useCategories();
 
@@ -112,57 +135,16 @@ export default function ProductListPage() {
     }));
   }, [categories]);
 
-  const descendantMap = useMemo(() => {
-    const map = {};
-    function collectIds(categoryId) {
-      if (map[categoryId]) return map[categoryId];
-      const children = categories.filter((c) => c.parentId === categoryId);
-      const ids = [categoryId, ...children.flatMap((c) => collectIds(c.id))];
-      map[categoryId] = ids;
-      return ids;
-    }
-    categories.forEach((c) => collectIds(c.id));
-    return map;
-  }, [categories]);
-
   const filteredProducts = useMemo(() => {
     let result = products.filter((p) => p.type !== "AUCTION");
-
-    if (selectedCategoryId) {
-      const ids = descendantMap[selectedCategoryId] ?? [selectedCategoryId];
-      result = result.filter((p) => ids.includes(p.categoryId));
-    }
-
     if (statusFilter === "판매중") {
       result = result.filter((p) => p.status !== "SOLD_OUT" && p.stockCount > 0);
-    } else if (statusFilter === "품절") {
-      result = result.filter((p) => p.status === "SOLD_OUT" || p.stockCount <= 0);
     }
-
-    if (keyword.trim()) {
-      const lowerKeyword = keyword.toLowerCase();
-      result = result.filter((p) => p.name.toLowerCase().includes(lowerKeyword));
+    if (sort === "name") {
+      result = [...result].sort((a, b) => a.name.localeCompare(b.name, "ko"));
     }
-
-    switch (sort) {
-      case "priceAsc":
-        result = [...result].sort((a, b) => a.price - b.price);
-        break;
-      case "priceDesc":
-        result = [...result].sort((a, b) => b.price - a.price);
-        break;
-      case "name":
-        result = [...result].sort((a, b) => a.name.localeCompare(b.name, "ko"));
-        break;
-      default:
-        result = [...result].sort(
-          (a, b) =>
-            new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
-        );
-    }
-
     return result;
-  }, [keyword, products, sort, statusFilter, selectedCategoryId, descendantMap]);
+  }, [products, statusFilter, sort]);
 
   const categoryPath = useMemo(() => {
     if (!selectedCategoryId) return [];
@@ -175,18 +157,7 @@ export default function ProductListPage() {
     return path;
   }, [categories, selectedCategoryId]);
 
-  const PAGE_SIZE = 12;
-  const [currentPage, setCurrentPage] = useState(0);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [keyword, statusFilter, sort, selectedCategoryId]);
-
-  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
-  const pagedProducts = useMemo(
-    () => filteredProducts.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE),
-    [filteredProducts, currentPage],
-  );
+  const totalPages = pageInfo.totalPages;
 
   const handleReset = () => {
     setKeyword("");
@@ -284,7 +255,7 @@ export default function ProductListPage() {
                 </div>
 
                 <span className="text-xs text-gray-400">
-                  {filteredProducts.length}개
+                  {pageInfo.totalElements}개
                   {totalPages > 1 && ` · ${currentPage + 1}/${totalPages}페이지`}
                 </span>
               </div>
@@ -357,7 +328,7 @@ export default function ProductListPage() {
               ) : (
                 <>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {pagedProducts.map((product) => (
+                    {filteredProducts.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}

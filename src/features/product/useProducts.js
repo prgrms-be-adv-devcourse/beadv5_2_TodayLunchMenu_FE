@@ -55,7 +55,7 @@ function useProducts(params = {}) {
     return () => {
       cancelled = true;
     };
-  }, [params.page, params.size, params.sort]);
+  }, [params.page, params.size, params.sort, params.keyword, params.categoryId]);
 
   return {
     products,

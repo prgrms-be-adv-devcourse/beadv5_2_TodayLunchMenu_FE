@@ -81,9 +81,11 @@ const toUiCategory = (category) => ({
 });
 
 async function getProductsApi(params = {}) {
-  const { sort: _sort, ...safeParams } = params;
+  const cleanParams = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v != null && v !== "")
+  );
   const response = await apiClient("/api/products", {
-    params: safeParams,
+    params: cleanParams,
   });
 
   const page = response.data ?? {};
