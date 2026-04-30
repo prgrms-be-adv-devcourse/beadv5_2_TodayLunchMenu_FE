@@ -39,6 +39,9 @@ function getItemActionability(status) {
   if (upper === "CANCELED") {
     return { type: "NONE", label: "이미 취소됨", canSelect: false };
   }
+  if (upper === "RETURN_REQUESTED") {
+    return { type: "NONE", label: "반품 진행 중", canSelect: false };
+  }
   return { type: "NONE", label: status || "처리 불가", canSelect: false };
 }
 

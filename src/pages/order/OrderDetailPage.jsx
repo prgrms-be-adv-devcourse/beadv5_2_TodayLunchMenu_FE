@@ -65,13 +65,14 @@ function getOrderStatusMeta(status) {
 
 function getItemStatusMeta(status) {
   switch (status?.toUpperCase()) {
-    case "PENDING":   return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "PREPARING": return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "SHIPPING":  return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
-    case "DELIVERED": return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
-    case "COMPLETED": return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
-    case "CANCELED":  return { label: "취소됨",      className: "bg-red-100 text-red-600" };
-    default:          return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
+    case "PENDING":           return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "PREPARING":         return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "SHIPPING":          return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
+    case "DELIVERED":         return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
+    case "COMPLETED":         return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
+    case "CANCELED":          return { label: "취소됨",      className: "bg-red-100 text-red-600" };
+    case "RETURN_REQUESTED":  return { label: "반품 진행 중", className: "bg-amber-100 text-amber-700" };
+    default:                  return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
   }
 }
 
@@ -253,6 +254,7 @@ export default function OrderDetailPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/orders/${normalizedOrder.orderId}/cancellation`)}
+                  className="text-sm font-extrabold text-rose-600 hover:text-rose-800 transition"
                   className="text-sm font-bold text-red-600 hover:text-red-700 transition"
                 >
                   취소/반품 신청
@@ -312,6 +314,12 @@ export default function OrderDetailPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
+                          {normalizedOrder.orderType === "AUCTION" ? (
+                            <span className="font-bold text-gray-900">{item.productName}</span>
+                          ) : (
+                            <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-violet-700 transition-colors">{item.productName}</Link>
+                          )}
+                          <span className={`shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                           <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
                           <span className={`flex-shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                             {statusMeta.label}
