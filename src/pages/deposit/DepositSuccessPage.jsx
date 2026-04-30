@@ -124,7 +124,7 @@ export default function DepositSuccessPage() {
           <section className="mt-12 flex flex-col gap-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
+              className="h-14 w-full rounded text-base font-extrabold"
               onClick={() => navigate("/deposits")}
             >
               예치금 페이지로 이동

@@ -590,7 +590,7 @@ export default function PaymentPage() {
             <Button
               variant="secondary"
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold"
+              className="h-14 w-full rounded text-base font-extrabold"
               onClick={() =>
                 navigate(`/payments/${payment.orderId || "pending"}/fail`, {
                   state: {
