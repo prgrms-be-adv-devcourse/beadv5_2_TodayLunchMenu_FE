@@ -85,8 +85,8 @@ export default function SellerProductEditPage() {
   const [form, setForm] = useState({
     title: "", description: "", price: "", stockQuantity: 0, categoryId: "",
   });
-  const [categorySelection, setCategorySelection] = useState({ depth0Id: "", depth1Id: "", depth2Id: "" });
-  const [categories, setCategories] = useState({ depth0: [], depth1: [], depth2: [] });
+  const [categorySelection, setCategorySelection] = useState({ depth0Id: "", depth1Id: "" });
+  const [categories, setCategories] = useState({ depth0: [], depth1: [] });
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,14 +98,14 @@ export default function SellerProductEditPage() {
     async function init() {
       try {
         setPageLoading(true);
-        const [product, depth0] = await Promise.all([
+        const [product, depth0Cats, depth1Cats] = await Promise.all([
           getProductDetailApi(productId),
           getCategoriesApi({ depth: 0 }),
+          getCategoriesApi({ depth: 1 }),
         ]);
         if (cancelled) return;
         setProductStatus(product.status);
         setImages(product.images ?? []);
-        setCategories((prev) => ({ ...prev, depth0 }));
         const isDefaultDesc = product.description === "상품 설명이 아직 등록되지 않았습니다.";
         setForm({
           title: product.name,
@@ -114,22 +114,21 @@ export default function SellerProductEditPage() {
           stockQuantity: product.stockCount,
           categoryId: product.categoryId || "",
         });
+        setCategories({ depth0: depth0Cats, depth1: [] });
         if (!product.categoryId) return;
-        const depth1 = await getChildCategoriesApi(product.categoryId);
-        if (cancelled) return;
-        if (depth1.length > 0) {
-          setCategories((prev) => ({ ...prev, depth1 }));
-          const matched = depth1.find((c) => c.name === product.category);
-          if (matched) {
-            setCategorySelection({ depth0Id: product.categoryId, depth1Id: matched.id, depth2Id: "" });
-            setForm((prev) => ({ ...prev, categoryId: matched.id }));
-            const depth2 = await getChildCategoriesApi(matched.id);
-            if (!cancelled && depth2.length > 0) setCategories((prev) => ({ ...prev, depth2 }));
-          } else {
-            setCategorySelection({ depth0Id: product.categoryId, depth1Id: "", depth2Id: "" });
-          }
-        } else {
-          setCategorySelection({ depth0Id: product.categoryId, depth1Id: "", depth2Id: "" });
+        const isDepth0 = depth0Cats.some((c) => c.id === product.categoryId);
+        if (isDepth0) {
+          const childDepth1 = depth1Cats.filter((c) => c.parentId === product.categoryId);
+          setCategorySelection({ depth0Id: product.categoryId, depth1Id: "" });
+          setCategories({ depth0: depth0Cats, depth1: childDepth1 });
+          return;
+        }
+        const catDepth1 = depth1Cats.find((c) => c.id === product.categoryId);
+        if (catDepth1) {
+          const depth0Id = catDepth1.parentId;
+          const childDepth1 = depth1Cats.filter((c) => c.parentId === depth0Id);
+          setCategorySelection({ depth0Id, depth1Id: product.categoryId });
+          setCategories({ depth0: depth0Cats, depth1: childDepth1 });
         }
       } catch (err) {
         if (!cancelled) setPageError(err?.message || "상품 정보를 불러오지 못했습니다.");
@@ -240,22 +239,15 @@ export default function SellerProductEditPage() {
     setErrors((prev) => ({ ...prev, categoryId: "" }));
     setSubmitError("");
     if (depthKey === "depth0Id") {
-      setCategorySelection({ depth0Id: nextId, depth1Id: "", depth2Id: "" });
-      setCategories((prev) => ({ ...prev, depth1: [], depth2: [] }));
+      setCategorySelection({ depth0Id: nextId, depth1Id: "" });
+      setCategories((prev) => ({ ...prev, depth1: [] }));
       setForm((prev) => ({ ...prev, categoryId: nextId }));
       if (!nextId) return;
       const depth1 = await getChildCategoriesApi(nextId);
       setCategories((prev) => ({ ...prev, depth1 }));
     } else if (depthKey === "depth1Id") {
-      setCategorySelection((prev) => ({ ...prev, depth1Id: nextId, depth2Id: "" }));
-      setCategories((prev) => ({ ...prev, depth2: [] }));
+      setCategorySelection((prev) => ({ ...prev, depth1Id: nextId }));
       setForm((prev) => ({ ...prev, categoryId: nextId || categorySelection.depth0Id }));
-      if (!nextId) return;
-      const depth2 = await getChildCategoriesApi(nextId);
-      setCategories((prev) => ({ ...prev, depth2 }));
-    } else if (depthKey === "depth2Id") {
-      setCategorySelection((prev) => ({ ...prev, depth2Id: nextId }));
-      setForm((prev) => ({ ...prev, categoryId: nextId || categorySelection.depth1Id || categorySelection.depth0Id }));
     }
   };
 
@@ -329,7 +321,6 @@ export default function SellerProductEditPage() {
   const catPath = [
     categories.depth0.find((c) => c.id === categorySelection.depth0Id)?.name,
     categories.depth1.find((c) => c.id === categorySelection.depth1Id)?.name,
-    categories.depth2.find((c) => c.id === categorySelection.depth2Id)?.name,
   ].filter(Boolean).join(" > ");
 
   return (
@@ -590,22 +581,6 @@ export default function SellerProductEditPage() {
                     ))}
                   </select>
 
-                  <svg className="hidden h-4 w-4 flex-shrink-0 text-gray-400 sm:block" fill="none" viewBox="0 0 16 16">
-                    <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-
-                  <select
-                    id="cat-2"
-                    value={categorySelection.depth2Id}
-                    onChange={(e) => handleCategoryChange("depth2Id", e.target.value)}
-                    disabled={isBusy || !categorySelection.depth1Id || categories.depth2.length === 0}
-                    className={[SELECT_CLASS, "flex-1"].join(" ")}
-                  >
-                    <option value="">{categories.depth2.length === 0 && categorySelection.depth1Id ? "소분류 없음" : "소분류 선택"}</option>
-                    {categories.depth2.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
                 </div>
 
                 {catPath && (
