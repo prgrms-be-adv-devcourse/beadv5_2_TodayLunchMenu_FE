@@ -1,6 +1,6 @@
 ﻿import { ApiError, apiClient } from "../../api/client";
 
-const unwrapResponse = (response) => response?.data?.data ?? null;
+const unwrapResponse = (response) => response?.data?.data ?? response?.data ?? null;
 
 export async function getMemberByIdApi(memberId) {
   if (!memberId) {
@@ -108,3 +108,4 @@ export async function uploadProfileImageToS3({ uploadUrl, file, contentType }) {
 
   return true;
 }
+
