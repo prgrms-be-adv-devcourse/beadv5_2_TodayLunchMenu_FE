@@ -63,7 +63,11 @@ function getOrderStatusMeta(status) {
   }
 }
 
-function getItemStatusMeta(status) {
+function getItemStatusMeta(status, orderStatus) {
+  // 결제 전(Order.status === "CREATED") 상태에서는 OrderItem 라벨도 "결제 대기"로 표기
+  if (orderStatus?.toUpperCase() === "CREATED") {
+    return { label: "결제 대기", className: "bg-amber-100 text-amber-700" };
+  }
   switch (status?.toUpperCase()) {
     case "PENDING":           return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
     case "PREPARING":         return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
@@ -234,9 +238,11 @@ export default function OrderDetailPage() {
     0
   );
 
-  const hasCancelable = normalizedOrder.items.some((item) =>
-    ["PENDING", "CONFIRMED", "PREPARING", "DELIVERED"].includes(item.status?.toUpperCase())
-  );
+  const hasCancelable =
+    normalizedOrder.status?.toUpperCase() !== "CREATED" &&
+    normalizedOrder.items.some((item) =>
+      ["PENDING", "CONFIRMED", "PREPARING", "DELIVERED"].includes(item.status?.toUpperCase())
+    );
 
   return (
     <>
@@ -287,7 +293,7 @@ export default function OrderDetailPage() {
             <div className="space-y-4">
               {normalizedOrder.items.map((item) => {
                 const thumbnailSrc = getThumbnailSrc(item.thumbnailKey);
-                const statusMeta = getItemStatusMeta(item.status);
+                const statusMeta = getItemStatusMeta(item.status, normalizedOrder.status);
                 const itemStatus = item.status?.toUpperCase();
                 const showTracking = item.deliveryId && ["SHIPPING", "DELIVERED", "COMPLETED"].includes(itemStatus);
                 const showConfirm = itemStatus === "DELIVERED";

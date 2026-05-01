@@ -12,9 +12,12 @@ export {
 export {
   clearPendingCharge,
   clearPendingOrderPayment,
+  clearChargeResult,
   getPendingCharge,
   getPendingOrderPayment,
+  getChargeResult,
   savePendingCharge,
   savePendingOrderPayment,
+  saveChargeResult,
 } from "./paymentStorage";
 export { loadTossPaymentsSdk } from "./tossPaymentsSdk";
