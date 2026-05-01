@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+﻿import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
@@ -49,6 +49,16 @@ export default function DepositSuccessPage() {
   const location = useLocation();
 
   const result = useMemo(() => buildSuccessModel(location.state), [location.state]);
+
+  // 뒤로 가기 시 Toss 중간 페이지(회색 버퍼링)로 돌아가지 않도록 인터셉트
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+    const onPopState = () => {
+      navigate("/deposits", { replace: true });
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [navigate]);
 
   return (
     <PageContainer>
