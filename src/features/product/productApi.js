@@ -141,9 +141,14 @@ async function getSellerProductsApi(params = {}) {
   });
 
   const page = response.data ?? {};
+  const items = Array.isArray(page.content) ? page.content.map(toUiProduct) : [];
+
+  const resolvedItems = await Promise.all(
+    items.map((p) => p.image ? p : getProductDetailApi(p.id).catch(() => p))
+  );
 
   return {
-    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    items: resolvedItems,
     pageInfo: {
       page: page.number ?? 0,
       size: page.size ?? 0,
