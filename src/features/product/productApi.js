@@ -39,7 +39,7 @@ const toNumber = (value) => {
 const toUiImage = (image) => ({
   id: image.imageId,
   s3Key: image.s3Key,
-  url: image.s3Key ? `${S3_BASE_URL}/${image.s3Key}` : null,
+  url: image.presignedUrl ?? (image.s3Key ? `${S3_BASE_URL}/${image.s3Key}` : null),
   sortOrder: image.sortOrder ?? 0,
   isThumbnail: Boolean(image.isThumbnail),
   createdAt: image.createdAt,
