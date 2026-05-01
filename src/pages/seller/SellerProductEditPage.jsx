@@ -98,10 +98,9 @@ export default function SellerProductEditPage() {
     async function init() {
       try {
         setPageLoading(true);
-        const [product, depth0Cats, depth1Cats] = await Promise.all([
+        const [product, depth0Cats] = await Promise.all([
           getProductDetailApi(productId),
           getCategoriesApi({ depth: 0 }),
-          getCategoriesApi({ depth: 1 }),
         ]);
         if (cancelled) return;
         setProductStatus(product.status);
@@ -116,19 +115,27 @@ export default function SellerProductEditPage() {
         });
         setCategories({ depth0: depth0Cats, depth1: [] });
         if (!product.categoryId) return;
-        const isDepth0 = depth0Cats.some((c) => c.id === product.categoryId);
-        if (isDepth0) {
-          const childDepth1 = depth1Cats.filter((c) => c.parentId === product.categoryId);
-          setCategorySelection({ depth0Id: product.categoryId, depth1Id: "" });
-          setCategories({ depth0: depth0Cats, depth1: childDepth1 });
+
+        // 상품 categoryId가 depth0인 경우
+        if (depth0Cats.some((c) => c.id === product.categoryId)) {
+          const depth1 = await getChildCategoriesApi(product.categoryId);
+          if (!cancelled) {
+            setCategorySelection({ depth0Id: product.categoryId, depth1Id: "" });
+            setCategories({ depth0: depth0Cats, depth1 });
+          }
           return;
         }
-        const catDepth1 = depth1Cats.find((c) => c.id === product.categoryId);
-        if (catDepth1) {
-          const depth0Id = catDepth1.parentId;
-          const childDepth1 = depth1Cats.filter((c) => c.parentId === depth0Id);
-          setCategorySelection({ depth0Id, depth1Id: product.categoryId });
-          setCategories({ depth0: depth0Cats, depth1: childDepth1 });
+
+        // 상품 categoryId가 depth1인 경우 — 부모 depth0를 찾을 때까지 순회
+        for (const d0 of depth0Cats) {
+          if (cancelled) return;
+          const children = await getChildCategoriesApi(d0.id);
+          if (cancelled) return;
+          if (children.some((c) => c.id === product.categoryId)) {
+            setCategorySelection({ depth0Id: d0.id, depth1Id: product.categoryId });
+            setCategories({ depth0: depth0Cats, depth1: children });
+            return;
+          }
         }
       } catch (err) {
         if (!cancelled) setPageError(err?.message || "상품 정보를 불러오지 못했습니다.");
