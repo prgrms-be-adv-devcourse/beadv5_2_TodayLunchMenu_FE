@@ -333,9 +333,11 @@ export default function OrderCancellationPage() {
                             className="h-11 w-full bg-blue-50/70 pl-3 pr-10 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-violet-200 rounded-lg"
                           >
                             <option value="">선택해 주세요</option>
-                            {REASON_OPTIONS.map((option) => (
-                              <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
+                            {REASON_OPTIONS
+                              .filter((option) => action.type === "RETURN" || option.liability !== "SELLER")
+                              .map((option) => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                              ))}
                           </select>
                           {(() => {
                             const selected = REASON_OPTIONS.find((r) => r.value === reasonState.reason);
