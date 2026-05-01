@@ -201,7 +201,7 @@ export default function SellerProductListPage() {
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xl font-black text-gray-300">
+                      <div className="flex h-full w-full items-center justify-center text-xl font-bold text-gray-300">
                         {(product.name || "P").slice(0, 1).toUpperCase()}
                       </div>
                     )}

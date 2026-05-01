@@ -274,7 +274,7 @@ export default function AdminMemberReportDetailPage() {
               <section className="space-y-8 bg-white p-8 shadow-xl ring-1 ring-gray-200">
                 <div className="flex flex-col gap-6 border-b border-gray-200 pb-6 md:flex-row md:items-start md:justify-between">
                   <div className="space-y-4">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">신고 정보</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">신고 정보</p>
                     <div className="flex flex-wrap items-center gap-4">
                       <div className={['border px-4 py-2 text-sm font-bold', type.accent].join(' ')}>
                         {type.label}
@@ -286,7 +286,7 @@ export default function AdminMemberReportDetailPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-slate-400">처리 상태</p>
+                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">처리 상태</p>
                     <div className="flex gap-1">
                       {[1, 2, 3, 4].map((index) => (
                         <div
@@ -304,9 +304,9 @@ export default function AdminMemberReportDetailPage() {
 
                 <div className="grid gap-8 md:grid-cols-2">
                   <div className="space-y-4">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">신고자</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">신고자</p>
                     <div className="flex items-center gap-4 bg-blue-50 p-4">
-                      <div className="flex h-12 w-12 items-center justify-center bg-blue-200 font-black text-blue-700">
+                      <div className="flex h-12 w-12 items-center justify-center bg-blue-200 font-bold text-blue-700">
                         R
                       </div>
                       <div>
@@ -317,9 +317,9 @@ export default function AdminMemberReportDetailPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-rose-500">피신고자</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-rose-500">피신고자</p>
                     <div className="flex items-center gap-4 bg-rose-50/60 p-4">
-                      <div className="flex h-12 w-12 items-center justify-center bg-rose-200 font-black text-rose-700">
+                      <div className="flex h-12 w-12 items-center justify-center bg-rose-200 font-bold text-rose-700">
                         S
                       </div>
                       <div>
@@ -331,7 +331,7 @@ export default function AdminMemberReportDetailPage() {
                 </div>
 
                 <div className="space-y-4 pt-4">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-400">신고 사유 상세</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">신고 사유 상세</p>
                   <div className="border-l-4 border-blue-600 bg-blue-50 p-6 text-base leading-relaxed text-gray-900">
                     {report.reason}
                   </div>
@@ -352,7 +352,7 @@ export default function AdminMemberReportDetailPage() {
                   ) : (
                     evidenceLines.map((line, index) => (
                       <div key={`${line}-${index}`} className="flex items-start gap-4">
-                        <span className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                        <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                           Note {index + 1}
                         </span>
                         <div className="flex-1 bg-blue-50 p-4 text-sm leading-relaxed text-gray-900">{line}</div>
@@ -369,7 +369,7 @@ export default function AdminMemberReportDetailPage() {
                   <h2 className="mb-6 text-2xl font-extrabold text-gray-900">검토 및 처리 설정</h2>
                   <div className="space-y-6">
                     <div className="space-y-3">
-                      <label className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                      <label className="px-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
                         검토 코멘트
                       </label>
                       <textarea
@@ -382,7 +382,7 @@ export default function AdminMemberReportDetailPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <label className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                      <label className="px-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
                         제재 옵션 설정
                       </label>
                       <div className="grid gap-2">
@@ -415,7 +415,7 @@ export default function AdminMemberReportDetailPage() {
                     </div>
 
                     <div className="space-y-3">
-                      <label className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                      <label className="px-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
                         제재 기간
                       </label>
                       <div className="grid grid-cols-2 gap-2">
@@ -428,7 +428,7 @@ export default function AdminMemberReportDetailPage() {
                               disabled={isReviewLocked || submitting}
                               onClick={() => setDurationHours(option.value)}
                               className={[
-                                'px-3 py-3 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-60',
+                                'px-3 py-3 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60',
                                 selected
                                   ? 'bg-blue-200 text-blue-900 ring-2 ring-blue-500'
                                   : 'bg-white text-slate-500 ring-1 ring-gray-200 hover:text-blue-600',
@@ -448,7 +448,7 @@ export default function AdminMemberReportDetailPage() {
                     type="button"
                     disabled={isReviewLocked || submitting}
                     onClick={handleApprove}
-                    className="w-full rounded-full bg-blue-700 px-6 py-4 text-sm font-black text-white shadow-xl transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-full bg-blue-700 px-6 py-4 text-sm font-bold text-white shadow-xl transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {submitting ? '처리 중...' : '신고 승인 및 제재 적용'}
                   </button>
@@ -472,7 +472,7 @@ export default function AdminMemberReportDetailPage() {
 
               <section className="border border-dashed border-blue-200 bg-blue-50 p-6">
                 <div className="mb-4 flex items-center gap-2">
-                  <span className="text-sm font-black uppercase tracking-[0.18em] text-slate-400">최근 처리 기록</span>
+                  <span className="text-sm font-bold uppercase tracking-[0.18em] text-slate-400">최근 처리 기록</span>
                 </div>
                 <div className="space-y-3 text-xs text-slate-500">
                   {timeline.map((item) => (
@@ -496,7 +496,7 @@ export default function AdminMemberReportDetailPage() {
           toastMessage ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-10 opacity-0',
         ].join(' ')}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-black text-white">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
           OK
         </div>
         <div>

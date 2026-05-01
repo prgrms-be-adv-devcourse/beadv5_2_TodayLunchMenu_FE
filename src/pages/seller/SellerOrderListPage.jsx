@@ -142,7 +142,7 @@ export default function SellerOrderListPage() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">
               Seller Orders
             </p>
-            <h1 className="mt-1 text-2xl font-black text-gray-900">
+            <h1 className="mt-1 text-2xl font-bold text-gray-900">
               정산 대기 주문
             </h1>
             <p className="mt-2 text-sm text-gray-500">
@@ -222,7 +222,7 @@ export default function SellerOrderListPage() {
                     <p className="text-xs font-semibold text-gray-500">
                       정산 대기 금액
                     </p>
-                    <p className="text-lg font-black text-violet-700">
+                    <p className="text-lg font-bold text-violet-700">
                       {formatKRW(item.amount)}
                     </p>
                     <span className="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700">

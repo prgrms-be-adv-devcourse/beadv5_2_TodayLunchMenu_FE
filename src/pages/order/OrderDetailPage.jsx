@@ -65,13 +65,14 @@ function getOrderStatusMeta(status) {
 
 function getItemStatusMeta(status) {
   switch (status?.toUpperCase()) {
-    case "PENDING":   return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "PREPARING": return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "SHIPPING":  return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
-    case "DELIVERED": return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
-    case "COMPLETED": return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
-    case "CANCELED":  return { label: "취소됨",      className: "bg-red-100 text-red-600" };
-    default:          return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
+    case "PENDING":           return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "PREPARING":         return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "SHIPPING":          return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
+    case "DELIVERED":         return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
+    case "COMPLETED":         return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
+    case "CANCELED":          return { label: "취소됨",      className: "bg-red-100 text-red-600" };
+    case "RETURN_REQUESTED":  return { label: "반품 진행 중", className: "bg-amber-100 text-amber-700" };
+    default:                  return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
   }
 }
 
@@ -120,18 +121,15 @@ export default function OrderDetailPage() {
       try {
         setLoading(true);
         setError("");
-        const [orderResult, paymentResult] = await Promise.allSettled([
-          getOrderDetailApi(orderId),
-          getOrderPaymentApi(orderId),
-        ]);
+        const orderResult = await getOrderDetailApi(orderId);
         if (!mounted) return;
-        if (orderResult.status === "fulfilled") {
-          setOrder(orderResult.value);
-        } else {
-          throw orderResult.reason;
-        }
-        if (paymentResult.status === "fulfilled") {
-          setPayment(paymentResult.value);
+        setOrder(orderResult);
+
+        try {
+          const paymentResult = await getOrderPaymentApi(orderId);
+          if (mounted) setPayment(paymentResult);
+        } catch {
+          // 결제 정보 조회 실패는 무시 (주문 상세는 이미 표시 가능)
         }
       } catch (loadError) {
         if (!mounted) return;
@@ -217,10 +215,10 @@ export default function OrderDetailPage() {
   if (error) {
     return (
       <PageContainer>
-        <div className="rounded-[28px] bg-red-50 px-6 py-16 text-center ring-1 ring-red-100">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-16 text-center">
           <p className="mb-2 text-lg font-bold text-red-600">주문 상세를 불러오지 못했습니다</p>
           <p className="mb-6 text-sm text-red-500">{error}</p>
-          <Link to="/orders" className="text-sm font-bold text-violet-700 hover:underline">
+          <Link to="/orders" className="text-sm font-bold text-blue-600 hover:underline">
             주문 목록으로 돌아가기
           </Link>
         </div>
@@ -253,13 +251,13 @@ export default function OrderDetailPage() {
                 <button
                   type="button"
                   onClick={() => navigate(`/orders/${normalizedOrder.orderId}/cancellation`)}
-                  className="text-sm font-bold text-violet-700 hover:text-violet-900 transition"
+                  className="text-sm font-bold text-red-600 hover:text-red-700 transition"
                 >
                   취소/반품 신청
                 </button>
               )}
             </div>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
+            <div className="border border-gray-200 bg-white p-6 space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">주문번호</span>
                 <span className="font-semibold text-gray-900">
@@ -297,14 +295,14 @@ export default function OrderDetailPage() {
                 return (
                   <div
                     key={item.orderItemId ?? item.productId}
-                    className="rounded-[20px] bg-white p-5 shadow-sm ring-1 ring-purple-100"
+                    className="border border-gray-200 bg-white p-5"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-600">
                             {(item.productName || "O").slice(0, 1).toUpperCase()}
                           </div>
                         )}
@@ -312,8 +310,12 @@ export default function OrderDetailPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-violet-700 transition-colors">{item.productName}</Link>
-                          <span className={`flex-shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
+                          {normalizedOrder.orderType === "AUCTION" ? (
+                            <span className="font-bold text-gray-900">{item.productName}</span>
+                          ) : (
+                            <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
+                          )}
+                          <span className={`shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                             {statusMeta.label}
                           </span>
                         </div>
@@ -339,7 +341,7 @@ export default function OrderDetailPage() {
                           <button
                             type="button"
                             onClick={() => openItemAction("confirm", item)}
-                            className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700 transition"
+                            className="rounded border border-blue-600 bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-700 transition"
                           >
                             구매 확정
                           </button>
@@ -357,7 +359,7 @@ export default function OrderDetailPage() {
           {/* 배송 정보 */}
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: '0.875rem' }}>배송 정보</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-4 text-sm">
+            <div className="border border-gray-200 bg-white p-6 space-y-4 text-sm">
               <div>
                 <p className="text-gray-400">받는 분</p>
                 <p className="mt-1 font-semibold text-gray-900">{normalizedOrder.receiver || "-"}</p>
@@ -389,14 +391,14 @@ export default function OrderDetailPage() {
           {/* 결제 정보 */}
           <div>
             <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: '0.875rem' }}>결제 정보</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
+            <div className="border border-gray-200 bg-white p-6 space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-400">상품 금액</span>
                 <span className="font-semibold text-gray-900">{formatPrice(productTotal)}원</span>
               </div>
               <div className="flex justify-between border-t border-gray-100 pt-3">
                 <span className="font-bold text-gray-900">총 결제 금액</span>
-                <span className="font-extrabold text-violet-700">{formatPrice(normalizedOrder.totalPrice)}원</span>
+                <span className="font-extrabold text-blue-700">{formatPrice(normalizedOrder.totalPrice)}원</span>
               </div>
               {payment?.paymentMethod && (
                 <div className="flex justify-between border-t border-gray-100 pt-3">
@@ -452,7 +454,7 @@ export default function OrderDetailPage() {
           <p className="py-6 text-center text-sm font-medium text-red-600">{trackingModal.error}</p>
         ) : trackingModal.data ? (
           <div className="space-y-4">
-            <div className="flex gap-4 rounded-2xl bg-purple-50 p-4 text-sm">
+            <div className="flex gap-4 rounded-lg border border-gray-200 bg-blue-50 p-4 text-sm">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-400">택배사</p>
                 <p className="mt-1 font-bold text-gray-900">{trackingModal.data.courierCode || "-"}</p>
@@ -471,10 +473,10 @@ export default function OrderDetailPage() {
             {trackingModal.data.details.length === 0 ? (
               <p className="py-4 text-center text-sm text-gray-400">배송 이력이 없습니다.</p>
             ) : (
-              <ol className="relative border-l-2 border-violet-100 pl-5">
+              <ol className="relative border-l-2 border-blue-200 pl-5">
                 {trackingModal.data.details.map((detail, idx) => (
                   <li key={idx} className="mb-4 last:mb-0">
-                    <span className="absolute -left-[5px] mt-1 flex h-2.5 w-2.5 rounded-full bg-violet-400" />
+                    <span className="absolute -left-[5px] mt-1 flex h-2.5 w-2.5 rounded-full bg-blue-500" />
                     <p className="text-xs text-gray-400">{detail.time}</p>
                     <p className="font-semibold text-gray-900">{detail.status}</p>
                     {detail.location && <p className="text-sm text-gray-500">{detail.location}</p>}

@@ -53,6 +53,7 @@ function toUiOrderDetail(order) {
 
   return {
     orderId: order?.orderId,
+    orderType: order?.orderType ?? "NORMAL",
     totalPrice: order?.totalPrice ?? totalFromItems,
     createdAt: order?.createdAt ?? null,
     address: order?.address ?? "",

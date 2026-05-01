@@ -8,8 +8,6 @@ export function useMyRecommendations() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     getMyRecommendedProductsApi()
       .then((data) => {

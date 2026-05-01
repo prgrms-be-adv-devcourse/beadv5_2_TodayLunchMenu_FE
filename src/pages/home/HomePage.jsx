@@ -17,7 +17,7 @@ import {
 function SectionHeader({ title, to }) {
   return (
     <div className="mb-4 flex items-center justify-between">
-      <h2 className="text-base font-black text-gray-900 sm:text-lg">{title}</h2>
+      <h2 className="text-base font-bold text-gray-900 sm:text-lg">{title}</h2>
       {to && (
         <Link to={to} className="text-xs font-semibold text-blue-600 hover:text-blue-700">
           전체 보기 →

@@ -183,7 +183,7 @@ export default function ProductListPage() {
     <div className="text-left">
       {/* Page Header */}
       <div className="mb-5">
-        <h1 className="text-xl font-black text-gray-900">상품 목록</h1>
+        <h1 className="text-xl font-bold text-gray-900">상품 목록</h1>
         <p className="mt-0.5 text-sm text-gray-500">다양한 상품을 탐색하고 원하는 상품을 찾아보세요</p>
       </div>
 

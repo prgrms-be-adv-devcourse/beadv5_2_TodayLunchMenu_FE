@@ -39,6 +39,9 @@ function getItemActionability(status) {
   if (upper === "CANCELED") {
     return { type: "NONE", label: "이미 취소됨", canSelect: false };
   }
+  if (upper === "RETURN_REQUESTED") {
+    return { type: "NONE", label: "반품 진행 중", canSelect: false };
+  }
   return { type: "NONE", label: status || "처리 불가", canSelect: false };
 }
 
@@ -298,7 +301,7 @@ export default function OrderCancellationPage() {
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-black text-violet-700">
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-violet-700">
                             {(item.productName || "O").slice(0, 1).toUpperCase()}
                           </div>
                         )}

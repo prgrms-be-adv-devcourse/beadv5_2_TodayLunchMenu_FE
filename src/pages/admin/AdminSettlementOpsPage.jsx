@@ -159,7 +159,7 @@ export default function AdminSettlementOpsPage() {
 
               <form className="space-y-4 p-6" onSubmit={handleManualSubmit}>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     settlementId (UUID)
                   </span>
                   <input
@@ -182,7 +182,7 @@ export default function AdminSettlementOpsPage() {
 
               {manualResult && (
                 <div className="mx-6 mb-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-4 ring-1 ring-emerald-200">
-                  <p className="mb-3 text-xs font-black uppercase tracking-[0.18em] text-emerald-600">
+                  <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-emerald-600">
                     실행 결과
                   </p>
                   <div className="space-y-2 text-sm">
@@ -212,7 +212,7 @@ export default function AdminSettlementOpsPage() {
 
               <form className="space-y-4 p-6" onSubmit={handleReplaySubmit}>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-slate-500">
+                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
                     settlementIds (최대 100개)
                   </span>
                   <textarea
@@ -239,31 +239,31 @@ export default function AdminSettlementOpsPage() {
 
               {replayResult && (
                 <div className="mx-6 mb-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-4 ring-1 ring-blue-200">
-                  <p className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-blue-600">
+                  <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">
                     실행 결과
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-lg bg-white p-3">
                       <p className="text-xs font-medium text-slate-500">requestedRetryCount</p>
-                      <p className="mt-1 text-xl font-black text-[#38274c]">
+                      <p className="mt-1 text-xl font-bold text-[#38274c]">
                         {formatCount(replayResult.requestedRetryCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
                       <p className="text-xs font-medium text-slate-500">manualActionRequiredCount</p>
-                      <p className="mt-1 text-xl font-black text-amber-600">
+                      <p className="mt-1 text-xl font-bold text-amber-600">
                         {formatCount(replayResult.manualActionRequiredCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
                       <p className="text-xs font-medium text-slate-500">skippedCount</p>
-                      <p className="mt-1 text-xl font-black text-slate-700">
+                      <p className="mt-1 text-xl font-bold text-slate-700">
                         {formatCount(replayResult.skippedCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
                       <p className="text-xs font-medium text-slate-500">notFoundCount</p>
-                      <p className="mt-1 text-xl font-black text-rose-600">
+                      <p className="mt-1 text-xl font-bold text-rose-600">
                         {formatCount(replayResult.notFoundCount)}
                       </p>
                     </div>

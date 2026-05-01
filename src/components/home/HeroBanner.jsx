@@ -14,11 +14,11 @@ function AuctionSlide({ auction }) {
         <span className="inline-block bg-red-500 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">
           경매 진행 중
         </span>
-        <h2 className="mt-3 line-clamp-2 text-xl font-black text-white sm:text-2xl">
+        <h2 className="mt-3 line-clamp-2 text-xl font-bold text-white sm:text-2xl">
           {auction.productTitle || "경매 상품"}
         </h2>
         <p className="mt-1 text-xs text-blue-300">현재 입찰가</p>
-        <p className="text-2xl font-black text-white sm:text-3xl">
+        <p className="text-2xl font-bold text-white sm:text-3xl">
           {formatKRW(auction.currentPrice)}원
         </p>
         {!ended && (
@@ -26,7 +26,7 @@ function AuctionSlide({ auction }) {
             <span className="text-xs text-blue-300">남은 시간</span>
             <span
               className={[
-                "font-mono text-lg font-black tabular-nums",
+                "font-mono text-lg font-bold tabular-nums",
                 isUrgent ? "text-red-400" : "text-white",
               ].join(" ")}
             >
@@ -59,7 +59,7 @@ function PromoFreeShipping() {
           <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600">
             배송 혜택
           </p>
-          <h2 className="mt-1 text-xl font-black text-gray-900 sm:text-2xl">
+          <h2 className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
             3만원 이상 구매 시
             <br />
             무료배송
@@ -88,7 +88,7 @@ function PromoAuction() {
           <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-400">
             실시간 경매
           </p>
-          <h2 className="mt-1 text-xl font-black text-white sm:text-2xl">
+          <h2 className="mt-1 text-xl font-bold text-white sm:text-2xl">
             더 낮은 가격으로
             <br />
             득템하세요

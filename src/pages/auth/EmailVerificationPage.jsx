@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import { ApiError } from "../../api/client";
-import { confirmEmailVerificationApi } from "../../features/auth/authApi";
+import {
+  confirmEmailVerificationApi,
+  emailVerificationAutoLoginApi,
+  getMyInfoApi,
+} from "../../features/auth/authApi";
+import { setAuthState, setAuthTokens } from "../../features/auth/authStore";
 
 function resolveErrorState(error) {
   if (!(error instanceof ApiError)) {
@@ -35,7 +40,8 @@ function resolveErrorState(error) {
   if (error.code === "EMAIL_VERIFICATION_NOT_ALLOWED") {
     return {
       status: "not-allowed",
-      message: "현재 상태에서는 이메일 인증을 완료할 수 없습니다. 로그인 또는 재가입을 진행해 주세요.",
+      message:
+        "현재 상태에서는 이메일 인증을 완료할 수 없습니다. 로그인 또는 재가입을 진행해 주세요.",
       ctaTarget: "/login",
       ctaLabel: "로그인 페이지로 이동",
     };
@@ -63,7 +69,7 @@ export default function EmailVerificationPage() {
 
   const [status, setStatus] = useState(token ? "loading" : "invalid");
   const [message, setMessage] = useState(
-    token ? "이메일 인증을 확인하고 있습니다." : "인증 토큰이 없습니다."
+    token ? "이메일 인증 정보를 확인하고 있습니다." : "인증 토큰이 없습니다."
   );
   const [secondaryTarget, setSecondaryTarget] = useState(pendingVerificationTarget);
   const [secondaryLabel, setSecondaryLabel] = useState("인증 대기 화면으로 이동");
@@ -79,14 +85,57 @@ export default function EmailVerificationPage() {
       }
 
       try {
-        await confirmEmailVerificationApi({ token });
+        const verificationResult = await confirmEmailVerificationApi({ token });
         if (cancelled) return;
+
+        const autoLoginToken = verificationResult?.autoLoginToken;
+        if (!autoLoginToken) {
+          setStatus("success");
+          setMessage("이메일 인증이 완료되었습니다. 로그인 페이지로 이동합니다.");
+          navigate("/login?verified=true", { replace: true });
+          return;
+        }
+
+        setMessage("이메일 인증이 완료되었습니다. 자동 로그인 중입니다.");
+        const authResult = await emailVerificationAutoLoginApi({ autoLoginToken });
+        if (cancelled) return;
+
+        setAuthTokens({
+          accessToken: authResult?.accessToken,
+          refreshToken: authResult?.refreshToken,
+          accessTokenExpiresIn: authResult?.accessTokenExpiresIn,
+          refreshTokenExpiresIn: authResult?.refreshTokenExpiresIn,
+        });
+
+        const user = await getMyInfoApi();
+        if (cancelled) return;
+
+        setAuthState({
+          user,
+          isAuthenticated: true,
+          loading: false,
+        });
+
         setStatus("success");
-        setMessage("이메일 인증이 완료되었습니다. 이제 로그인할 수 있습니다.");
-        setSecondaryTarget(pendingVerificationTarget);
-        setSecondaryLabel("인증 대기 화면으로 이동");
+        setMessage("이메일 인증과 로그인까지 완료되었습니다. 메인 화면으로 이동합니다.");
+        navigate("/", { replace: true });
       } catch (err) {
         if (cancelled) return;
+
+        if (
+          err instanceof ApiError &&
+          err.code === "EMAIL_VERIFICATION_AUTO_LOGIN_TOKEN_INVALID"
+        ) {
+          setStatus("success");
+          setMessage(
+            "이메일 인증은 완료되었지만 자동 로그인에 실패했습니다. 다시 로그인해 주세요."
+          );
+          navigate("/login?verified=true&autoLoginFailed=true", {
+            replace: true,
+          });
+          return;
+        }
+
         const resolved = resolveErrorState(err);
         setStatus(resolved.status);
         setMessage(resolved.message);
@@ -103,7 +152,7 @@ export default function EmailVerificationPage() {
     return () => {
       cancelled = true;
     };
-  }, [pendingVerificationTarget, token]);
+  }, [navigate, pendingVerificationTarget, token]);
 
   return (
     <div className="min-h-screen bg-blue-50 px-6 py-16 text-gray-900">
@@ -130,7 +179,12 @@ export default function EmailVerificationPage() {
               <Button type="button" size="lg" onClick={() => navigate("/login")}>
                 로그인 페이지로 이동
               </Button>
-              <Button type="button" size="lg" variant="secondary" onClick={() => navigate(secondaryTarget)}>
+              <Button
+                type="button"
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate(secondaryTarget)}
+              >
                 {secondaryLabel}
               </Button>
             </div>

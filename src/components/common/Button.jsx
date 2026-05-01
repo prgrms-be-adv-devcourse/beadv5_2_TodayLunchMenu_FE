@@ -17,9 +17,9 @@ export default function Button({
   };
 
   const sizes = {
-    sm: "h-10 px-4 text-sm rounded-full",
-    md: "h-12 px-5 text-sm rounded-full",
-    lg: "h-14 px-6 text-base rounded-full font-bold",
+    sm: "h-10 px-4 text-sm rounded",
+    md: "h-12 px-5 text-sm rounded",
+    lg: "h-14 px-6 text-base rounded font-bold",
   };
 
   return (

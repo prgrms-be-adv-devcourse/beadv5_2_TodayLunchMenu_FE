@@ -17,7 +17,7 @@ function SellerNav({ currentPage = "products" }) {
       <div className="flex items-center gap-8">
         <Link
           to="/seller/me"
-          className="text-xl font-black tracking-tight text-violet-700 hover:opacity-80 transition-opacity"
+          className="text-xl font-bold tracking-tight text-violet-700 hover:opacity-80 transition-opacity"
         >
           판매자 센터
         </Link>

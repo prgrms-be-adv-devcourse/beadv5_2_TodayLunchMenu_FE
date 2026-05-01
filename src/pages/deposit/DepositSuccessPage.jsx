@@ -57,7 +57,7 @@ export default function DepositSuccessPage() {
           <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/deposits", { replace: true })}
               className="flex h-10 w-10 items-center justify-center rounded-full text-blue-700 transition hover:bg-blue-100/60"
               aria-label="뒤로 가기"
             >
@@ -124,18 +124,10 @@ export default function DepositSuccessPage() {
           <section className="mt-12 flex flex-col gap-4">
             <Button
               size="lg"
-              className="h-14 w-full rounded-full text-base font-extrabold shadow-lg"
+              className="h-14 w-full rounded text-base font-extrabold"
               onClick={() => navigate("/deposits")}
             >
-              거래내역 보기
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="h-14 w-full rounded-full text-base font-extrabold"
-              onClick={() => navigate("/deposits")}
-            >
-              예치금 페이지로 돌아가기
+              예치금 페이지로 이동
             </Button>
           </section>
         </main>

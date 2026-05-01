@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-
 import CountdownPill from "./CountdownPill";
 import { formatKRW } from "../../features/auction/format";
 import { useCountdown } from "../../features/auction/useCountdown";
@@ -15,20 +14,18 @@ export default function AuctionCard({ auction }) {
 
   const statusLabel = isWaiting ? "시작 전" : ended ? "종료" : "진행 중";
   const statusClass = isWaiting
-    ? "border-blue-200 bg-blue-50 text-blue-600"
+    ? "bg-blue-50 text-blue-600"
     : ended
-      ? "border-gray-200 bg-gray-100 text-gray-500"
-      : "border-red-200 bg-red-50 text-red-600";
+      ? "bg-gray-100 text-gray-500"
+      : "bg-red-50 text-red-600";
 
   const actionLabel = isWaiting ? "시작 전" : ended ? "결과 보기" : "입찰 참여";
-  const actionClass = isWaiting
-    ? "border-blue-300 text-blue-600 hover:bg-blue-50"
-    : ended
-      ? "border-gray-300 text-gray-500 hover:bg-gray-50"
-      : "border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white";
+  const actionClass = isWaiting || ended
+    ? "border border-gray-300 text-gray-500 hover:bg-gray-50"
+    : "bg-blue-600 text-white hover:bg-blue-700";
 
   return (
-    <article className="group border border-gray-200 bg-white transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col border border-gray-200 bg-white transition-shadow hover:shadow-md">
       <Link to={`/auctions/${auction.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
@@ -40,57 +37,59 @@ export default function AuctionCard({ auction }) {
         </div>
       </Link>
 
-      <div className="p-2.5">
+      <div className="flex flex-1 flex-col p-3">
         <div className="mb-1">
-          <span
-            className={[
-              "border px-1.5 py-0.5 text-xs font-semibold",
-              statusClass,
-            ].join(" ")}
-          >
+          <span className={["inline-block px-1.5 py-0.5 text-xs font-semibold", statusClass].join(" ")}>
             {statusLabel}
           </span>
         </div>
 
         <Link to={`/auctions/${auction.id}`}>
-          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-gray-900 hover:text-blue-600">
+          <h3 className="truncate text-sm font-medium leading-snug text-gray-800 hover:text-blue-600">
             {title}
           </h3>
         </Link>
 
-        <p className="mt-1 text-sm font-bold text-red-600">
-          {formatKRW(auction.currentPrice)}원
-        </p>
-
-        {!isWaiting && !ended && (
-          <p className="mt-0.5 text-xs text-gray-400">
-            입찰 단위 {formatKRW(auction.bidUnit)}원
+        <div className="mt-auto pt-2">
+          {auction.startPrice && auction.currentPrice > auction.startPrice && (
+            <p className="truncate text-xs text-gray-400 line-through">
+              {formatKRW(auction.startPrice)}원
+            </p>
+          )}
+          <p className="text-base font-bold text-gray-900">
+            {formatKRW(auction.currentPrice)}원
           </p>
-        )}
 
-        {isWaiting && auction.startedAt && (
-          <p className="mt-0.5 text-xs text-gray-400">
-            {new Date(auction.startedAt).toLocaleString("ko-KR", {
-              month: "numeric",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}{" "}
-            시작
-          </p>
-        )}
+          {!isWaiting && !ended && (
+            <p className="mt-0.5 truncate text-xs text-gray-400">
+              입찰 단위 {formatKRW(auction.bidUnit)}원
+            </p>
+          )}
 
-        <Link to={`/auctions/${auction.id}`} className="block">
-          <button
-            type="button"
-            className={[
-              "mt-2 w-full border py-1.5 text-xs font-semibold transition",
-              actionClass,
-            ].join(" ")}
-          >
-            {actionLabel}
-          </button>
-        </Link>
+          {isWaiting && auction.startedAt && (
+            <p className="mt-0.5 truncate text-xs text-gray-400">
+              {new Date(auction.startedAt).toLocaleString("ko-KR", {
+                month: "numeric",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}{" "}
+              시작
+            </p>
+          )}
+
+          <Link to={`/auctions/${auction.id}`} className="mt-2 block">
+            <button
+              type="button"
+              className={[
+                "w-full py-2 text-sm font-semibold transition",
+                actionClass,
+              ].join(" ")}
+            >
+              {actionLabel}
+            </button>
+          </Link>
+        </div>
       </div>
     </article>
   );

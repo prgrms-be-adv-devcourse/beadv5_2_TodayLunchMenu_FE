@@ -176,7 +176,7 @@ export default function ProductDetailPage() {
                   className="aspect-square w-full object-cover"
                 />
               ) : (
-                <div className="flex aspect-square w-full items-center justify-center text-8xl font-black text-gray-200">
+                <div className="flex aspect-square w-full items-center justify-center text-8xl font-bold text-gray-200">
                   {(product.name || "P").slice(0, 1).toUpperCase()}
                 </div>
               )}
