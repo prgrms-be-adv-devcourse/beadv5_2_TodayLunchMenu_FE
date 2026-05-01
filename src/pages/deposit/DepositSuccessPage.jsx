@@ -125,7 +125,7 @@ export default function DepositSuccessPage() {
             <Button
               size="lg"
               className="h-14 w-full rounded text-base font-extrabold"
-              onClick={() => navigate("/deposits")}
+              onClick={() => navigate("/deposits", { replace: true })}
             >
               예치금 페이지로 이동
             </Button>

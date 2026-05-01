@@ -1,5 +1,6 @@
 const PENDING_CHARGE_KEY_PREFIX = "deposit-charge:";
 const PENDING_ORDER_PAYMENT_KEY_PREFIX = "order-payment:";
+const CHARGE_RESULT_KEY_PREFIX = "deposit-charge-result:";
 
 function savePendingCharge(charge) {
   if (!charge?.pgOrderId) {
@@ -89,11 +90,38 @@ function clearPendingOrderPayment(pgOrderId) {
   sessionStorage.removeItem(`${PENDING_ORDER_PAYMENT_KEY_PREFIX}${pgOrderId}`);
 }
 
+function saveChargeResult(pgOrderId, result) {
+  if (!pgOrderId) return;
+  sessionStorage.setItem(
+    `${CHARGE_RESULT_KEY_PREFIX}${pgOrderId}`,
+    JSON.stringify(result)
+  );
+}
+
+function getChargeResult(pgOrderId) {
+  if (!pgOrderId) return null;
+  const raw = sessionStorage.getItem(`${CHARGE_RESULT_KEY_PREFIX}${pgOrderId}`);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function clearChargeResult(pgOrderId) {
+  if (!pgOrderId) return;
+  sessionStorage.removeItem(`${CHARGE_RESULT_KEY_PREFIX}${pgOrderId}`);
+}
+
 export {
   clearPendingCharge,
   clearPendingOrderPayment,
+  clearChargeResult,
   getPendingCharge,
   getPendingOrderPayment,
+  getChargeResult,
   savePendingCharge,
   savePendingOrderPayment,
+  saveChargeResult,
 };

@@ -4,8 +4,11 @@ import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import {
   clearPendingCharge,
+  clearChargeResult,
   confirmChargeApi,
   getPendingCharge,
+  getChargeResult,
+  saveChargeResult,
 } from "../../features/payment/paymentApi";
 
 function parseAmount(value) {
@@ -41,18 +44,16 @@ export default function DepositConfirmPage() {
         return;
       }
 
+      // 이미 처리 완료된 결제(뒤로 가기 재방문)이면 성공 결과로 바로 이동
+      const existingResult = getChargeResult(orderId);
+      if (existingResult) {
+        navigate("/deposits/success", { replace: true, state: existingResult });
+        return;
+      }
+
       const pendingCharge = getPendingCharge(orderId);
       if (!pendingCharge?.chargeId) {
-        navigate("/payments/toss/fail", {
-          replace: true,
-          state: {
-            errorTitle: "충전 요청 정보 없음",
-            errorMessage: "충전 요청 정보를 찾을 수 없습니다. 다시 시도해 주세요.",
-            errorCode: "CHARGE_NOT_FOUND",
-            orderId,
-            amount,
-          },
-        });
+        navigate("/deposits", { replace: true });
         return;
       }
 
@@ -85,16 +86,15 @@ export default function DepositConfirmPage() {
           return;
         }
 
+        const successState = {
+          chargeId: result.chargeId,
+          approvedAmount: result.approvedAmount,
+          walletBalance: result.walletBalance,
+          approvedAt: result.approvedAt,
+        };
+        saveChargeResult(orderId, successState);
         clearPendingCharge(orderId);
-        navigate("/deposits/success", {
-          replace: true,
-          state: {
-            chargeId: result.chargeId,
-            approvedAmount: result.approvedAmount,
-            walletBalance: result.walletBalance,
-            approvedAt: result.approvedAt,
-          },
-        });
+        navigate("/deposits/success", { replace: true, state: successState });
       } catch (error) {
         if (cancelled) {
           return;
