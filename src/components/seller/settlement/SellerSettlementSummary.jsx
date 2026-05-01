@@ -5,19 +5,19 @@ function formatKRW(value) {
 function SummaryItem({ label, value, helper, tone = "default" }) {
   const toneClass =
     tone === "accent"
-      ? "bg-violet-700 text-white"
+      ? "bg-brand text-white"
       : tone === "success"
         ? "bg-emerald-50 text-emerald-900 ring-1 ring-emerald-100"
-        : "bg-white text-gray-900 ring-1 ring-purple-100";
+        : "bg-white text-plum ring-1 ring-warm";
 
   return (
     <div className={`rounded-2xl p-5 shadow-sm ${toneClass}`}>
-      <p className={tone === "accent" ? "text-xs text-violet-100" : "text-xs text-gray-500"}>
+      <p className={tone === "accent" ? "text-xs text-white/80" : "text-xs text-olive"}>
         {label}
       </p>
       <p className="mt-2 text-2xl font-bold tracking-tight">{formatKRW(value)}</p>
       {helper ? (
-        <p className={tone === "accent" ? "mt-2 text-xs text-violet-100" : "mt-2 text-xs text-gray-500"}>
+        <p className={tone === "accent" ? "mt-2 text-xs text-white/80" : "mt-2 text-xs text-olive"}>
           {helper}
         </p>
       ) : null}

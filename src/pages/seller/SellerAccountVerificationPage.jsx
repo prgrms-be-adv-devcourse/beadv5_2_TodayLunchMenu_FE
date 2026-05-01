@@ -125,7 +125,7 @@ function getStatusBadgeClass(status) {
     case "CANCELLED":
       return "bg-red-100 text-red-700 ring-red-200";
     default:
-      return "bg-blue-100 text-blue-700 ring-gray-200";
+      return "bg-warm text-plum ring-sand";
   }
 }
 
@@ -280,7 +280,7 @@ export default function SellerAccountVerificationPage() {
     isResendLimitExceeded;
   const isSecondaryActionDisabled = isVerificationLocked || isVerified;
   const disabledButtonClassName =
-    "bg-gray-200 text-gray-500 shadow-none hover:bg-gray-200 hover:brightness-100";
+    "bg-warm text-olive shadow-none hover:bg-warm hover:brightness-100";
 
   const handleCodeChange = (event) => {
     const nextCode = event.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH);
@@ -426,29 +426,29 @@ export default function SellerAccountVerificationPage() {
     <PageContainer>
       <section className="mb-8">
         <div className="mb-2 flex items-end justify-between">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-700">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-plum">
             Step 2 of 2
           </span>
-          <span className="text-sm font-bold text-gray-500">계좌 인증</span>
+          <span className="text-sm font-bold text-olive">계좌 인증</span>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-          <div className="h-full w-full rounded-full bg-blue-700" />
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-fog">
+          <div className="h-full w-full rounded-full bg-brand" />
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-blue-700 p-6 text-white shadow-xl">
+      <section className="relative overflow-hidden bg-brand p-6 text-white shadow-xl">
         <div className="absolute -right-14 -top-16 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
         <div className="absolute -bottom-16 -left-10 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
 
         <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-blue-100">
+            <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-fog">
               Verify Account
             </p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">
               계좌 인증을 완료해 주세요
             </h1>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-blue-100">
+            <p className="mt-3 max-w-xs text-sm leading-relaxed text-fog">
               판매자 등록 마지막 단계입니다. 현재 인증 세션 상태와 남은 시간을
               확인한 뒤 mock 인증 코드를 제출하면 인증을 완료할 수 있습니다.
             </p>
@@ -466,14 +466,14 @@ export default function SellerAccountVerificationPage() {
 
         <div className="relative mt-6 grid grid-cols-2 gap-3">
           <div className="bg-white/12 p-4 backdrop-blur">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-100">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-fog">
               Time Remaining
             </p>
             <p className="mt-2 text-2xl font-extrabold">{remainingTime}</p>
           </div>
 
           <div className="bg-white/12 p-4 backdrop-blur">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-100">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-fog">
               Attempts
             </p>
             <p className="mt-2 text-2xl font-extrabold">
@@ -496,11 +496,11 @@ export default function SellerAccountVerificationPage() {
       ) : null}
 
       {!hasSession && !loadingCurrent ? (
-        <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
-          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
+        <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-sand">
+          <h2 className="text-2xl font-extrabold tracking-tight text-plum">
             진행 중인 인증이 없습니다
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-gray-500">
+          <p className="mt-3 text-sm leading-relaxed text-olive">
             판매자 등록 화면에서 계좌 정보를 다시 입력하고 인증을 시작해 주세요.
           </p>
           <div className="mt-6">
@@ -511,51 +511,51 @@ export default function SellerAccountVerificationPage() {
         </section>
       ) : (
         <>
-          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
+          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-sand">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-700">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-plum">
                   Registered Account
                 </p>
-                <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-gray-900">
+                <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-plum">
                   {verification?.bankName || "등록 계좌"}
                 </h2>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-olive">
                   {verification?.maskedAccountNumber || "계좌번호를 확인할 수 없습니다."}
                 </p>
               </div>
 
-              <div className="bg-blue-100 px-4 py-3 text-right">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
+              <div className="bg-warm px-4 py-3 text-right">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-plum">
                   Resend
                 </p>
-                <p className="mt-1 text-xl font-extrabold text-blue-900">
+                <p className="mt-1 text-xl font-extrabold text-plum">
                   {verification?.resendCount ?? 0}회
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-gray-500">
-              <div className="bg-gray-50 px-4 py-3">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
+            <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-olive">
+              <div className="bg-fog px-4 py-3">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-silver">
                   Status
                 </span>
-                <span className="mt-1 block font-medium text-gray-700">
+                <span className="mt-1 block font-medium text-plum">
                   {getStatusText(apiStatus)}
                 </span>
               </div>
-              <div className="bg-gray-50 px-4 py-3">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
+              <div className="bg-fog px-4 py-3">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-silver">
                   Expires At
                 </span>
-                <span className="mt-1 block font-medium text-gray-700">
+                <span className="mt-1 block font-medium text-plum">
                   {formatDateTime(verification?.expiresAt)}
                 </span>
               </div>
             </div>
 
-            <div className="mt-5 border-l-4 border-blue-500 bg-blue-50/80 px-4 py-4">
-              <p className="text-sm leading-relaxed text-blue-900">
+            <div className="mt-5 border-l-4 border-brand bg-fog/80 px-4 py-4">
+              <p className="text-sm leading-relaxed text-plum">
                 개발용 모의 인증 화면입니다. 현재 세션의 상태, 남은 시간, 시도 횟수,
                 재전송 횟수를 응답값 그대로 반영합니다. 자동 입력된 인증 코드를 그대로
                 제출하면 계좌 인증이 완료됩니다.
@@ -563,11 +563,11 @@ export default function SellerAccountVerificationPage() {
             </div>
           </section>
 
-          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-gray-200">
-            <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
+          <section className="mt-6 bg-white p-6 shadow-sm ring-1 ring-sand">
+            <h2 className="text-2xl font-extrabold tracking-tight text-plum">
               Enter Verification Code
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-gray-500">
+            <p className="mt-2 text-sm leading-relaxed text-olive">
               서버에서 내려준 mock 인증 코드를 자동으로 채워두었습니다.
             </p>
 
@@ -575,7 +575,7 @@ export default function SellerAccountVerificationPage() {
               {verificationDigits.map((digit, index) => (
                 <div
                   key={`verification-digit-${index}`}
-                  className="flex h-16 items-center justify-center bg-blue-50 text-2xl font-bold text-gray-900 shadow-inner ring-1 ring-gray-200"
+                  className="flex h-16 items-center justify-center bg-fog text-2xl font-bold text-plum shadow-inner ring-1 ring-sand"
                 >
                   {digit.trim() || "-"}
                 </div>
@@ -601,20 +601,20 @@ export default function SellerAccountVerificationPage() {
               </FormField>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-gray-500">
-              <div className="bg-gray-50 px-4 py-3">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
+            <div className="mt-6 grid grid-cols-2 gap-3 text-sm text-olive">
+              <div className="bg-fog px-4 py-3">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-silver">
                   Session
                 </span>
-                <span className="mt-1 block truncate font-medium text-gray-700">
+                <span className="mt-1 block truncate font-medium text-plum">
                   {verification?.sessionId || "-"}
                 </span>
               </div>
-              <div className="bg-gray-50 px-4 py-3">
-                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-gray-400">
+              <div className="bg-fog px-4 py-3">
+                <span className="block text-[11px] font-bold uppercase tracking-[0.16em] text-silver">
                   API Status
                 </span>
-                <span className="mt-1 block font-medium text-gray-700">
+                <span className="mt-1 block font-medium text-plum">
                   {verification?.status || "-"}
                 </span>
               </div>

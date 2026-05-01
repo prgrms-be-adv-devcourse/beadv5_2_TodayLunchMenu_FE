@@ -104,43 +104,43 @@ export default function MyPage() {
             <img
               src={me.profileImageUrl}
               alt="내 프로필 이미지"
-              className="h-28 w-28 rounded-full border-4 border-blue-500 object-cover shadow-2xl"
+              className="h-28 w-28 rounded-full border-4 border-brand object-cover shadow-2xl"
             />
           ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-blue-500 bg-white shadow-2xl">
-              <span className="text-4xl font-extrabold text-blue-700">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-brand bg-white shadow-2xl">
+              <span className="text-4xl font-extrabold text-plum">
                 {me.name.slice(0, 1) || 'G'}
               </span>
             </div>
           )}
           {isSeller ? (
-            <div className="absolute bottom-0 right-0 rounded-full border-4 border-blue-50 bg-blue-700 px-3 py-2 text-xs font-bold text-white shadow-lg">
+            <div className="absolute bottom-0 right-0 rounded-full border-4 border-fog bg-brand px-3 py-2 text-xs font-bold text-white shadow-lg">
               SELLER
             </div>
           ) : null}
         </div>
 
-        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-gray-900">{me.name}</h1>
-        <p className="text-sm font-medium text-gray-500">{me.email}</p>
-        <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-blue-600">
+        <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-plum">{me.name}</h1>
+        <p className="text-sm font-medium text-olive">{me.email}</p>
+        <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-plum">
           Member since {me.joinedAt}
         </p>
       </section>
 
-      <section className="relative mt-8 overflow-hidden bg-gray-100 p-6">
-        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-400/10" />
+      <section className="relative mt-8 overflow-hidden bg-fog p-6">
+        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-silver/10" />
         <div className="flex items-end justify-between gap-4">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-blue-700">
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-plum">
               Account Type
             </span>
-            <h2 className="text-xl font-bold text-gray-900">{isSeller ? '판매자 회원' : '일반 회원'}</h2>
+            <h2 className="text-xl font-bold text-plum">{isSeller ? '판매자 회원' : '일반 회원'}</h2>
           </div>
-          <span className="text-sm font-bold text-blue-700">{formatPrice(me.depositBalance)}원</span>
+          <span className="text-sm font-bold text-plum">{formatPrice(me.depositBalance)}원</span>
         </div>
 
         {isSeller ? (
-          <div className="mt-4 bg-white/70 p-4 text-sm text-gray-700 ring-1 ring-gray-200">
+          <div className="mt-4 bg-white/70 p-4 text-sm text-plum ring-1 ring-sand">
             판매자 계정이 활성화되어 있습니다. 판매자 센터에서 상품, 주문, 정산 기능을 이용할 수 있습니다.
           </div>
         ) : null}
@@ -178,23 +178,23 @@ export default function MyPage() {
           <Link
             key={item.title}
             to={item.to}
-            className="bg-white p-4 shadow-sm ring-1 ring-gray-200 transition hover:shadow-md"
+            className="bg-white p-4 shadow-sm ring-1 ring-sand transition hover:shadow-md"
           >
             <div className="mb-2 text-2xl">{item.icon}</div>
-            <span className="block text-sm font-bold text-gray-900">{item.title}</span>
-            <span className="text-[11px] font-medium text-gray-500">{item.description}</span>
+            <span className="block text-sm font-bold text-plum">{item.title}</span>
+            <span className="text-[11px] font-medium text-olive">{item.description}</span>
           </Link>
         ))}
       </section>
 
-      <section className="mt-8 bg-blue-50 p-2">
+      <section className="mt-8 bg-fog p-2">
         <Link
           to="/me/settings"
           className="flex items-center gap-4 p-4 transition hover:bg-white/60"
         >
           <span>⚙️</span>
           <span className="flex-1 text-sm font-semibold">설정</span>
-          <span className="text-gray-400">›</span>
+          <span className="text-silver">›</span>
         </Link>
 
         <Link
@@ -203,7 +203,7 @@ export default function MyPage() {
         >
           <span>🔒</span>
           <span className="flex-1 text-sm font-semibold">세션 관리</span>
-          <span className="text-gray-400">›</span>
+          <span className="text-silver">›</span>
         </Link>
 
         <Link
@@ -212,7 +212,7 @@ export default function MyPage() {
         >
           <span>🔗</span>
           <span className="flex-1 text-sm font-semibold">외부 계정 연동</span>
-          <span className="text-gray-400">›</span>
+          <span className="text-silver">›</span>
         </Link>
       </section>
     </PageContainer>

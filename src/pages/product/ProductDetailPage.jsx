@@ -109,7 +109,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="py-24 text-center text-sm text-gray-400">
+      <div className="py-24 text-center text-sm text-silver">
         상품을 불러오는 중입니다.
       </div>
     );
@@ -117,7 +117,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="py-24 text-center text-sm text-gray-400">
+      <div className="py-24 text-center text-sm text-silver">
         {error?.message || "상품을 찾을 수 없습니다."}
       </div>
     );
@@ -146,29 +146,29 @@ export default function ProductDetailPage() {
   return (
     <>
       <div className="py-2">
-        <nav className="mb-4 flex items-center gap-1 text-sm text-gray-500">
+        <nav className="mb-4 flex items-center gap-1 text-sm text-olive">
           <button
             type="button"
             onClick={() => navigate("/products")}
-            className="hover:text-blue-600 hover:underline"
+            className="hover:text-plum hover:underline"
           >
             상품 목록
           </button>
           {product.category && (
             <>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-500">{product.category}</span>
+              <span className="text-silver">/</span>
+              <span className="text-olive">{product.category}</span>
             </>
           )}
-          <span className="text-gray-300">/</span>
-          <span className="max-w-xs truncate font-medium text-gray-800">
+          <span className="text-silver">/</span>
+          <span className="max-w-xs truncate font-medium text-plum">
             {product.name}
           </span>
         </nav>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_400px] md:items-start">
           <div className="md:sticky md:top-6">
-            <div className="overflow-hidden border border-gray-200 bg-gray-50">
+            <div className="overflow-hidden border border-sand bg-fog">
               {selectedUrl ? (
                 <img
                   src={selectedUrl}
@@ -176,7 +176,7 @@ export default function ProductDetailPage() {
                   className="aspect-square w-full object-cover"
                 />
               ) : (
-                <div className="flex aspect-square w-full items-center justify-center text-8xl font-bold text-gray-200">
+                <div className="flex aspect-square w-full items-center justify-center text-8xl font-bold text-warm">
                   {(product.name || "P").slice(0, 1).toUpperCase()}
                 </div>
               )}
@@ -192,8 +192,8 @@ export default function ProductDetailPage() {
                     className={[
                       "h-14 w-14 shrink-0 overflow-hidden border-2 transition",
                       idx === selectedIdx
-                        ? "border-blue-600"
-                        : "border-gray-200 opacity-60 hover:opacity-90",
+                        ? "border-brand"
+                        : "border-sand opacity-60 hover:opacity-90",
                     ].join(" ")}
                   >
                     {img.url ? (
@@ -203,7 +203,7 @@ export default function ProductDetailPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gray-100 text-xs text-gray-300">
+                      <div className="flex h-full w-full items-center justify-center bg-fog text-xs text-silver">
                         없음
                       </div>
                     )}
@@ -215,26 +215,26 @@ export default function ProductDetailPage() {
 
           <div className="flex flex-col gap-4">
             <div>
-              <p className="mb-1 text-xs text-gray-500">{product.category}</p>
-              <h1 className="text-xl font-bold leading-snug text-gray-900">
+              <p className="mb-1 text-xs text-olive">{product.category}</p>
+              <h1 className="text-xl font-bold leading-snug text-plum">
                 {product.name}
               </h1>
             </div>
 
-            <div className="border-b border-gray-200 pb-4">
-              <p className="text-xs text-gray-500">판매가</p>
-              <p className="mt-1 tabular-nums text-3xl font-bold text-gray-900">
+            <div className="border-b border-sand pb-4">
+              <p className="text-xs text-olive">판매가</p>
+              <p className="mt-1 tabular-nums text-3xl font-bold text-plum">
                 {formatPrice(product.price)}
-                <span className="ml-1 text-xl font-medium text-gray-600">
+                <span className="ml-1 text-xl font-medium text-olive">
                   원
                 </span>
               </p>
             </div>
 
-            <div className="border border-gray-200 bg-white">
-              <dl className="divide-y divide-gray-100">
+            <div className="border border-sand bg-white">
+              <dl className="divide-y divide-warm">
                 <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <dt className="text-gray-500">판매 상태</dt>
+                  <dt className="text-olive">판매 상태</dt>
                   <dd
                     className={
                       soldOut
@@ -246,33 +246,33 @@ export default function ProductDetailPage() {
                   </dd>
                 </div>
                 <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <dt className="text-gray-500">재고</dt>
+                  <dt className="text-olive">재고</dt>
                   <dd
-                    className={`font-semibold ${product.stockCount === 0 ? "text-red-500" : "text-gray-800"}`}
+                    className={`font-semibold ${product.stockCount === 0 ? "text-red-500" : "text-plum"}`}
                   >
                     {product.stockCount}개
                   </dd>
                 </div>
                 <div className="flex items-center justify-between px-4 py-2.5 text-sm">
-                  <dt className="text-gray-500">등록일</dt>
-                  <dd className="text-gray-700">
+                  <dt className="text-olive">등록일</dt>
+                  <dd className="text-plum">
                     {formatDate(product.createdAt)}
                   </dd>
                 </div>
               </dl>
             </div>
 
-            <div className="border border-gray-200 bg-white p-4">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">
+            <div className="border border-sand bg-white p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-silver">
                 판매자
               </p>
 
               {sellerLoading ? (
-                <div className="mt-4 rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">
+                <div className="mt-4 rounded-2xl bg-fog px-4 py-5 text-sm text-olive">
                   판매자 정보를 불러오는 중입니다.
                 </div>
               ) : seller ? (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-blue-50 px-4 py-4">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-fog px-4 py-4">
                   <div className="flex min-w-0 items-center gap-3">
                     {seller.profileImageUrl ? (
                       <img
@@ -281,12 +281,12 @@ export default function ProductDetailPage() {
                         className="h-14 w-14 rounded-full object-cover ring-2 ring-white"
                       />
                     ) : (
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-sm font-extrabold text-white ring-2 ring-white">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand text-sm font-extrabold text-white ring-2 ring-white">
                         {getInitials(seller.nickname)}
                       </div>
                     )}
 
-                    <p className="truncate text-base font-bold text-gray-900">
+                    <p className="truncate text-base font-bold text-plum">
                       {seller.nickname || "알 수 없는 판매자"}
                     </p>
                   </div>
@@ -300,13 +300,13 @@ export default function ProductDetailPage() {
                       신고하기
                     </button>
                   ) : (
-                    <span className="shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-blue-700 ring-1 ring-blue-100">
+                    <span className="shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-plum ring-1 ring-warm">
                       내 상품
                     </span>
                   )}
                 </div>
               ) : (
-                <div className="mt-4 rounded-2xl bg-gray-50 px-4 py-5 text-sm text-gray-500">
+                <div className="mt-4 rounded-2xl bg-fog px-4 py-5 text-sm text-olive">
                   {sellerError || "판매자 정보를 표시할 수 없습니다."}
                 </div>
               )}
@@ -314,17 +314,17 @@ export default function ProductDetailPage() {
 
             {!soldOut && (
               <div>
-                <p className="mb-2 text-xs font-semibold text-gray-600">수량</p>
+                <p className="mb-2 text-xs font-semibold text-olive">수량</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => quantity > 1 && setQuantity(quantity - 1)}
                     disabled={quantity <= 1}
-                    className="flex h-9 w-9 items-center justify-center border border-gray-300 text-lg font-bold text-gray-600 transition hover:bg-gray-100 disabled:opacity-30"
+                    className="flex h-9 w-9 items-center justify-center border border-silver text-lg font-bold text-olive transition hover:bg-fog disabled:opacity-30"
                   >
                     -
                   </button>
-                  <span className="w-10 text-center font-bold text-gray-900">
+                  <span className="w-10 text-center font-bold text-plum">
                     {quantity}
                   </span>
                   <button
@@ -333,7 +333,7 @@ export default function ProductDetailPage() {
                       quantity < product.stockCount && setQuantity(quantity + 1)
                     }
                     disabled={quantity >= product.stockCount}
-                    className="flex h-9 w-9 items-center justify-center border border-gray-300 text-lg font-bold text-gray-600 transition hover:bg-gray-100 disabled:opacity-30"
+                    className="flex h-9 w-9 items-center justify-center border border-silver text-lg font-bold text-olive transition hover:bg-fog disabled:opacity-30"
                   >
                     +
                   </button>
@@ -342,11 +342,11 @@ export default function ProductDetailPage() {
             )}
 
             {!soldOut && (
-              <div className="flex items-baseline justify-between border border-gray-200 bg-gray-50 px-4 py-3">
-                <span className="text-sm text-gray-600">합계</span>
-                <span className="tabular-nums text-2xl font-bold text-gray-900">
+              <div className="flex items-baseline justify-between border border-sand bg-fog px-4 py-3">
+                <span className="text-sm text-olive">합계</span>
+                <span className="tabular-nums text-2xl font-bold text-plum">
                   {formatPrice(totalPrice)}
-                  <span className="ml-1 text-base font-medium text-gray-600">
+                  <span className="ml-1 text-base font-medium text-olive">
                     원
                   </span>
                 </span>
@@ -358,7 +358,7 @@ export default function ProductDetailPage() {
                 type="button"
                 disabled={soldOut || isAddingToCart}
                 onClick={handleAddToCart}
-                className="h-12 w-full border border-blue-600 text-sm font-bold text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-12 w-full border border-brand text-sm font-bold text-plum transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isAddingToCart ? "담는 중..." : "장바구니 담기"}
               </button>
@@ -366,7 +366,7 @@ export default function ProductDetailPage() {
                 type="button"
                 disabled={soldOut}
                 onClick={() => setOpenModal(true)}
-                className="h-12 w-full bg-blue-600 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-12 w-full bg-brand text-sm font-bold text-white transition hover:bg-brand disabled:cursor-not-allowed disabled:opacity-40"
               >
                 구매하기
               </button>
@@ -381,12 +381,12 @@ export default function ProductDetailPage() {
         </div>
 
         {product.description && (
-          <div className="mt-6 border border-gray-200 bg-white">
-            <div className="border-b border-gray-200 px-5 py-3">
-              <h2 className="text-sm font-bold text-gray-700">상품 설명</h2>
+          <div className="mt-6 border border-sand bg-white">
+            <div className="border-b border-sand px-5 py-3">
+              <h2 className="text-sm font-bold text-plum">상품 설명</h2>
             </div>
             <div className="px-5 py-4">
-              <p className="whitespace-pre-line text-sm leading-relaxed text-gray-600">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-olive">
                 {product.description}
               </p>
             </div>
@@ -429,7 +429,7 @@ export default function ProductDetailPage() {
 
       {toast && (
         <div
-          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}
+          className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-dark-surface"}`}
         >
           {toast.error ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

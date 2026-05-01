@@ -114,20 +114,20 @@ export default function MemberReportHistoryPage() {
       <div className="mx-auto max-w-3xl">
         <section className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-olive">
               Member Report
             </p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-plum">
               내 신고 이력
             </h1>
-            <p className="mt-2 text-sm leading-6 text-gray-600">
+            <p className="mt-2 text-sm leading-6 text-olive">
               제출하신 신고 내역과 현재 처리 상태를 한눈에 확인할 수 있습니다.
             </p>
           </div>
           <div className="flex gap-3">
             <Link
               to="/member-reports/new"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-gray-100 px-5 text-sm font-bold text-gray-700 transition hover:bg-gray-200"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-fog px-5 text-sm font-bold text-plum transition hover:bg-warm"
             >
               새 신고 작성
             </Link>
@@ -137,7 +137,7 @@ export default function MemberReportHistoryPage() {
           </div>
         </section>
 
-        <nav className="mb-8 flex gap-2 bg-blue-50 p-1.5 ring-1 ring-gray-200">
+        <nav className="mb-8 flex gap-2 bg-fog p-1.5 ring-1 ring-sand">
           {statusTabs.map((tab) => {
             const active = tab.value === activeTab;
             return (
@@ -148,8 +148,8 @@ export default function MemberReportHistoryPage() {
                 className={[
                   'flex-1 px-4 py-3 text-sm font-bold transition',
                   active
-                    ? 'bg-white text-blue-700 shadow-sm'
-                    : 'text-gray-500 hover:text-blue-600',
+                    ? 'bg-white text-plum shadow-sm'
+                    : 'text-olive hover:text-plum',
                 ].join(' ')}
               >
                 {tab.label}
@@ -165,24 +165,24 @@ export default function MemberReportHistoryPage() {
         ) : null}
 
         {loading ? (
-          <div className="border border-gray-200 bg-white px-6 py-16 text-center text-sm font-medium text-gray-500 shadow-sm">
+          <div className="border border-sand bg-white px-6 py-16 text-center text-sm font-medium text-olive shadow-sm">
             신고 이력을 불러오는 중입니다...
           </div>
         ) : filteredReports.length === 0 ? (
-          <div className="border border-dashed border-gray-200 bg-white px-6 py-16 text-center shadow-sm">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 text-3xl text-blue-300">
+          <div className="border border-dashed border-sand bg-white px-6 py-16 text-center shadow-sm">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-fog text-3xl text-silver">
               <span>🗂️</span>
             </div>
-            <h2 className="mt-5 text-xl font-extrabold tracking-tight text-gray-900">
+            <h2 className="mt-5 text-xl font-extrabold tracking-tight text-plum">
               표시할 신고 내역이 없습니다
             </h2>
-            <p className="mt-2 text-sm leading-6 text-gray-500">
+            <p className="mt-2 text-sm leading-6 text-olive">
               아직 신고를 제출하지 않았거나, 현재 선택한 필터에 해당하는 내역이 없습니다.
             </p>
             <div className="mt-6">
               <Link
                 to="/member-reports/new"
-                className="inline-flex h-12 items-center justify-center rounded-full bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700"
+                className="inline-flex h-12 items-center justify-center rounded-full bg-brand px-5 text-sm font-bold text-white transition hover:bg-brand"
               >
                 신고하러 가기
               </Link>
@@ -199,7 +199,7 @@ export default function MemberReportHistoryPage() {
                 <article
                   key={report.reportId}
                   className={[
-                    'border-l-4 bg-white p-5 shadow-sm ring-1 ring-gray-200',
+                    'border-l-4 bg-white p-5 shadow-sm ring-1 ring-sand',
                     statusMeta.card,
                   ].join(' ')}
                 >
@@ -211,11 +211,11 @@ export default function MemberReportHistoryPage() {
                       ].join(' ')}>
                         {statusMeta.label}
                       </span>
-                      <h2 className="mt-3 text-lg font-extrabold tracking-tight text-gray-900">
+                      <h2 className="mt-3 text-lg font-extrabold tracking-tight text-plum">
                         {report.reportId}
                       </h2>
                     </div>
-                    <div className="text-right text-xs font-semibold text-gray-400">
+                    <div className="text-right text-xs font-semibold text-silver">
                       <p>신고일</p>
                       <time>{formatDate(report.createdAt)}</time>
                     </div>
@@ -223,24 +223,24 @@ export default function MemberReportHistoryPage() {
 
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className="rounded-full bg-gray-100 px-3 py-1 font-bold text-gray-700">
+                      <span className="rounded-full bg-fog px-3 py-1 font-bold text-plum">
                         {reportTypeLabel}
                       </span>
-                      <span className="font-medium text-gray-400">대상 회원: {report.reportedMemberId}</span>
+                      <span className="font-medium text-silver">대상 회원: {report.reportedMemberId}</span>
                     </div>
-                    <p className="text-sm leading-6 text-gray-700">{report.reason}</p>
+                    <p className="text-sm leading-6 text-plum">{report.reason}</p>
                   </div>
 
-                  <div className="mt-5 bg-blue-50 p-4 ring-1 ring-gray-200">
+                  <div className="mt-5 bg-fog p-4 ring-1 ring-sand">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-700">
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-plum">
                         검토 코멘트
                       </p>
-                      <span className="text-[11px] font-semibold text-gray-400">
+                      <span className="text-[11px] font-semibold text-silver">
                         검토일 {formatDate(report.reviewedAt)}
                       </span>
                     </div>
-                    <p className="text-sm leading-6 text-gray-600">{comment}</p>
+                    <p className="text-sm leading-6 text-olive">{comment}</p>
                   </div>
                 </article>
               );

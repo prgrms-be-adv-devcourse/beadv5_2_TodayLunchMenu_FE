@@ -155,11 +155,11 @@ export default function EmailVerificationPage() {
   }, [navigate, pendingVerificationTarget, token]);
 
   return (
-    <div className="min-h-screen bg-blue-50 px-6 py-16 text-gray-900">
+    <div className="min-h-screen bg-fog px-6 py-16 text-plum">
       <div className="mx-auto flex min-h-[80vh] max-w-3xl items-center justify-center">
         <section className="w-full bg-white p-8 shadow-xl md:p-12">
           <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl text-blue-700">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-warm text-4xl text-plum">
               {status === "success" ? "✓" : status === "loading" ? "…" : "!"}
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
@@ -173,7 +173,7 @@ export default function EmailVerificationPage() {
                       ? "유효하지 않은 인증 링크"
                       : "이메일 인증 실패"}
             </h1>
-            <p className="mt-4 text-base font-medium leading-7 text-gray-600">{message}</p>
+            <p className="mt-4 text-base font-medium leading-7 text-olive">{message}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button type="button" size="lg" onClick={() => navigate("/login")}>
@@ -189,9 +189,9 @@ export default function EmailVerificationPage() {
               </Button>
             </div>
 
-            <p className="mt-8 text-sm font-medium text-gray-500">
+            <p className="mt-8 text-sm font-medium text-olive">
               문제가 계속되면
-              <Link to="/signup" className="ml-1 font-bold text-blue-700 hover:underline">
+              <Link to="/signup" className="ml-1 font-bold text-plum hover:underline">
                 다시 회원가입
               </Link>
               을 시도해 주세요.

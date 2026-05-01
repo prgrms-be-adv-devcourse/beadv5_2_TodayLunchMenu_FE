@@ -10,7 +10,7 @@ import {
 
 function DecorativeFoodIcon({ label }) {
   return (
-    <div className="flex h-12 w-12 items-center justify-center border border-blue-200/70 bg-white/70 text-lg font-bold text-blue-400 shadow-sm">
+    <div className="flex h-12 w-12 items-center justify-center border border-sand/70 bg-white/70 text-lg font-bold text-silver shadow-sm">
       {label}
     </div>
   );
@@ -46,14 +46,14 @@ export default function KakaoLinkRequiredPage() {
     : "/signup";
 
   return (
-    <div className="min-h-screen overflow-hidden bg-blue-50 text-gray-900">
+    <div className="min-h-screen overflow-hidden bg-fog text-plum">
       <header className="fixed top-0 z-50 w-full bg-white/75 backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-md items-center justify-between px-6">
           <button
             type="button"
             aria-label="뒤로 가기"
             onClick={() => navigate(-1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold text-blue-700 transition hover:bg-blue-100 active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold text-plum transition hover:bg-warm active:scale-95"
           >
             {"<"}
           </button>
@@ -62,19 +62,19 @@ export default function KakaoLinkRequiredPage() {
 
           <Link
             to="/login"
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold text-plum transition hover:bg-warm"
           >
             홈
           </Link>
         </div>
-        <div className="h-px w-full bg-blue-200" />
+        <div className="h-px w-full bg-sand" />
       </header>
 
       <main className="mx-auto flex min-h-screen w-full max-w-md flex-col px-6 pb-12 pt-24">
         <section className="relative mb-10 flex justify-center pt-4">
           <div className="relative h-64 w-64">
-            <div className="absolute left-4 top-4 h-56 w-56 rotate-6 bg-blue-200/70" />
-            <div className="absolute left-0 top-0 h-56 w-56 -rotate-3 bg-blue-500/10" />
+            <div className="absolute left-4 top-4 h-56 w-56 rotate-6 bg-sand/70" />
+            <div className="absolute left-0 top-0 h-56 w-56 -rotate-3 bg-brand/10" />
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative flex h-48 w-48 flex-col items-center justify-center bg-white p-8 text-center shadow-[0_24px_70px_rgba(37,99,235,0.18)]">
@@ -82,10 +82,10 @@ export default function KakaoLinkRequiredPage() {
                   K
                 </div>
 
-                <div className="flex items-center gap-3 text-blue-700">
+                <div className="flex items-center gap-3 text-plum">
                   <span className="text-xl font-bold">Kakao</span>
-                  <span className="h-1.5 w-10 rounded-full bg-blue-200" />
-                  <span className="text-xl font-bold text-slate-700">Me</span>
+                  <span className="h-1.5 w-10 rounded-full bg-sand" />
+                  <span className="text-xl font-bold text-olive">Me</span>
                 </div>
               </div>
 
@@ -98,7 +98,7 @@ export default function KakaoLinkRequiredPage() {
 
         <section className="space-y-6">
           <div className="space-y-3">
-            <p className="text-xs font-bold uppercase tracking-[0.28em] text-blue-600">
+            <p className="text-xs font-bold uppercase tracking-[0.28em] text-plum">
               카카오 계정 연동
             </p>
             <h2 className="text-3xl font-bold leading-tight tracking-tight">
@@ -106,18 +106,18 @@ export default function KakaoLinkRequiredPage() {
               <br />
               필요해요
             </h2>
-            <p className="text-sm font-medium leading-7 text-gray-500">
+            <p className="text-sm font-medium leading-7 text-olive">
               카카오 인증은 완료되었지만 아직 카카오 계정이 GoodsMall 회원 계정과 연결되어 있지
               않아요.
             </p>
           </div>
 
           {pendingLink.nickname ? (
-            <div className="border border-blue-200/80 bg-white/70 p-4 shadow-sm backdrop-blur">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-blue-600">
+            <div className="border border-sand/80 bg-white/70 p-4 shadow-sm backdrop-blur">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-plum">
                 카카오 계정
               </p>
-              <p className="mt-2 text-xs font-medium text-gray-500">
+              <p className="mt-2 text-xs font-medium text-olive">
                 카카오 닉네임: {pendingLink.nickname}
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function KakaoLinkRequiredPage() {
         <section className="mt-10 space-y-4">
           <Button
             size="lg"
-            className="w-full gap-2 bg-blue-700"
+            className="w-full gap-2 bg-brand"
             onClick={() => navigate(loginTarget)}
           >
             기존 계정과 연결하기
@@ -137,7 +137,7 @@ export default function KakaoLinkRequiredPage() {
           <button
             type="button"
             onClick={() => navigate(signupTarget)}
-            className="flex h-14 w-full items-center justify-center rounded-full bg-blue-100 px-6 text-base font-bold text-blue-900 transition hover:bg-blue-200 active:scale-[0.98]"
+            className="flex h-14 w-full items-center justify-center rounded-full bg-warm px-6 text-base font-bold text-plum transition hover:bg-sand active:scale-[0.98]"
           >
             회원가입 후 연결하기
           </button>
@@ -148,7 +148,7 @@ export default function KakaoLinkRequiredPage() {
               clearPendingKakaoLink();
               navigate("/login");
             }}
-            className="w-full py-3 text-sm font-semibold text-gray-500 transition hover:text-blue-700"
+            className="w-full py-3 text-sm font-semibold text-olive transition hover:text-plum"
           >
             취소
           </button>
@@ -156,7 +156,7 @@ export default function KakaoLinkRequiredPage() {
 
         <footer className="mt-auto pt-12 text-center">
           <div className="bg-white/65 p-4 text-left shadow-sm backdrop-blur">
-            <p className="text-xs font-medium leading-6 text-gray-500">
+            <p className="text-xs font-medium leading-6 text-olive">
               한 번 연결해두면 다음부터는 카카오로 바로 로그인할 수 있어요.
             </p>
           </div>

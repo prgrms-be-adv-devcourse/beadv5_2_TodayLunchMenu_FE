@@ -128,7 +128,7 @@ function getTransactionLabel(transaction) {
 function TransactionHistory({ items, loading, error }) {
   if (loading) {
     return (
-      <p className="py-12 text-center text-sm text-gray-500">
+      <p className="py-12 text-center text-sm text-olive">
         {
           "\uAC70\uB798 \uB0B4\uC5ED\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4..."
         }
@@ -146,7 +146,7 @@ function TransactionHistory({ items, loading, error }) {
 
   if (items.length === 0) {
     return (
-      <p className="py-12 text-center text-sm text-gray-500">
+      <p className="py-12 text-center text-sm text-olive">
         {
           "\uD45C\uC2DC\uD560 \uAC70\uB798 \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."
         }
@@ -159,24 +159,24 @@ function TransactionHistory({ items, loading, error }) {
       {items.map((item) => (
         <article
           key={item.id || `${item.referenceId}-${item.createdAt}`}
-          className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100 md:flex-row md:items-center md:justify-between"
+          className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-warm md:flex-row md:items-center md:justify-between"
         >
           <div className="text-left">
-            <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-bold text-violet-700">
+            <span className="rounded-full bg-warm px-3 py-1 text-xs font-bold text-plum">
               {getTransactionLabel(item)}
             </span>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-olive">
               {translateTransactionText(item.description)}
             </p>
-            <p className="mt-1 text-xs text-gray-400">
+            <p className="mt-1 text-xs text-silver">
               {formatDate(item.createdAt)}
             </p>
           </div>
           <div className="text-left md:text-right">
-            <p className="text-lg font-bold text-gray-900">
+            <p className="text-lg font-bold text-plum">
               {formatKRW(item.amount)}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-olive">
               {"\uC794\uC561"} {formatKRW(item.balanceAfter)}
             </p>
           </div>
@@ -352,7 +352,7 @@ export default function SellerSettlementPage() {
     return (
       <PageContainer>
         <section className="py-16 text-center">
-          <p className="text-sm font-medium text-gray-500">
+          <p className="text-sm font-medium text-olive">
             {
               "\uD310\uB9E4\uC790 \uAD8C\uD55C\uC744 \uD655\uC778\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
             }
@@ -448,13 +448,13 @@ export default function SellerSettlementPage() {
       <SellerNav currentPage="settlements" />
       <PageContainer>
         <section className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-plum">
             판매자 정산
           </p>
-          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-extrabold tracking-tight text-plum">
             {"\uC815\uC0B0 \uAD00\uB9AC"}
           </h1>
-          <p className="text-sm leading-6 text-gray-500">
+          <p className="text-sm leading-6 text-olive">
             {
               "\uC815\uC0B0 \uB300\uAE30 \uAE08\uC561\uACFC \uC9C0\uAE08 \uC815\uC0B0 \uAC00\uB2A5\uD55C \uAE08\uC561, \uADF8\uB9AC\uACE0 \uC6D4 \uC815\uC0B0 \uC9C0\uAE09 \uC0C1\uD0DC\uB97C \uD55C \uD654\uBA74\uC5D0\uC11C \uD655\uC778\uD558\uC138\uC694."
             }
@@ -494,8 +494,8 @@ export default function SellerSettlementPage() {
                   className={[
                     "rounded-full px-5 py-2 text-sm font-bold transition",
                     active
-                      ? "bg-violet-700 text-white shadow-md shadow-violet-500/20"
-                      : "bg-purple-100 text-gray-500 hover:bg-purple-200",
+                      ? "bg-brand text-white shadow-md shadow-sand/20"
+                      : "bg-warm text-olive hover:bg-sand",
                   ].join(" ")}
                 >
                   {tab.label}

@@ -150,7 +150,7 @@ export default function MemberEditPage() {
   if (authLoading && !user) {
     return (
       <PageContainer>
-        <div className="bg-white px-6 py-12 text-center text-sm font-medium text-gray-500 shadow-sm ring-1 ring-gray-200">
+        <div className="bg-white px-6 py-12 text-center text-sm font-medium text-olive shadow-sm ring-1 ring-sand">
           회원 정보를 불러오는 중입니다...
         </div>
       </PageContainer>
@@ -162,16 +162,16 @@ export default function MemberEditPage() {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-olive">
               Profile Edit
             </p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-plum">
               회원 정보 수정
             </h1>
             <div className="mt-3 flex flex-wrap gap-3">
               <Link
                 to="/me/password"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-blue-100 px-5 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-warm px-5 text-sm font-semibold text-plum transition hover:bg-sand"
               >
                 비밀번호 변경으로 이동
               </Link>
@@ -188,16 +188,16 @@ export default function MemberEditPage() {
           </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-sm ring-1 ring-gray-200">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-sm ring-1 ring-sand">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             {user?.profileImageUrl ? (
               <img
                 src={user.profileImageUrl}
                 alt="현재 프로필 이미지"
-                className="h-24 w-24 rounded-full object-cover ring-2 ring-blue-200"
+                className="h-24 w-24 rounded-full object-cover ring-2 ring-sand"
               />
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-600 text-2xl font-extrabold text-white">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-brand text-2xl font-extrabold text-white">
                 {(form.nickname || user?.nickname || "U").slice(0, 1).toUpperCase()}
               </div>
             )}
@@ -208,14 +208,14 @@ export default function MemberEditPage() {
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
                   onChange={handleProfileImageChange}
-                  className="block w-full border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-200"
+                  className="block w-full border border-sand bg-white px-4 py-3 text-sm text-plum file:mr-4 file:rounded-full file:border-0 file:bg-warm file:px-4 file:py-2 file:font-semibold file:text-plum hover:file:bg-sand"
                 />
                 {profileImage ? (
-                  <p className="mt-2 text-xs font-medium text-gray-500">
+                  <p className="mt-2 text-xs font-medium text-olive">
                     선택한 파일: {profileImage.name}
                   </p>
                 ) : (
-                  <p className="mt-2 text-xs font-medium text-gray-500">
+                  <p className="mt-2 text-xs font-medium text-olive">
                     이미지를 선택하지 않으면 기존 프로필 사진이 유지됩니다. 최대 1MB까지 업로드할 수 있습니다.
                   </p>
                 )}

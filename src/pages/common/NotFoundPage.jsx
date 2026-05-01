@@ -7,13 +7,13 @@ export default function NotFoundPage() {
 
   return (
     <section className="flex min-h-[calc(100svh-8rem)] items-center justify-center px-4">
-      <div className="w-full max-w-xl rounded-[32px] bg-white px-8 py-12 text-center shadow-sm ring-1 ring-gray-200 sm:px-12 sm:py-14">
+      <div className="w-full max-w-xl rounded-[32px] bg-white px-8 py-12 text-center shadow-sm ring-1 ring-sand sm:px-12 sm:py-14">
         <div className="space-y-6">
           <div className="space-y-3">
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-plum sm:text-5xl">
               페이지를 찾을 수 없어요
             </h1>
-            <p className="text-base leading-7 text-gray-500 sm:text-lg">
+            <p className="text-base leading-7 text-olive sm:text-lg">
               입력한 주소가 잘못됐거나, 페이지가 이동/삭제됐을 수 있어요.
             </p>
           </div>

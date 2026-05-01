@@ -22,7 +22,7 @@ export default function CheckboxField({
             aria-invalid={!!error}
             className={cn(
               "h-5 w-5 rounded border-none",
-              "bg-purple-200 text-violet-700 focus:ring-violet-300",
+              "bg-sand text-brand focus:ring-[#435ee5]",
               disabled && "cursor-not-allowed opacity-50"
             )}
           />
@@ -32,7 +32,7 @@ export default function CheckboxField({
           htmlFor={id}
           className={cn(
             "text-sm leading-tight",
-            error ? "text-red-600" : "text-gray-600",
+            error ? "text-[#9e0a0a]" : "text-olive",
             disabled && "opacity-50"
           )}
         >

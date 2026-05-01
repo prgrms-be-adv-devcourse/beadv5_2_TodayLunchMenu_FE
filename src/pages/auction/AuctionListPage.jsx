@@ -15,11 +15,11 @@ const FILTERS = [
 ];
 
 const FILTER_COLORS = {
-  ALL: "text-gray-800",
-  WAITING: "text-blue-600",
+  ALL: "text-plum",
+  WAITING: "text-plum",
   ONGOING: "text-green-600",
   ENDING_SOON: "text-red-600",
-  ENDED: "text-gray-500",
+  ENDED: "text-olive",
 };
 
 const BACKEND_STATUS = {
@@ -84,8 +84,8 @@ export default function AuctionListPage() {
     <div className="text-left">
       {/* Page Header */}
       <div className="mb-5">
-        <h1 className="text-xl font-bold text-gray-900">경매장</h1>
-        <p className="mt-0.5 text-sm text-gray-500">실시간으로 진행되는 경매에 참여해보세요</p>
+        <h1 className="text-xl font-bold text-plum">경매장</h1>
+        <p className="mt-0.5 text-sm text-olive">실시간으로 진행되는 경매에 참여해보세요</p>
       </div>
 
       <div className="flex items-start gap-0">
@@ -96,8 +96,8 @@ export default function AuctionListPage() {
             sidebarOpen ? "w-40" : "w-0 overflow-hidden",
           ].join(" ")}
         >
-          <div className="mr-4 overflow-hidden border border-gray-200 bg-white">
-            <div className="bg-blue-700 px-4 py-2.5">
+          <div className="mr-4 overflow-hidden border border-sand bg-white">
+            <div className="bg-brand px-4 py-2.5">
               <h2 className="text-sm font-bold text-white">경매 상태</h2>
             </div>
             <nav className="py-1">
@@ -111,8 +111,8 @@ export default function AuctionListPage() {
                     className={[
                       "w-full px-4 py-2 text-left text-sm transition",
                       active
-                        ? `bg-blue-50 font-semibold ${FILTER_COLORS[f.key]}`
-                        : "text-gray-700 hover:bg-gray-50",
+                        ? `bg-fog font-semibold ${FILTER_COLORS[f.key]}`
+                        : "text-plum hover:bg-fog",
                     ].join(" ")}
                   >
                     {f.label}
@@ -126,7 +126,7 @@ export default function AuctionListPage() {
         {/* Main Content */}
         <div className="min-w-0 flex-1">
           {/* Top Bar */}
-          <div className="mb-4 border-b border-gray-200 pb-3">
+          <div className="mb-4 border-b border-sand pb-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <button
@@ -135,18 +135,18 @@ export default function AuctionListPage() {
                   className={[
                     "flex h-8 items-center gap-1.5 border px-2 text-xs font-semibold transition",
                     sidebarOpen
-                      ? "border-gray-300 text-gray-500 hover:bg-gray-100"
-                      : "border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100",
+                      ? "border-silver text-olive hover:bg-fog"
+                      : "border-silver bg-fog text-plum hover:bg-warm",
                   ].join(" ")}
                   title="사이드바 열기/닫기"
                 >
                   <Menu className="h-4 w-4" />
                   {!sidebarOpen && <span>필터</span>}
                 </button>
-                <h2 className="text-sm font-bold text-gray-900">
+                <h2 className="text-sm font-bold text-plum">
                   {FILTERS.find((f) => f.key === filterKey)?.label}
                 </h2>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-silver">
                   {visible.length}개
                   {pageInfo.totalPages > 1 && ` · ${page + 1}/${pageInfo.totalPages}페이지`}
                 </span>
@@ -157,13 +157,13 @@ export default function AuctionListPage() {
                   value={keyword}
                   onChange={(e) => { setKeyword(e.target.value); setPage(0); }}
                   placeholder="상품명 검색"
-                  className="h-8 border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
+                  className="h-8 border border-silver px-3 text-sm outline-none focus:border-brand"
                 />
                 {keyword && (
                   <button
                     type="button"
                     onClick={() => { setKeyword(""); setPage(0); }}
-                    className="h-8 border border-gray-300 px-2.5 text-xs text-gray-600 transition hover:bg-gray-100"
+                    className="h-8 border border-silver px-2.5 text-xs text-olive transition hover:bg-fog"
                   >
                     초기화
                   </button>
@@ -174,7 +174,7 @@ export default function AuctionListPage() {
 
           {/* Grid */}
           {loading ? (
-            <div className="py-20 text-center text-sm text-gray-400">
+            <div className="py-20 text-center text-sm text-silver">
               경매를 불러오는 중입니다…
             </div>
           ) : error ? (
@@ -185,7 +185,7 @@ export default function AuctionListPage() {
             <div className={fetching ? "pointer-events-none opacity-50 transition-opacity" : ""}>
               {visible.length === 0 ? (
                 <div className="py-20 text-center">
-                  <p className="text-sm font-semibold text-gray-700">
+                  <p className="text-sm font-semibold text-plum">
                     {keyword.trim()
                       ? `"${keyword}"에 해당하는 경매가 없습니다.`
                       : "조건에 맞는 경매가 없습니다."}
@@ -193,7 +193,7 @@ export default function AuctionListPage() {
                   <button
                     type="button"
                     onClick={() => { handleFilterChange("ALL"); setKeyword(""); }}
-                    className="mt-3 border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100"
+                    className="mt-3 border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog"
                   >
                     전체 보기
                   </button>
@@ -215,18 +215,18 @@ export default function AuctionListPage() {
                         type="button"
                         disabled={page === 0}
                         onClick={() => setPage((p) => Math.max(0, p - 1))}
-                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         이전
                       </button>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-olive">
                         {page + 1} / {pageInfo.totalPages}
                       </span>
                       <button
                         type="button"
                         disabled={!pageInfo.hasNext}
                         onClick={() => setPage((p) => p + 1)}
-                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         다음
                       </button>

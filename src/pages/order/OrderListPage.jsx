@@ -43,9 +43,9 @@ function getStatusMeta(status) {
     case "CREATED":
       return { label: "결제 대기", className: "bg-amber-100 text-amber-700" };
     case "CONFIRMED":
-      return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
+      return { label: "주문 완료", className: "bg-warm text-plum" };
     case "SHIPPING":
-      return { label: "배송 중", className: "bg-blue-100 text-blue-700" };
+      return { label: "배송 중", className: "bg-warm text-plum" };
     case "PARTIAL_SHIPPING":
       return { label: "일부 배송 중", className: "bg-sky-100 text-sky-700" };
     case "DELIVERED":
@@ -57,7 +57,7 @@ function getStatusMeta(status) {
     case "CANCELED":
       return { label: "취소됨", className: "bg-red-100 text-red-600" };
     default:
-      return { label: status, className: "bg-gray-100 text-gray-700" };
+      return { label: status, className: "bg-fog text-plum" };
   }
 }
 
@@ -146,21 +146,21 @@ export default function OrderListPage() {
       <PageHeader
         title="주문 내역"
         action={
-          <span className="text-sm font-medium text-gray-500">
+          <span className="text-sm font-medium text-olive">
             총 {filteredOrders.length}건
           </span>
         }
       />
 
-      <div className="mb-5 flex rounded-xl bg-gray-100 p-1">
+      <div className="mb-5 flex rounded-xl bg-fog p-1">
         {ORDER_TYPE_TABS.map((tab) => (
           <button
             key={tab.value}
             onClick={() => { setOrderType(tab.value); setStatus("ALL"); setKeyword(""); setDateFrom(""); setDateTo(""); }}
             className={`flex-1 rounded-lg py-2 text-sm font-bold transition-all ${
               orderType === tab.value
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-white text-plum shadow-sm"
+                : "text-olive hover:text-plum"
             }`}
           >
             {tab.label}
@@ -168,7 +168,7 @@ export default function OrderListPage() {
         ))}
       </div>
 
-      <section className="mb-6 bg-white/80 p-4 shadow-sm ring-1 ring-gray-200">
+      <section className="mb-6 bg-white/80 p-4 shadow-sm ring-1 ring-sand">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.5fr_1fr]">
           <Input
             placeholder="주문번호 또는 상품명 검색"
@@ -179,7 +179,7 @@ export default function OrderListPage() {
           <select
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="h-14 bg-blue-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-blue-200"
+            className="h-14 bg-warm/70 px-4 text-sm text-plum outline-none transition focus:ring-2 focus:ring-sand"
           >
             {STATUS_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -194,21 +194,21 @@ export default function OrderListPage() {
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+            className="h-10 flex-1 border border-sand bg-white px-3 text-sm text-plum outline-none focus:ring-2 focus:ring-sand"
           />
-          <span className="text-sm text-gray-400">~</span>
+          <span className="text-sm text-silver">~</span>
           <input
             type="date"
             value={dateTo}
             min={dateFrom}
             onChange={(e) => setDateTo(e.target.value)}
-            className="h-10 flex-1 border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-200"
+            className="h-10 flex-1 border border-sand bg-white px-3 text-sm text-plum outline-none focus:ring-2 focus:ring-sand"
           />
           {(dateFrom || dateTo) && (
             <button
               type="button"
               onClick={() => { setDateFrom(""); setDateTo(""); }}
-              className="text-sm font-medium text-gray-400 hover:text-gray-600"
+              className="text-sm font-medium text-silver hover:text-olive"
             >
               초기화
             </button>
@@ -217,8 +217,8 @@ export default function OrderListPage() {
       </section>
 
       {loading ? (
-        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
-          <p className="text-sm font-medium text-gray-500">주문 목록을 불러오는 중입니다...</p>
+        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-sand">
+          <p className="text-sm font-medium text-olive">주문 목록을 불러오는 중입니다...</p>
         </section>
       ) : error ? (
         <section className="bg-red-50 px-6 py-16 text-center shadow-sm ring-1 ring-red-100">
@@ -226,9 +226,9 @@ export default function OrderListPage() {
           <p className="text-sm text-red-500">{error}</p>
         </section>
       ) : filteredOrders.length === 0 ? (
-        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
-          <p className="mb-2 text-lg font-bold text-gray-900">주문 내역이 없어요</p>
-          <p className="text-sm text-gray-500">첫 주문을 생성하면 이곳에서 확인할 수 있어요.</p>
+        <section className="bg-white/75 px-6 py-16 text-center shadow-sm ring-1 ring-sand">
+          <p className="mb-2 text-lg font-bold text-plum">주문 내역이 없어요</p>
+          <p className="text-sm text-olive">첫 주문을 생성하면 이곳에서 확인할 수 있어요.</p>
         </section>
       ) : (
         <section className="space-y-4">
@@ -240,7 +240,7 @@ export default function OrderListPage() {
             const cardContent = (
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 overflow-hidden bg-blue-50">
+                  <div className="h-20 w-20 overflow-hidden bg-fog">
                     {thumbnailSrc ? (
                       <img
                         src={thumbnailSrc}
@@ -248,7 +248,7 @@ export default function OrderListPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-700">
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-plum">
                         {(order.representativeProductName || "O").slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -264,25 +264,25 @@ export default function OrderListPage() {
                       >
                         {statusMeta.label}
                       </span>
-                      <span className="text-xs font-medium uppercase tracking-wider text-gray-400">
+                      <span className="text-xs font-medium uppercase tracking-wider text-silver">
                         {formatDate(order.createdAt)}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
+                    <h3 className="text-lg font-extrabold tracking-tight text-plum">
                       {order.representativeProductName}
                       {order.itemCount > 1 ? ` 외 ${order.itemCount - 1}건` : ""}
                     </h3>
 
-                    <p className="mt-1 text-sm font-medium text-gray-500">
+                    <p className="mt-1 text-sm font-medium text-olive">
                       주문번호 {order.orderNumber}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-left md:text-right">
-                  <p className="text-sm text-gray-500">총 결제 금액</p>
-                  <p className="mt-1 text-2xl font-extrabold tracking-tight text-blue-700">
+                  <p className="text-sm text-olive">총 결제 금액</p>
+                  <p className="mt-1 text-2xl font-extrabold tracking-tight text-plum">
                     {formatPrice(order.totalAmount)}원
                   </p>
                 </div>
@@ -307,10 +307,10 @@ export default function OrderListPage() {
             return (
               <div
                 key={order.orderId}
-                className={`bg-white/80 p-5 shadow-sm ring-1 ${isPendingAuction ? "ring-amber-300" : "ring-gray-200"}`}
+                className={`bg-white/80 p-5 shadow-sm ring-1 ${isPendingAuction ? "ring-amber-300" : "ring-sand"}`}
               >
                 {cardContent}
-                <div className="mt-4 flex justify-end gap-2 border-t border-gray-100 pt-3">
+                <div className="mt-4 flex justify-end gap-2 border-t border-warm pt-3">
                   {isPendingAuction && (
                     <button
                       type="button"
@@ -323,7 +323,7 @@ export default function OrderListPage() {
                   <button
                     type="button"
                     onClick={handleGoDetail}
-                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-50 transition"
+                    className="rounded-lg border border-silver bg-white px-4 py-2 text-sm font-bold text-plum hover:bg-fog transition"
                   >
                     상세 조회
                   </button>

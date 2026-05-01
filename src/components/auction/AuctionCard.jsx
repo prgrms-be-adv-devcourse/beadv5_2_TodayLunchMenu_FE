@@ -14,20 +14,20 @@ export default function AuctionCard({ auction }) {
 
   const statusLabel = isWaiting ? "시작 전" : ended ? "종료" : "진행 중";
   const statusClass = isWaiting
-    ? "bg-blue-50 text-blue-600"
+    ? "bg-fog text-plum"
     : ended
-      ? "bg-gray-100 text-gray-500"
+      ? "bg-fog text-olive"
       : "bg-red-50 text-red-600";
 
   const actionLabel = isWaiting ? "시작 전" : ended ? "결과 보기" : "입찰 참여";
   const actionClass = isWaiting || ended
-    ? "border border-gray-300 text-gray-500 hover:bg-gray-50"
-    : "bg-blue-600 text-white hover:bg-blue-700";
+    ? "border border-silver text-olive hover:bg-fog"
+    : "bg-brand text-white hover:bg-brand";
 
   return (
-    <article className="group flex h-full flex-col border border-gray-200 bg-white transition-shadow hover:shadow-md">
+    <article className="group flex h-full flex-col border border-sand bg-white transition-shadow hover:shadow-md">
       <Link to={`/auctions/${auction.id}`} className="block">
-        <div className="relative aspect-square overflow-hidden bg-gray-100">
+        <div className="relative aspect-square overflow-hidden bg-fog">
           <img
             src={imageSrc}
             alt={title}
@@ -45,29 +45,29 @@ export default function AuctionCard({ auction }) {
         </div>
 
         <Link to={`/auctions/${auction.id}`}>
-          <h3 className="truncate text-sm font-medium leading-snug text-gray-800 hover:text-blue-600">
+          <h3 className="truncate text-sm font-medium leading-snug text-plum hover:text-plum">
             {title}
           </h3>
         </Link>
 
         <div className="mt-auto pt-2">
           {auction.startPrice && auction.currentPrice > auction.startPrice && (
-            <p className="truncate text-xs text-gray-400 line-through">
+            <p className="truncate text-xs text-silver line-through">
               {formatKRW(auction.startPrice)}원
             </p>
           )}
-          <p className="text-base font-bold text-gray-900">
+          <p className="text-base font-bold text-plum">
             {formatKRW(auction.currentPrice)}원
           </p>
 
           {!isWaiting && !ended && (
-            <p className="mt-0.5 truncate text-xs text-gray-400">
+            <p className="mt-0.5 truncate text-xs text-silver">
               입찰 단위 {formatKRW(auction.bidUnit)}원
             </p>
           )}
 
           {isWaiting && auction.startedAt && (
-            <p className="mt-0.5 truncate text-xs text-gray-400">
+            <p className="mt-0.5 truncate text-xs text-silver">
               {new Date(auction.startedAt).toLocaleString("ko-KR", {
                 month: "numeric",
                 day: "numeric",

@@ -123,7 +123,7 @@ export default function AdminSettlementOpsPage() {
       : "입력한 settlementId 목록으로 replay를 실행합니다. 계속 진행할까요?";
 
   return (
-    <div className="min-h-screen bg-[#fdf3ff] text-[#38274c]">
+    <div className="min-h-screen bg-[#fdf3ff] text-plum">
       <AdminNav currentPage="settlement-ops" />
       <AdminSidebar currentPage="settlement-ops" />
 
@@ -131,10 +131,10 @@ export default function AdminSettlementOpsPage() {
         <main className="w-full px-4 pb-12 pt-24 lg:ml-64 lg:p-8 lg:pt-24">
           <header className="mb-8 flex items-end justify-between">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-[#38274c]">
+              <h1 className="text-4xl font-extrabold tracking-tight text-plum">
                 정산 운영 조치
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-olive">
                 FAILED 정산건 수동 재지급과 replay 작업을 실행합니다.
               </p>
             </div>
@@ -147,19 +147,19 @@ export default function AdminSettlementOpsPage() {
           )}
 
           <div className="mb-8 grid gap-6 md:grid-cols-2">
-            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
-              <div className="border-b border-violet-100 p-6">
-                <h2 className="mb-1 text-xl font-extrabold text-[#38274c]">
+            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-sand/5 ring-1 ring-warm">
+              <div className="border-b border-warm p-6">
+                <h2 className="mb-1 text-xl font-extrabold text-plum">
                   수동 재지급 요청
                 </h2>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-olive">
                   단일 settlementId를 입력해 수동 재지급을 요청합니다.
                 </p>
               </div>
 
               <form className="space-y-4 p-6" onSubmit={handleManualSubmit}>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-olive">
                     settlementId (UUID)
                   </span>
                   <input
@@ -167,14 +167,14 @@ export default function AdminSettlementOpsPage() {
                     value={manualSettlementId}
                     onChange={(event) => setManualSettlementId(event.target.value)}
                     placeholder="예: 123e4567-e89b-12d3-a456-426614174000"
-                    className="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-[#38274c] outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                    className="w-full rounded-2xl border border-sand bg-white px-4 py-3 text-sm text-plum outline-none transition focus:border-[#435ee5] focus:ring-2 focus:ring-warm"
                   />
                 </label>
 
                 <button
                   type="submit"
                   disabled={!canExecuteManual}
-                  className="w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:scale-[1.02] hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                  className="w-full rounded-full bg-brand px-5 py-3 text-sm font-bold text-white shadow-lg shadow-sand/20 transition hover:scale-[1.02] hover:bg-brand disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
                 >
                   {loadingAction === "manual" ? "처리 중..." : "수동 재지급 요청"}
                 </button>
@@ -186,13 +186,13 @@ export default function AdminSettlementOpsPage() {
                     실행 결과
                   </p>
                   <div className="space-y-2 text-sm">
-                    <p className="text-slate-700">
+                    <p className="text-olive">
                       settlementId: <span className="font-mono">{manualResult.settlementId || "-"}</span>
                     </p>
-                    <p className="text-slate-700">
+                    <p className="text-olive">
                       requested: <span className="font-semibold">{String(Boolean(manualResult.requested))}</span>
                     </p>
-                    <p className="text-slate-700">
+                    <p className="text-olive">
                       message: <span className="font-semibold">{manualResult.message || "-"}</span>
                     </p>
                   </div>
@@ -200,19 +200,19 @@ export default function AdminSettlementOpsPage() {
               )}
             </section>
 
-            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-violet-900/5 ring-1 ring-violet-100">
-              <div className="border-b border-violet-100 p-6">
-                <h2 className="mb-1 text-xl font-extrabold text-[#38274c]">
+            <section className="overflow-hidden rounded-[32px] bg-white shadow-xl shadow-sand/5 ring-1 ring-warm">
+              <div className="border-b border-warm p-6">
+                <h2 className="mb-1 text-xl font-extrabold text-plum">
                   FAILED 정산건 replay
                 </h2>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-olive">
                   settlementId를 공백 또는 콤마로 구분해 여러 건 replay를 실행합니다.
                 </p>
               </div>
 
               <form className="space-y-4 p-6" onSubmit={handleReplaySubmit}>
                 <label className="block">
-                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                  <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-olive">
                     settlementIds (최대 100개)
                   </span>
                   <textarea
@@ -220,12 +220,12 @@ export default function AdminSettlementOpsPage() {
                     value={replayIdsInput}
                     onChange={(event) => setReplayIdsInput(event.target.value)}
                     placeholder="UUID를 줄바꿈 또는 콤마로 입력"
-                    className="w-full resize-y rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-[#38274c] outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                    className="w-full resize-y rounded-2xl border border-sand bg-white px-4 py-3 text-sm text-plum outline-none transition focus:border-[#435ee5] focus:ring-2 focus:ring-warm"
                   />
                 </label>
 
-                <p className="text-xs text-slate-500">
-                  인식된 ID: <span className="font-semibold text-[#38274c]">{formatCount(parsedReplayIds.length)}개</span>
+                <p className="text-xs text-olive">
+                  인식된 ID: <span className="font-semibold text-plum">{formatCount(parsedReplayIds.length)}개</span>
                 </p>
 
                 <button
@@ -238,31 +238,31 @@ export default function AdminSettlementOpsPage() {
               </form>
 
               {replayResult && (
-                <div className="mx-6 mb-6 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 p-4 ring-1 ring-blue-200">
-                  <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-blue-600">
+                <div className="mx-6 mb-6 rounded-2xl bg-gradient-to-br from-fog to-cyan-50 p-4 ring-1 ring-sand">
+                  <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-plum">
                     실행 결과
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="rounded-lg bg-white p-3">
-                      <p className="text-xs font-medium text-slate-500">requestedRetryCount</p>
-                      <p className="mt-1 text-xl font-bold text-[#38274c]">
+                      <p className="text-xs font-medium text-olive">requestedRetryCount</p>
+                      <p className="mt-1 text-xl font-bold text-plum">
                         {formatCount(replayResult.requestedRetryCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
-                      <p className="text-xs font-medium text-slate-500">manualActionRequiredCount</p>
+                      <p className="text-xs font-medium text-olive">manualActionRequiredCount</p>
                       <p className="mt-1 text-xl font-bold text-amber-600">
                         {formatCount(replayResult.manualActionRequiredCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
-                      <p className="text-xs font-medium text-slate-500">skippedCount</p>
-                      <p className="mt-1 text-xl font-bold text-slate-700">
+                      <p className="text-xs font-medium text-olive">skippedCount</p>
+                      <p className="mt-1 text-xl font-bold text-olive">
                         {formatCount(replayResult.skippedCount)}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white p-3">
-                      <p className="text-xs font-medium text-slate-500">notFoundCount</p>
+                      <p className="text-xs font-medium text-olive">notFoundCount</p>
                       <p className="mt-1 text-xl font-bold text-rose-600">
                         {formatCount(replayResult.notFoundCount)}
                       </p>

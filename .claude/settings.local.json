@@ -39,7 +39,10 @@
       "Bash(git commit -m ' *)",
       "Bash(git pull *)",
       "Bash(git stash *)",
-      "Bash(xargs sed *)"
+      "Bash(xargs sed *)",
+      "Bash(Get-ChildItem -Path . -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Get-ChildItem -Path public -Force)"
     ]
   }
 }

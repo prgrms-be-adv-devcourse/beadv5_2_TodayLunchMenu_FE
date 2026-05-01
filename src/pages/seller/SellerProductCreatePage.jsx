@@ -600,14 +600,14 @@ export default function SellerProductCreatePage() {
     <PageContainer>
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-700">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-plum">
             Drafting
           </p>
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-plum">
             새 상품 등록
           </h1>
         </div>
-        <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-700">
+        <span className="rounded-full bg-fog px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-plum">
           작성 중
         </span>
       </div>
@@ -655,7 +655,7 @@ export default function SellerProductCreatePage() {
                         error={!!auctionErrors.startPrice}
                         className="pr-10 text-right"
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-olive">원</span>
                     </div>
                   </FormField>
                   <FormField label="입찰 단위" htmlFor="bidUnit" required error={auctionErrors.bidUnit} helpText="500원 단위로 입력">
@@ -671,7 +671,7 @@ export default function SellerProductCreatePage() {
                         error={!!auctionErrors.bidUnit}
                         className="pr-10 text-right"
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">원</span>
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-olive">원</span>
                     </div>
                   </FormField>
                 </div>
@@ -727,7 +727,7 @@ export default function SellerProductCreatePage() {
                     })}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="shrink-0 text-xs font-medium text-gray-500">직접 입력</span>
+                    <span className="shrink-0 text-xs font-medium text-olive">직접 입력</span>
                     <div className="relative flex-1">
                       <Input
                         id="durationMinutes"
@@ -739,7 +739,7 @@ export default function SellerProductCreatePage() {
                         onChange={handleAuctionChange("durationMinutes")}
                         error={!!auctionErrors.durationMinutes}
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">분</span>
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-silver">분</span>
                     </div>
                   </div>
                 </FormField>

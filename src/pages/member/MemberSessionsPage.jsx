@@ -73,15 +73,15 @@ function SessionSkeleton() {
       {[0, 1, 2].map((item) => (
         <div
           key={item}
-          className="overflow-hidden border border-slate-200 bg-white p-5 shadow-sm"
+          className="overflow-hidden border border-sand bg-white p-5 shadow-sm"
         >
           <div className="animate-pulse space-y-4">
-            <div className="h-4 w-32 bg-slate-200" />
-            <div className="h-8 w-3/4 bg-slate-100" />
+            <div className="h-4 w-32 bg-sand" />
+            <div className="h-8 w-3/4 bg-fog" />
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="h-14 bg-slate-100" />
-              <div className="h-14 bg-slate-100" />
-              <div className="h-14 bg-slate-100" />
+              <div className="h-14 bg-fog" />
+              <div className="h-14 bg-fog" />
+              <div className="h-14 bg-fog" />
             </div>
           </div>
         </div>
@@ -92,12 +92,12 @@ function SessionSkeleton() {
 
 function SessionInfo({ label, value, accent = false }) {
   return (
-    <div className="border border-slate-200 bg-white/75 p-3">
-      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+    <div className="border border-sand bg-white/75 p-3">
+      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-olive">
         {label}
       </p>
       <p
-        className={`mt-2 text-sm font-semibold ${accent ? "text-amber-700" : "text-slate-900"}`}
+        className={`mt-2 text-sm font-semibold ${accent ? "text-amber-700" : "text-olive"}`}
       >
         {value}
       </p>
@@ -284,14 +284,14 @@ export default function MemberSessionsPage() {
     return (
       <PageContainer>
         <div className="leading-[1.2]">
-          <section className="border border-slate-200 bg-white px-6 py-12 text-center shadow-sm">
-            <p className="text-sm font-bold uppercase tracking-[0.24em] text-blue-600">
+          <section className="border border-sand bg-white px-6 py-12 text-center shadow-sm">
+            <p className="text-sm font-bold uppercase tracking-[0.24em] text-plum">
               Session Security
             </p>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
+            <h1 className="mt-4 text-3xl font-bold tracking-tight text-olive">
               로그인이 필요합니다
             </h1>
-            <p className="mt-3 text-sm font-medium leading-6 text-slate-600">
+            <p className="mt-3 text-sm font-medium leading-6 text-olive">
               로그인된 기기 목록을 확인하려면 먼저 로그인해 주세요.
             </p>
             <div className="mt-6 flex justify-center">
@@ -308,19 +308,19 @@ export default function MemberSessionsPage() {
   return (
     <PageContainer>
       <div className="leading-[1.2]">
-        <section className="relative overflow-hidden border border-slate-200 bg-[linear-gradient(135deg,#fff8ef_0%,#fff_48%,#eef6ff_100%)] px-6 py-8 shadow-sm sm:px-8">
+        <section className="relative overflow-hidden border border-sand bg-[linear-gradient(135deg,#fff8ef_0%,#fff_48%,#eef6ff_100%)] px-6 py-8 shadow-sm sm:px-8">
           <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-300/20 blur-3xl" />
-          <div className="absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-blue-300/20 blur-3xl" />
+          <div className="absolute -left-10 bottom-0 h-32 w-32 rounded-full bg-warm/20 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl text-left">
               <p className="text-sm font-bold uppercase tracking-[0.24em] text-amber-700">
                 Session Security
               </p>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-3 text-3xl font-bold tracking-tight text-olive sm:text-4xl">
                 로그인된 기기 관리
               </h1>
-              <p className="mt-3 text-sm font-medium leading-7 text-slate-600 sm:text-base">
+              <p className="mt-3 text-sm font-medium leading-7 text-olive sm:text-base">
                 내 계정에 로그인된 기기와 세션을 한눈에 확인하고, 필요할 때 바로
                 종료할 수 있어요.
               </p>
@@ -360,10 +360,10 @@ export default function MemberSessionsPage() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-amber-700">
                   Current Session
                 </p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-olive">
                   {summarizeUserAgent(currentSession.userAgent)}
                 </h2>
-                <p className="mt-2 text-sm font-medium text-slate-600">
+                <p className="mt-2 text-sm font-medium text-olive">
                   최근 활동 {formatDateTime(currentSession.lastAccessedAt)}
                 </p>
               </div>
@@ -384,11 +384,11 @@ export default function MemberSessionsPage() {
 
         <section className="mt-8 space-y-4">
           {sessions.length === 0 ? (
-            <div className="border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
-              <p className="text-lg font-bold text-slate-900">
+            <div className="border border-dashed border-silver bg-fog px-6 py-12 text-center">
+              <p className="text-lg font-bold text-olive">
                 활성 세션이 없습니다
               </p>
-              <p className="mt-2 text-sm font-medium text-slate-500">
+              <p className="mt-2 text-sm font-medium text-olive">
                 다시 로그인하면 여기에 기기 정보가 표시됩니다.
               </p>
             </div>
@@ -399,13 +399,13 @@ export default function MemberSessionsPage() {
                 className={`overflow-hidden border p-5 text-left shadow-sm transition ${
                   session.current
                     ? "border-amber-200 bg-[linear-gradient(135deg,#fffef8_0%,#ffffff_100%)]"
-                    : "border-slate-200 bg-white"
+                    : "border-sand bg-white"
                 }`}
               >
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white">
+                      <span className="rounded-full bg-dark-surface px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white">
                         {summarizeUserAgent(session.userAgent)}
                       </span>
                       {session.current ? (
@@ -435,11 +435,11 @@ export default function MemberSessionsPage() {
                       />
                     </div>
 
-                    <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3">
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                    <div className="mt-4 rounded-2xl bg-fog px-4 py-3">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-olive">
                         User Agent
                       </p>
-                      <p className="mt-2 break-all text-sm font-medium leading-6 text-slate-600">
+                      <p className="mt-2 break-all text-sm font-medium leading-6 text-olive">
                         {session.userAgent || "No user agent data"}
                       </p>
                     </div>
@@ -450,7 +450,7 @@ export default function MemberSessionsPage() {
                       variant={session.current ? "secondary" : "danger"}
                       className={
                         session.current
-                          ? "border border-slate-200 text-slate-800 hover:bg-slate-100"
+                          ? "border border-sand text-olive hover:bg-fog"
                           : ""
                       }
                       onClick={() => openSingleConfirm(session)}
@@ -500,11 +500,11 @@ export default function MemberSessionsPage() {
           onConfirm={handleConfirm}
         >
           {confirmState.type === "single" && confirmState.session ? (
-            <div className="space-y-3 rounded-2xl bg-slate-50 p-4 text-left">
-              <p className="text-sm font-semibold text-slate-900">
+            <div className="space-y-3 rounded-2xl bg-fog p-4 text-left">
+              <p className="text-sm font-semibold text-olive">
                 {summarizeUserAgent(confirmState.session.userAgent)}
               </p>
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs font-medium text-olive">
                 최근 활동 {formatDateTime(confirmState.session.lastAccessedAt)}
               </p>
             </div>

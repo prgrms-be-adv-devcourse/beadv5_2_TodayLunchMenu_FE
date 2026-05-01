@@ -17,13 +17,13 @@ function AuctionSlide({ auction }) {
         <h2 className="mt-3 line-clamp-2 text-xl font-bold text-white sm:text-2xl">
           {auction.productTitle || "경매 상품"}
         </h2>
-        <p className="mt-1 text-xs text-blue-300">현재 입찰가</p>
+        <p className="mt-1 text-xs text-silver">현재 입찰가</p>
         <p className="text-2xl font-bold text-white sm:text-3xl">
           {formatKRW(auction.currentPrice)}원
         </p>
         {!ended && (
           <div className="mt-2 flex items-center gap-2">
-            <span className="text-xs text-blue-300">남은 시간</span>
+            <span className="text-xs text-silver">남은 시간</span>
             <span
               className={[
                 "font-mono text-lg font-bold tabular-nums",
@@ -36,7 +36,7 @@ function AuctionSlide({ auction }) {
         )}
         <Link
           to={`/auctions/${auction.id}`}
-          className="mt-5 inline-block bg-white px-6 py-2 text-sm font-bold text-blue-800 transition hover:bg-blue-50"
+          className="mt-5 inline-block bg-white px-6 py-2 text-sm font-bold text-plum transition hover:bg-fog"
         >
           지금 입찰하기 →
         </Link>
@@ -52,22 +52,22 @@ function PromoFreeShipping() {
   return (
     <div className="flex h-full items-center bg-white px-8 text-left sm:px-14">
       <div className="flex items-center gap-8">
-        <div className="hidden h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:flex">
-          <Package className="h-10 w-10 text-blue-600" />
+        <div className="hidden h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-warm sm:flex">
+          <Package className="h-10 w-10 text-plum" />
         </div>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-blue-600">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-plum">
             배송 혜택
           </p>
-          <h2 className="mt-1 text-xl font-bold text-gray-900 sm:text-2xl">
+          <h2 className="mt-1 text-xl font-bold text-plum sm:text-2xl">
             3만원 이상 구매 시
             <br />
             무료배송
           </h2>
-          <p className="mt-1.5 text-sm text-gray-500">당일 발송 · 빠른 배송으로 편리하게</p>
+          <p className="mt-1.5 text-sm text-olive">당일 발송 · 빠른 배송으로 편리하게</p>
           <Link
             to="/products"
-            className="mt-4 inline-block bg-blue-600 px-6 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+            className="mt-4 inline-block bg-brand px-6 py-2 text-sm font-bold text-white transition hover:bg-brand"
           >
             쇼핑 시작하기 →
           </Link>
@@ -93,12 +93,12 @@ function PromoAuction() {
             <br />
             득템하세요
           </h2>
-          <p className="mt-1.5 text-sm text-gray-400">
+          <p className="mt-1.5 text-sm text-silver">
             지금 진행 중인 경매에 참여하고 원하는 상품을 낙찰받으세요
           </p>
           <Link
             to="/auctions"
-            className="mt-4 inline-block border border-white px-6 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-gray-900"
+            className="mt-4 inline-block border border-white px-6 py-2 text-sm font-bold text-white transition hover:bg-white hover:text-plum"
           >
             경매장 가기 →
           </Link>

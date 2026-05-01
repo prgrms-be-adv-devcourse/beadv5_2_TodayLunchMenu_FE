@@ -23,8 +23,8 @@ function StatusBadge({ status }) {
   const meta = {
     ACTIVE: { label: "판매중", className: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
     SOLD_OUT: { label: "품절", className: "bg-red-50 text-red-600 border border-red-200" },
-    INACTIVE: { label: "비공개", className: "bg-gray-100 text-gray-500 border border-gray-200" },
-  }[status] ?? { label: status, className: "bg-gray-100 text-gray-500 border border-gray-200" };
+    INACTIVE: { label: "비공개", className: "bg-fog text-olive border border-sand" },
+  }[status] ?? { label: status, className: "bg-fog text-olive border border-sand" };
 
   return (
     <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ${meta.className}`}>
@@ -79,7 +79,7 @@ export default function SellerProductListPage() {
   if (authLoading) {
     return (
       <PageContainer>
-        <p className="py-16 text-center text-sm text-gray-400">권한을 확인하는 중...</p>
+        <p className="py-16 text-center text-sm text-silver">권한을 확인하는 중...</p>
       </PageContainer>
     );
   }
@@ -102,13 +102,13 @@ export default function SellerProductListPage() {
         {/* 헤더 */}
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-blue-500">Seller Hub</p>
-            <h1 className="mt-0.5 text-xl font-extrabold text-gray-900">상품 관리</h1>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-olive">Seller Hub</p>
+            <h1 className="mt-0.5 text-xl font-extrabold text-plum">상품 관리</h1>
           </div>
           <button
             type="button"
             onClick={() => navigate("/seller/products/new")}
-            className="flex items-center gap-1.5 rounded-full bg-blue-700 px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 active:scale-[0.97]"
+            className="flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-sm font-bold text-white shadow-md transition hover:bg-brand active:scale-[0.97]"
           >
             <span className="text-base leading-none">+</span>
             상품 등록
@@ -117,16 +117,16 @@ export default function SellerProductListPage() {
 
         {/* 통계 요약 */}
         {!loading && products.length > 0 && (
-          <div className="mb-5 grid grid-cols-4 divide-x divide-gray-100 bg-white py-3 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-5 grid grid-cols-4 divide-x divide-warm bg-white py-3 shadow-sm ring-1 ring-warm">
             {[
-              { label: "전체", value: products.length, color: "text-gray-900" },
+              { label: "전체", value: products.length, color: "text-plum" },
               { label: "판매중", value: activeCount, color: "text-emerald-600" },
               { label: "품절", value: soldOutCount, color: "text-red-500" },
-              { label: "비공개", value: inactiveCount, color: "text-gray-400" },
+              { label: "비공개", value: inactiveCount, color: "text-silver" },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex flex-col items-center gap-0.5 px-2">
                 <span className={`text-lg font-extrabold ${color}`}>{value}</span>
-                <span className="text-[10px] text-gray-400">{label}</span>
+                <span className="text-[10px] text-silver">{label}</span>
               </div>
             ))}
           </div>
@@ -154,8 +154,8 @@ export default function SellerProductListPage() {
                   className={[
                     "flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition",
                     active
-                      ? "bg-blue-700 text-white"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                      ? "bg-brand text-white"
+                      : "bg-fog text-olive hover:bg-warm",
                   ].join(" ")}
                 >
                   {label}
@@ -172,17 +172,17 @@ export default function SellerProductListPage() {
 
         {/* 상품 목록 */}
         {loading ? (
-          <p className="py-16 text-center text-sm text-gray-400">상품을 불러오는 중...</p>
+          <p className="py-16 text-center text-sm text-silver">상품을 불러오는 중...</p>
         ) : filteredProducts.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-silver">
               {products.length === 0 ? "등록된 상품이 없습니다." : "조건에 맞는 상품이 없습니다."}
             </p>
             {products.length === 0 && (
               <button
                 type="button"
                 onClick={() => navigate("/seller/products/new")}
-                className="mt-4 text-sm font-semibold text-blue-600 underline underline-offset-2"
+                className="mt-4 text-sm font-semibold text-plum underline underline-offset-2"
               >
                 첫 상품 등록하기
               </button>
@@ -193,15 +193,15 @@ export default function SellerProductListPage() {
             {filteredProducts.map((product) => (
               <li key={product.id}>
                 <article
-                  className="flex cursor-pointer gap-3 bg-white p-3.5 shadow-sm ring-1 ring-gray-100 transition hover:ring-blue-200"
+                  className="flex cursor-pointer gap-3 bg-white p-3.5 shadow-sm ring-1 ring-warm transition hover:ring-sand"
                   onClick={() => navigate(`/seller/products/${product.id}/edit`)}
                 >
                   {/* 썸네일 */}
-                  <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden bg-gray-50">
+                  <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden bg-fog">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-xl font-bold text-gray-300">
+                      <div className="flex h-full w-full items-center justify-center text-xl font-bold text-silver">
                         {(product.name || "P").slice(0, 1).toUpperCase()}
                       </div>
                     )}
@@ -210,26 +210,26 @@ export default function SellerProductListPage() {
                   {/* 정보 */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="truncate text-sm font-bold text-gray-900 leading-snug">
+                      <p className="truncate text-sm font-bold text-plum leading-snug">
                         {product.name}
                       </p>
                       <StatusBadge status={product.status} />
                     </div>
 
-                    <p className="mt-0.5 truncate text-xs text-gray-400">{product.category}</p>
+                    <p className="mt-0.5 truncate text-xs text-silver">{product.category}</p>
 
-                    <p className="mt-1 text-sm font-extrabold text-blue-700">
+                    <p className="mt-1 text-sm font-extrabold text-plum">
                       {formatPrice(product.price)}원
                     </p>
 
                     <div className="mt-2 flex items-center justify-between">
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-silver">
                         재고{" "}
                         <span
                           className={
                             product.stockCount === 0
                               ? "font-bold text-red-500"
-                              : "font-semibold text-gray-700"
+                              : "font-semibold text-plum"
                           }
                         >
                           {product.stockCount}개
@@ -238,7 +238,7 @@ export default function SellerProductListPage() {
 
                       <button
                         type="button"
-                        className="text-xs text-gray-400 transition hover:text-red-500"
+                        className="text-xs text-silver transition hover:text-red-500"
                         onClick={(e) => {
                           e.stopPropagation();
                           setDeleteTarget(product);

@@ -16,11 +16,11 @@ export default function FormField({
           htmlFor={htmlFor}
           className={cn(
             "ml-1 text-xs font-bold uppercase tracking-wider",
-            error ? "text-red-600" : "text-gray-600"
+            error ? "text-[#9e0a0a]" : "text-olive"
           )}
         >
           {label}
-          {required && <span className="ml-1 text-red-500">*</span>}
+          {required && <span className="ml-1 text-[#9e0a0a]">*</span>}
         </label>
       )}
 
@@ -28,7 +28,7 @@ export default function FormField({
 
       {error ? <FieldError message={error} /> : null}
       {!error && helpText ? (
-        <p className="mt-1 px-1 text-sm text-gray-500">{helpText}</p>
+        <p className="mt-1 px-1 text-sm text-olive">{helpText}</p>
       ) : null}
     </div>
   );

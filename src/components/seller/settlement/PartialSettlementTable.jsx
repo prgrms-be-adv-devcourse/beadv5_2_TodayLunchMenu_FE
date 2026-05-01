@@ -31,7 +31,7 @@ export default function PartialSettlementTable({
     .reduce((sum, item) => sum + item.netAmount, 0);
 
   if (loading) {
-    return <p className="py-12 text-center text-sm text-gray-500">부분 정산 가능 항목을 불러오는 중입니다...</p>;
+    return <p className="py-12 text-center text-sm text-olive">부분 정산 가능 항목을 불러오는 중입니다...</p>;
   }
 
   if (error) {
@@ -39,15 +39,15 @@ export default function PartialSettlementTable({
   }
 
   if (items.length === 0) {
-    return <p className="py-12 text-center text-sm text-gray-500">지금 부분 정산할 수 있는 항목이 없습니다.</p>;
+    return <p className="py-12 text-center text-sm text-olive">지금 부분 정산할 수 있는 항목이 없습니다.</p>;
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-purple-100 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-warm md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-xs text-gray-500">선택한 실지급 예정 금액</p>
-          <p className="text-xl font-bold text-gray-900">{formatKRW(selectedAmount)}</p>
+          <p className="text-xs text-olive">선택한 실지급 예정 금액</p>
+          <p className="text-xl font-bold text-plum">{formatKRW(selectedAmount)}</p>
         </div>
         <Button
           size="md"
@@ -62,13 +62,13 @@ export default function PartialSettlementTable({
       <div className="-mx-4 overflow-x-auto px-4">
         <table className="w-full min-w-[880px] border-separate border-spacing-y-2 text-left text-sm">
           <thead>
-            <tr className="text-xs font-bold uppercase text-gray-400">
+            <tr className="text-xs font-bold uppercase text-silver">
               <th className="px-4 py-2">
                 <input
                   type="checkbox"
                   checked={allSelected}
                   onChange={onToggleAll}
-                  className="h-4 w-4 rounded border-purple-200 text-violet-700"
+                  className="h-4 w-4 rounded border-purple-200 text-plum"
                 />
               </th>
               <th className="px-4 py-2">주문</th>
@@ -83,23 +83,23 @@ export default function PartialSettlementTable({
               const checked = selectedIds.includes(item.settlementItemId);
 
               return (
-                <tr key={item.settlementItemId} className="bg-white shadow-sm ring-1 ring-purple-100">
+                <tr key={item.settlementItemId} className="bg-white shadow-sm ring-1 ring-warm">
                   <td className="rounded-l-2xl px-4 py-4">
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => onToggle(item.settlementItemId)}
-                      className="h-4 w-4 rounded border-purple-200 text-violet-700"
+                      className="h-4 w-4 rounded border-purple-200 text-plum"
                     />
                   </td>
                   <td className="px-4 py-4">
-                    <p className="font-mono text-xs font-bold text-gray-800">{shortId(item.orderId)}</p>
-                    <p className="mt-1 font-mono text-[11px] text-gray-400">항목 {shortId(item.settlementItemId)}</p>
+                    <p className="font-mono text-xs font-bold text-plum">{shortId(item.orderId)}</p>
+                    <p className="mt-1 font-mono text-[11px] text-silver">항목 {shortId(item.settlementItemId)}</p>
                   </td>
-                  <td className="px-4 py-4 text-gray-700">{formatKRW(item.grossAmount)}</td>
-                  <td className="px-4 py-4 text-gray-500">-{formatKRW(item.feeAmount)}</td>
-                  <td className="px-4 py-4 font-extrabold text-violet-700">{formatKRW(item.netAmount)}</td>
-                  <td className="rounded-r-2xl px-4 py-4 text-gray-500">{formatDate(item.releasedAt)}</td>
+                  <td className="px-4 py-4 text-plum">{formatKRW(item.grossAmount)}</td>
+                  <td className="px-4 py-4 text-olive">-{formatKRW(item.feeAmount)}</td>
+                  <td className="px-4 py-4 font-extrabold text-plum">{formatKRW(item.netAmount)}</td>
+                  <td className="rounded-r-2xl px-4 py-4 text-olive">{formatDate(item.releasedAt)}</td>
                 </tr>
               );
             })}

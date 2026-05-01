@@ -218,7 +218,7 @@ export default function CheckoutPage() {
 
         <PageHeader title="주문서" />
 
-        <section className="mb-6 border-b border-gray-200">
+        <section className="mb-6 border-b border-sand">
           <div className="flex items-center justify-center gap-0">
             {[
               { step: 1, label: "장바구니" },
@@ -228,12 +228,12 @@ export default function CheckoutPage() {
               const active = step === 2;
               return (
                 <div key={step} className="flex items-center">
-                  {idx > 0 && <div className="h-px w-8 bg-gray-200" />}
-                  <div className={["flex flex-col items-center px-4 pb-3 pt-2", active ? "border-b-2 border-blue-600" : ""].join(" ")}>
-                    <span className={["flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold", active ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-400"].join(" ")}>
+                  {idx > 0 && <div className="h-px w-8 bg-warm" />}
+                  <div className={["flex flex-col items-center px-4 pb-3 pt-2", active ? "border-b-2 border-brand" : ""].join(" ")}>
+                    <span className={["flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold", active ? "bg-brand text-white" : "bg-fog text-silver"].join(" ")}>
                       {step}
                     </span>
-                    <span className={["mt-1 text-xs font-semibold", active ? "text-blue-600" : "text-gray-400"].join(" ")}>
+                    <span className={["mt-1 text-xs font-semibold", active ? "text-plum" : "text-silver"].join(" ")}>
                       {label}
                     </span>
                   </div>
@@ -245,15 +245,15 @@ export default function CheckoutPage() {
 
         <div className="space-y-7 pb-32">
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
-          <section className="border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
+          <section className="border border-sand bg-white p-6">
             <div className="space-y-4">
               {checkoutItems.map((item) => (
                 <article
                   key={item.cartId || item.productId}
-                  className="flex gap-4 border border-gray-100 bg-white p-4"
+                  className="flex gap-4 border border-warm bg-white p-4"
                 >
-                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
+                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-fog">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -261,24 +261,24 @@ export default function CheckoutPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-blue-600">
+                      <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-plum">
                         {(item.name || "P").slice(0, 1).toUpperCase()}
                       </div>
                     )}
                   </div>
                   <div className="flex flex-1 items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-base font-extrabold text-gray-900">
+                      <h3 className="text-base font-extrabold text-plum">
                         {item.name}
                       </h3>
-                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-gray-500">
+                      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-olive">
                         {item.category}
                       </p>
-                      <p className="mt-2 text-sm text-gray-500">
+                      <p className="mt-2 text-sm text-olive">
                         수량 {item.quantity}개
                       </p>
                     </div>
-                    <p className="text-lg font-extrabold text-blue-700">
+                    <p className="text-lg font-extrabold text-plum">
                       {formatPrice(item.price * item.quantity)}원
                     </p>
                   </div>
@@ -289,8 +289,8 @@ export default function CheckoutPage() {
           </div>
 
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
-          <section className="border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
+          <section className="border border-sand bg-white p-6">
             <div className="space-y-4">
               <FormField
                 label="수령인"
@@ -380,8 +380,8 @@ export default function CheckoutPage() {
           </div>
 
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제수단 선택</h2>
-          <section className="border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>결제수단 선택</h2>
+          <section className="border border-sand bg-white p-6">
             <div className="space-y-3">
               {[
                 { value: "DEPOSIT", label: "예치금 결제" },
@@ -394,11 +394,11 @@ export default function CheckoutPage() {
                   className={[
                     "w-full border p-4 text-left transition",
                     selectedPaymentMethod === method.value
-                      ? "border-blue-200 bg-blue-50 ring-2 ring-blue-200"
-                      : "border-gray-100 bg-white hover:bg-blue-50/70",
+                      ? "border-sand bg-fog ring-2 ring-sand"
+                      : "border-warm bg-white hover:bg-fog/70",
                   ].join(" ")}
                 >
-                  <p className="text-lg font-extrabold text-gray-900">{method.label}</p>
+                  <p className="text-lg font-extrabold text-plum">{method.label}</p>
                 </button>
               ))}
             </div>
@@ -406,25 +406,25 @@ export default function CheckoutPage() {
           </div>
 
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제 요약</h2>
-          <section className="border border-gray-200 bg-white p-6">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>결제 요약</h2>
+          <section className="border border-sand bg-white p-6">
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">상품 금액</span>
-                <span className="font-bold text-gray-900">
+                <span className="text-olive">상품 금액</span>
+                <span className="font-bold text-plum">
                   {formatPrice(summary.subtotal)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">배송비</span>
-                <span className="font-bold text-gray-900">무료</span>
+                <span className="text-olive">배송비</span>
+                <span className="font-bold text-plum">무료</span>
               </div>
-              <div className="border-t border-gray-200 pt-4">
+              <div className="border-t border-sand pt-4">
                 <div className="flex items-end justify-between">
-                  <span className="text-lg font-extrabold text-gray-900">
+                  <span className="text-lg font-extrabold text-plum">
                     총 결제 금액
                   </span>
-                  <span className="text-2xl font-extrabold tracking-tight text-blue-700">
+                  <span className="text-2xl font-extrabold tracking-tight text-plum">
                     {formatPrice(summary.total)}
                   </span>
                 </div>
@@ -438,9 +438,9 @@ export default function CheckoutPage() {
 
       <footer className="fixed bottom-0 left-0 z-40 w-full bg-white/90 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm text-olive">
             <span>{paymentMethodLabel}</span>
-            <span className="text-lg font-extrabold text-blue-700">
+            <span className="text-lg font-extrabold text-plum">
               {formatPrice(summary.total)}원
             </span>
           </div>

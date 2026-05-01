@@ -22,7 +22,7 @@ const MAX_IMAGE_FILES = 5;
 const STATUS_META = {
   ACTIVE:   { label: "판매중", dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-700 border border-emerald-200" },
   SOLD_OUT: { label: "품절",   dot: "bg-red-500",     badge: "bg-red-50 text-red-600 border border-red-200" },
-  INACTIVE: { label: "비공개", dot: "bg-gray-400",    badge: "bg-gray-100 text-gray-500 border border-gray-200" },
+  INACTIVE: { label: "비공개", dot: "bg-silver",    badge: "bg-fog text-olive border border-sand" },
 };
 
 function formatPrice(v) {
@@ -33,14 +33,14 @@ function formatPrice(v) {
 // 번호 섹션 카드
 function SectionCard({ number, title, children }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-      <div className="flex items-center gap-3 border-b border-gray-100 bg-gray-50 px-6 py-4">
-        <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+    <div className="overflow-hidden rounded-lg border border-sand bg-white shadow-sm">
+      <div className="flex items-center gap-3 border-b border-warm bg-fog px-6 py-4">
+        <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
           {number}
         </span>
-        <h3 className="text-sm font-bold text-gray-800">{title}</h3>
+        <h3 className="text-sm font-bold text-plum">{title}</h3>
       </div>
-      <div className="divide-y divide-gray-100">{children}</div>
+      <div className="divide-y divide-warm">{children}</div>
     </div>
   );
 }
@@ -50,23 +50,23 @@ function FieldRow({ label, required, error, helpText, children }) {
   return (
     <div className="flex flex-col gap-2 px-6 py-4 sm:flex-row sm:items-start sm:gap-0">
       <div className="flex w-full items-center gap-1 sm:w-36 sm:flex-shrink-0 sm:pt-2">
-        <span className="text-sm font-semibold text-gray-700">{label}</span>
+        <span className="text-sm font-semibold text-plum">{label}</span>
         {required && <span className="text-red-500">*</span>}
       </div>
       <div className="flex-1">
         {children}
         {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
-        {!error && helpText && <p className="mt-1.5 text-xs text-gray-400">{helpText}</p>}
+        {!error && helpText && <p className="mt-1.5 text-xs text-silver">{helpText}</p>}
       </div>
     </div>
   );
 }
 
 const INPUT_CLASS =
-  "h-11 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50 disabled:text-gray-400";
+  "h-11 w-full rounded border border-silver bg-white px-3 text-sm text-plum placeholder:text-silver outline-none transition focus:border-brand focus:ring-2 focus:ring-warm disabled:bg-fog disabled:text-silver";
 
 const SELECT_CLASS =
-  "h-11 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50 disabled:text-gray-400";
+  "h-11 w-full rounded border border-silver bg-white px-3 text-sm text-plum outline-none transition focus:border-brand focus:ring-2 focus:ring-warm disabled:bg-fog disabled:text-silver";
 
 export default function SellerProductEditPage() {
   const { productId } = useParams();
@@ -298,8 +298,8 @@ export default function SellerProductEditPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-sm text-gray-400">상품 정보를 불러오는 중...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+          <p className="text-sm text-silver">상품 정보를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -311,7 +311,7 @@ export default function SellerProductEditPage() {
         <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-600">{pageError}</div>
         <button
           type="button"
-          className="text-sm text-blue-600 underline underline-offset-2"
+          className="text-sm text-plum underline underline-offset-2"
           onClick={() => navigate("/seller/products")}
         >
           목록으로 돌아가기
@@ -331,14 +331,14 @@ export default function SellerProductEditPage() {
   ].filter(Boolean).join(" > ");
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-fog">
       {/* 상단 헤더 바 */}
-      <div className="sticky top-0 z-20 border-b border-gray-200 bg-white shadow-sm">
+      <div className="sticky top-0 z-20 border-b border-sand bg-white shadow-sm">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               type="button"
-              className="flex items-center gap-1.5 text-sm text-gray-500 transition hover:text-gray-900"
+              className="flex items-center gap-1.5 text-sm text-olive transition hover:text-plum"
               onClick={() => navigate("/seller/products")}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -346,8 +346,8 @@ export default function SellerProductEditPage() {
               </svg>
               상품 목록
             </button>
-            <span className="text-gray-300">/</span>
-            <span className="truncate text-sm font-semibold text-gray-800">{form.title || "상품 수정"}</span>
+            <span className="text-silver">/</span>
+            <span className="truncate text-sm font-semibold text-plum">{form.title || "상품 수정"}</span>
           </div>
           <div className="flex flex-shrink-0 items-center gap-2">
             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${statusMeta.badge}`}>
@@ -361,19 +361,19 @@ export default function SellerProductEditPage() {
       {/* 메인 콘텐츠 */}
       <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
         {/* 상품 요약 카드 */}
-        <div className="mb-5 flex items-center gap-4 overflow-hidden rounded-lg border border-gray-200 bg-white px-5 py-4 shadow-sm">
-          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+        <div className="mb-5 flex items-center gap-4 overflow-hidden rounded-lg border border-sand bg-white px-5 py-4 shadow-sm">
+          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg bg-fog">
             {thumbnailImage?.url ? (
               <img src={thumbnailImage.url} alt={form.title} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">
+              <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-silver">
                 {(form.title || "P").slice(0, 1).toUpperCase()}
               </div>
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-gray-900">{form.title || "—"}</p>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <p className="truncate text-sm font-bold text-plum">{form.title || "—"}</p>
+            <p className="mt-0.5 text-xs text-olive">
               {formatPrice(form.price || 0)}원 · 재고 {form.stockQuantity}개
             </p>
           </div>
@@ -385,10 +385,10 @@ export default function SellerProductEditPage() {
             <SectionCard number="1" title="상품 이미지">
               <div className="px-6 py-5">
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-olive">
                     JPG, PNG, WEBP, GIF · 파일당 최대 5MB · 최대 {MAX_IMAGE_FILES}장
                   </p>
-                  <span className="text-xs font-medium text-gray-500">
+                  <span className="text-xs font-medium text-olive">
                     {images.length}/{MAX_IMAGE_FILES}장
                   </span>
                 </div>
@@ -415,15 +415,15 @@ export default function SellerProductEditPage() {
                             onClick={() => img.url && setPreviewIdx(idx)}
                             disabled={!img.url}
                             className={[
-                              "group relative h-24 w-full overflow-hidden rounded-lg bg-gray-100 ring-2 transition",
-                              img.isThumbnail ? "ring-blue-500" : "ring-transparent hover:ring-gray-200",
+                              "group relative h-24 w-full overflow-hidden rounded-lg bg-fog ring-2 transition",
+                              img.isThumbnail ? "ring-brand" : "ring-transparent hover:ring-sand",
                               img.url ? "cursor-zoom-in" : "cursor-default",
                             ].join(" ")}
                           >
                             {img.url ? (
                               <img src={img.url} alt="" className="h-full w-full object-cover" />
                             ) : (
-                              <div className="flex h-full w-full items-center justify-center text-xs text-gray-300">없음</div>
+                              <div className="flex h-full w-full items-center justify-center text-xs text-silver">없음</div>
                             )}
                             {/* 확대 힌트 */}
                             {img.url && (
@@ -443,7 +443,7 @@ export default function SellerProductEditPage() {
 
                           {/* 대표 뱃지 */}
                           {img.isThumbnail && (
-                            <span className="absolute bottom-1 left-1 rounded bg-blue-600 px-1.5 py-px text-[9px] font-bold text-white shadow">
+                            <span className="absolute bottom-1 left-1 rounded bg-brand px-1.5 py-px text-[9px] font-bold text-white shadow">
                               대표
                             </span>
                           )}
@@ -453,7 +453,7 @@ export default function SellerProductEditPage() {
                             <button
                               type="button"
                               aria-label="이미지 삭제"
-                              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white shadow transition hover:bg-red-500"
+                              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-dark-surface text-white shadow transition hover:bg-red-500"
                               onClick={() => handleDeleteImage(img.id)}
                             >
                               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -469,7 +469,7 @@ export default function SellerProductEditPage() {
                             type="button"
                             onClick={() => handleSetThumbnail(img.id)}
                             disabled={!!settingThumbnailId || uploadingCount > 0}
-                            className="w-full rounded border border-gray-200 bg-white py-1 text-[10px] font-medium text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                            className="w-full rounded border border-sand bg-white py-1 text-[10px] font-medium text-olive transition hover:border-silver hover:bg-fog hover:text-plum disabled:cursor-not-allowed disabled:opacity-40"
                           >
                             {isSettingThumb ? (
                               <span className="flex items-center justify-center gap-1">
@@ -490,8 +490,8 @@ export default function SellerProductEditPage() {
 
                   {Array.from({ length: uploadingCount }).map((_, i) => (
                     <div key={`uploading-${i}`} className="flex flex-col gap-1.5">
-                      <div className="flex h-24 w-full items-center justify-center rounded-lg bg-gray-100">
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+                      <div className="flex h-24 w-full items-center justify-center rounded-lg bg-fog">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-silver border-t-transparent" />
                       </div>
                       <div className="h-[26px]" />
                     </div>
@@ -502,7 +502,7 @@ export default function SellerProductEditPage() {
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
-                      className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition hover:border-blue-400 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-silver text-silver transition hover:border-silver hover:text-olive disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M10 4v12M4 10h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -537,7 +537,7 @@ export default function SellerProductEditPage() {
                   className={[INPUT_CLASS, errors.title && "border-red-400 focus:border-red-400 focus:ring-red-100"].filter(Boolean).join(" ")}
                 />
                 <div className="mt-1 flex justify-end">
-                  <span className="text-xs text-gray-400">{form.title.length}/100</span>
+                  <span className="text-xs text-silver">{form.title.length}/100</span>
                 </div>
               </FieldRow>
 
@@ -549,7 +549,7 @@ export default function SellerProductEditPage() {
                   placeholder="상품에 대한 설명을 입력해 주세요"
                   rows={4}
                   disabled={isBusy}
-                  className="w-full resize-none rounded border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50 disabled:text-gray-400"
+                  className="w-full resize-none rounded border border-silver bg-white px-3 py-2.5 text-sm text-plum placeholder:text-silver outline-none transition focus:border-brand focus:ring-2 focus:ring-warm disabled:bg-fog disabled:text-silver"
                 />
               </FieldRow>
             </SectionCard>
@@ -571,7 +571,7 @@ export default function SellerProductEditPage() {
                     ))}
                   </select>
 
-                  <svg className="hidden h-4 w-4 flex-shrink-0 text-gray-400 sm:block" fill="none" viewBox="0 0 16 16">
+                  <svg className="hidden h-4 w-4 flex-shrink-0 text-silver sm:block" fill="none" viewBox="0 0 16 16">
                     <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
 
@@ -591,11 +591,11 @@ export default function SellerProductEditPage() {
                 </div>
 
                 {catPath && (
-                  <div className="mt-2 flex items-center gap-1.5 rounded-md bg-blue-50 px-3 py-2">
-                    <svg className="h-3.5 w-3.5 flex-shrink-0 text-blue-500" fill="none" viewBox="0 0 16 16">
+                  <div className="mt-2 flex items-center gap-1.5 rounded-md bg-fog px-3 py-2">
+                    <svg className="h-3.5 w-3.5 flex-shrink-0 text-olive" fill="none" viewBox="0 0 16 16">
                       <path d="M2 8h12M8 2v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
-                    <span className="text-xs font-medium text-blue-700">{catPath}</span>
+                    <span className="text-xs font-medium text-plum">{catPath}</span>
                   </div>
                 )}
               </FieldRow>
@@ -616,10 +616,10 @@ export default function SellerProductEditPage() {
                       disabled={isBusy}
                       className={[INPUT_CLASS, "pr-8", errors.price && "border-red-400 focus:border-red-400 focus:ring-red-100"].filter(Boolean).join(" ")}
                     />
-                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">원</span>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-olive">원</span>
                   </div>
                   {form.price && !errors.price && (
-                    <span className="flex-shrink-0 rounded-md bg-gray-100 px-3 py-2 text-sm font-semibold text-gray-700">
+                    <span className="flex-shrink-0 rounded-md bg-fog px-3 py-2 text-sm font-semibold text-plum">
                       {formatPrice(form.price)}원
                     </span>
                   )}
@@ -634,7 +634,7 @@ export default function SellerProductEditPage() {
                       setForm((prev) => ({ ...prev, stockQuantity: Math.max(MIN_STOCK, Number(prev.stockQuantity) - 1) }))
                     }
                     disabled={isBusy || Number(form.stockQuantity) <= MIN_STOCK}
-                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded border border-gray-300 bg-white text-lg font-bold text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded border border-silver bg-white text-lg font-bold text-olive transition hover:border-silver hover:bg-fog hover:text-plum disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     −
                   </button>
@@ -646,7 +646,7 @@ export default function SellerProductEditPage() {
                     min={MIN_STOCK}
                     disabled={isBusy}
                     className={[
-                      "h-11 w-24 rounded border border-gray-300 bg-white text-center text-sm font-bold text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50",
+                      "h-11 w-24 rounded border border-silver bg-white text-center text-sm font-bold text-plum outline-none transition focus:border-brand focus:ring-2 focus:ring-warm disabled:bg-fog",
                       errors.stockQuantity && "border-red-400 focus:border-red-400 focus:ring-red-100",
                     ].filter(Boolean).join(" ")}
                   />
@@ -656,11 +656,11 @@ export default function SellerProductEditPage() {
                       setForm((prev) => ({ ...prev, stockQuantity: Number(prev.stockQuantity) + 1 }))
                     }
                     disabled={isBusy}
-                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded border border-gray-300 bg-white text-lg font-bold text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded border border-silver bg-white text-lg font-bold text-olive transition hover:border-silver hover:bg-fog hover:text-plum disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     +
                   </button>
-                  <span className="text-sm text-gray-500">개</span>
+                  <span className="text-sm text-olive">개</span>
                 </div>
               </FieldRow>
             </SectionCard>
@@ -668,7 +668,7 @@ export default function SellerProductEditPage() {
 
           {/* 하단 고정 액션 바 */}
           <div className="sticky bottom-0 mt-4">
-            <div className="border-t border-gray-200 bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
+            <div className="border-t border-sand bg-white shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
               <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6">
                 {submitError && (
                   <div className="mb-3 flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">
@@ -783,7 +783,7 @@ export default function SellerProductEditPage() {
             {images[previewIdx].isThumbnail && (
               <>
                 <span className="opacity-40">·</span>
-                <span className="text-blue-300">대표 이미지</span>
+                <span className="text-silver">대표 이미지</span>
               </>
             )}
           </div>

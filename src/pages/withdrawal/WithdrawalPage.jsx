@@ -71,7 +71,7 @@ function getWithdrawalStatusClass(status) {
     case "PROCESSING":
       return "bg-amber-50 text-amber-700 ring-amber-100";
     default:
-      return "bg-blue-50 text-blue-700 ring-gray-200";
+      return "bg-fog text-plum ring-sand";
   }
 }
 
@@ -272,26 +272,26 @@ export default function WithdrawalPage() {
           </section>
         ) : null}
 
-        <section className="mb-6 overflow-hidden bg-blue-700 p-6 text-white shadow-xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-blue-100">
+        <section className="mb-6 overflow-hidden bg-brand p-6 text-white shadow-xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-fog">
             Withdrawable Balance
           </p>
           <h2 className="mt-3 text-4xl font-extrabold tracking-tight">
             {loading ? "불러오는 중..." : `${formatPrice(balance)}원`}
           </h2>
-          <p className="mt-2 text-sm text-blue-100">
+          <p className="mt-2 text-sm text-fog">
             출금 수수료 {formatPrice(WITHDRAW_FEE)}원이 차감됩니다.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3">
             <div className="bg-white/10 p-4 backdrop-blur">
-              <p className="text-xs font-medium text-blue-100">최소 출금</p>
+              <p className="text-xs font-medium text-fog">최소 출금</p>
               <p className="mt-1 text-lg font-extrabold">
                 {formatPrice(MIN_WITHDRAW_AMOUNT)}원
               </p>
             </div>
             <div className="bg-white/10 p-4 backdrop-blur">
-              <p className="text-xs font-medium text-blue-100">입금 예정</p>
+              <p className="text-xs font-medium text-fog">입금 예정</p>
               <p className="mt-1 text-lg font-extrabold">
                 {formatPrice(actualAmount)}원
               </p>
@@ -299,12 +299,12 @@ export default function WithdrawalPage() {
           </div>
         </section>
 
-        <section className="mb-8 bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
+        <section className="mb-8 bg-white/80 p-5 shadow-sm ring-1 ring-sand">
           <div className="mb-4">
-            <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
+            <h3 className="text-lg font-extrabold tracking-tight text-plum">
               출금 요청
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-olive">
               계좌번호와 예금주를 확인한 뒤 출금을 요청해 주세요.
             </p>
           </div>
@@ -325,7 +325,7 @@ export default function WithdrawalPage() {
                   key={quickAmount}
                   type="button"
                   onClick={() => handleQuickAmount(quickAmount)}
-                  className="rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-blue-700 transition hover:bg-blue-200"
+                  className="rounded-full bg-fog px-4 py-2 text-sm font-semibold text-plum transition hover:bg-sand"
                 >
                   {formatPrice(quickAmount)}원
                 </button>
@@ -345,7 +345,7 @@ export default function WithdrawalPage() {
               onChange={(event) => setAccountHolder(event.target.value)}
             />
 
-            <div className="bg-blue-50/80 px-4 py-4 text-sm text-gray-700">
+            <div className="bg-fog/80 px-4 py-4 text-sm text-plum">
               <div className="flex items-center justify-between">
                 <span>출금 요청 금액</span>
                 <strong>{formatPrice(parsedAmount)}원</strong>
@@ -354,7 +354,7 @@ export default function WithdrawalPage() {
                 <span>수수료</span>
                 <strong>-{formatPrice(WITHDRAW_FEE)}원</strong>
               </div>
-              <div className="mt-3 flex items-center justify-between border-t border-blue-200 pt-3 text-blue-700">
+              <div className="mt-3 flex items-center justify-between border-t border-sand pt-3 text-plum">
                 <span className="font-bold">입금 예정 금액</span>
                 <strong>{formatPrice(actualAmount)}원</strong>
               </div>
@@ -371,22 +371,22 @@ export default function WithdrawalPage() {
           </div>
         </section>
 
-        <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
+        <section className="bg-white/80 p-5 shadow-sm ring-1 ring-sand">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-extrabold tracking-tight text-gray-900">
+            <h3 className="text-lg font-extrabold tracking-tight text-plum">
               출금 내역
             </h3>
-            <span className="text-sm font-medium text-gray-500">
+            <span className="text-sm font-medium text-olive">
               {withdrawals.length}건
             </span>
           </div>
 
           {loading ? (
-            <div className="bg-blue-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
+            <div className="bg-fog/70 px-4 py-6 text-center text-sm font-medium text-olive">
               출금 내역을 불러오는 중입니다...
             </div>
           ) : withdrawals.length === 0 ? (
-            <div className="bg-blue-50/70 px-4 py-6 text-center text-sm font-medium text-gray-500">
+            <div className="bg-fog/70 px-4 py-6 text-center text-sm font-medium text-olive">
               아직 출금 내역이 없습니다.
             </div>
           ) : (
@@ -394,20 +394,20 @@ export default function WithdrawalPage() {
               {withdrawals.map((withdrawal, index) => (
                 <article
                   key={withdrawal.withdrawRequestId ?? index}
-                  className="bg-blue-50/70 px-4 py-4"
+                  className="bg-fog/70 px-4 py-4"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-sm font-bold text-plum">
                         {withdrawal.maskedBankAccount || "출금 계좌"}
                       </p>
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-olive">
                         {formatDate(withdrawal.requestedAt)}
                       </p>
                     </div>
 
                     <div className="text-right">
-                      <p className="text-sm font-extrabold text-gray-900">
+                      <p className="text-sm font-extrabold text-plum">
                         -{formatPrice(withdrawal.amount)}원
                       </p>
                       <span
@@ -421,7 +421,7 @@ export default function WithdrawalPage() {
                     </div>
                   </div>
 
-                  <div className="mt-3 grid grid-cols-2 gap-3 border-t border-gray-200 pt-3 text-xs text-gray-500">
+                  <div className="mt-3 grid grid-cols-2 gap-3 border-t border-sand pt-3 text-xs text-olive">
                     <p>수수료 {formatPrice(withdrawal.fee)}원</p>
                     <p className="text-right">
                       입금 {formatPrice(withdrawal.actualAmount)}원
@@ -465,7 +465,7 @@ export default function WithdrawalPage() {
           </>
         }
       >
-        <div className="bg-blue-50/80 px-4 py-4 text-sm text-gray-700">
+        <div className="bg-fog/80 px-4 py-4 text-sm text-plum">
           <div className="flex items-center justify-between">
             <span>계좌번호</span>
             <strong>{normalizedBankAccount}</strong>

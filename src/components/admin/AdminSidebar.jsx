@@ -36,9 +36,9 @@ const sidebarItems = [
 
 export default function AdminSidebar() {
   return (
-    <aside className="fixed left-0 top-14 hidden h-[calc(100vh-3.5rem)] w-56 flex-col border-r border-gray-200 bg-white lg:flex">
+    <aside className="fixed left-0 top-14 hidden h-[calc(100vh-3.5rem)] w-56 flex-col border-r border-sand bg-white lg:flex">
       <div className="px-4 py-5">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-silver">
           관리 메뉴
         </p>
       </div>
@@ -53,8 +53,8 @@ export default function AdminSidebar() {
               [
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition",
                 isActive
-                  ? "bg-blue-50 text-blue-700 font-semibold border-l-2 border-blue-600 rounded-l-none"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+                  ? "bg-fog text-plum font-semibold border-l-2 border-brand rounded-l-none"
+                  : "text-plum hover:bg-fog hover:text-plum",
               ].join(" ")
             }
           >
@@ -63,8 +63,8 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-gray-200 p-4">
-        <p className="text-[11px] text-gray-400">GoodsMall Admin v1.0</p>
+      <div className="border-t border-sand p-4">
+        <p className="text-[11px] text-silver">GoodsMall Admin v1.0</p>
       </div>
     </aside>
   );

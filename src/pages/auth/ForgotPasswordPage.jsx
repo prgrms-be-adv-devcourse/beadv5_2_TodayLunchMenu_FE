@@ -57,25 +57,25 @@ export default function ForgotPasswordPage() {
   return (
     <PageContainer>
       <div className="mx-auto max-w-md">
-        <div className="mb-6 border border-blue-200 bg-blue-50/80 px-4 py-4 text-sm font-medium leading-7 text-blue-700">
+        <div className="mb-6 border border-sand bg-fog/80 px-4 py-4 text-sm font-medium leading-7 text-plum">
           가입한 이메일 주소를 입력하면 비밀번호 재설정 링크를 보내드립니다.
         </div>
 
         <div className="mb-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-500">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-olive">
             Password Reset
           </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-plum">
             비밀번호 찾기
           </h1>
-          <p className="mt-2 text-sm leading-7 text-gray-500">
+          <p className="mt-2 text-sm leading-7 text-olive">
             메일에 포함된 링크에서 새 비밀번호를 8자 이상으로 다시 설정할 수 있습니다.
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-gray-200"
+          className="space-y-6 bg-white p-6 text-left shadow-[0_10px_40px_-10px_rgba(56,39,76,0.04)] ring-1 ring-sand"
         >
           <FormField
             label="이메일 주소"

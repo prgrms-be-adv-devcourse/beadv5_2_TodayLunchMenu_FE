@@ -68,62 +68,62 @@ export default function DepositSuccessPage() {
             <button
               type="button"
               onClick={() => navigate("/deposits", { replace: true })}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-blue-700 transition hover:bg-blue-100/60"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-plum transition hover:bg-warm/60"
               aria-label="뒤로 가기"
             >
               ←
             </button>
-            <h1 className="font-headline text-base font-bold tracking-tight text-blue-700">
+            <h1 className="font-headline text-base font-bold tracking-tight text-plum">
               Transaction Details
             </h1>
           </div>
-          <div className="text-lg font-extrabold tracking-tight text-gray-900">
+          <div className="text-lg font-extrabold tracking-tight text-plum">
             VIVID ARTIFACT
           </div>
         </header>
 
         <main className="flex-1">
           <div className="mb-12 flex flex-col items-center text-center">
-            <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-700 text-white shadow-[0_0_20px_rgba(29,78,216,0.2)]">
+            <div className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-brand text-white shadow-[0_0_20px_rgba(29,78,216,0.2)]">
               <span className="text-5xl">✓</span>
-              <div className="absolute -inset-2 rounded-full border-2 border-blue-700/20 animate-pulse" />
+              <div className="absolute -inset-2 rounded-full border-2 border-brand/20 animate-pulse" />
             </div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">충전 완료</h2>
-            <p className="mt-2 font-medium text-gray-500">예치금이 성공적으로 충전되었습니다.</p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-plum">충전 완료</h2>
+            <p className="mt-2 font-medium text-olive">예치금이 성공적으로 충전되었습니다.</p>
           </div>
 
-          <section className="relative overflow-hidden bg-white px-8 py-8 shadow-[0_40px_60px_-20px_rgba(0,0,0,0.08)] ring-1 ring-gray-200">
-            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-blue-700/5" />
+          <section className="relative overflow-hidden bg-white px-8 py-8 shadow-[0_40px_60px_-20px_rgba(0,0,0,0.08)] ring-1 ring-sand">
+            <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 rounded-bl-full bg-brand/5" />
 
             <div className="relative z-10 space-y-8">
-              <div className="flex items-end justify-between border-b border-blue-200 pb-6">
+              <div className="flex items-end justify-between border-b border-sand pb-6">
                 <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-gray-500">
+                  <p className="mb-1 text-xs font-medium uppercase tracking-[0.18em] text-olive">
                     Approved Amount
                   </p>
-                  <h3 className="text-2xl font-extrabold tracking-tight text-blue-700">
+                  <h3 className="text-2xl font-extrabold tracking-tight text-plum">
                     {formatPrice(result.approvedAmount)}
                   </h3>
                 </div>
-                <span className="text-3xl text-blue-400">₩</span>
+                <span className="text-3xl text-silver">₩</span>
               </div>
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-gray-500">충전 후 잔액</span>
-                  <span className="font-headline text-base font-bold text-gray-900">
+                  <span className="text-sm text-olive">충전 후 잔액</span>
+                  <span className="font-headline text-base font-bold text-plum">
                     {formatPrice(result.walletBalance)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-gray-500">충전 일시</span>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm text-olive">충전 일시</span>
+                  <span className="text-sm font-medium text-plum">
                     {formatDate(result.approvedAt)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-gray-500">충전 ID</span>
-                  <span className="rounded bg-gray-100 px-2 py-1 font-mono text-xs font-semibold text-blue-700">
+                  <span className="text-sm text-olive">충전 ID</span>
+                  <span className="rounded bg-fog px-2 py-1 font-mono text-xs font-semibold text-plum">
                     {result.chargeId}
                   </span>
                 </div>

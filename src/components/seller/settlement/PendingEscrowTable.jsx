@@ -34,7 +34,7 @@ export default function PendingEscrowTable({
   onOpenTransactions,
 }) {
   if (loading) {
-    return <p className="py-12 text-center text-sm text-gray-500">정산 대기 내역을 불러오는 중입니다...</p>;
+    return <p className="py-12 text-center text-sm text-olive">정산 대기 내역을 불러오는 중입니다...</p>;
   }
 
   if (error) {
@@ -42,14 +42,14 @@ export default function PendingEscrowTable({
   }
 
   if (items.length === 0) {
-    return <p className="py-12 text-center text-sm text-gray-500">현재 정산 대기 중인 주문 수입이 없습니다.</p>;
+    return <p className="py-12 text-center text-sm text-olive">현재 정산 대기 중인 주문 수입이 없습니다.</p>;
   }
 
   return (
     <div className="-mx-4 overflow-x-auto px-4">
       <table className="w-full min-w-[760px] border-separate border-spacing-y-2 text-left text-sm">
         <thead>
-          <tr className="text-xs font-bold uppercase text-gray-400">
+          <tr className="text-xs font-bold uppercase text-silver">
             <th className="px-4 py-2">주문</th>
             <th className="px-4 py-2">에스크로</th>
             <th className="px-4 py-2">정산 대기 금액</th>
@@ -60,14 +60,14 @@ export default function PendingEscrowTable({
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.escrowId} className="bg-white shadow-sm ring-1 ring-purple-100">
-              <td className="rounded-l-2xl px-4 py-4 font-mono text-xs text-gray-700">
+            <tr key={item.escrowId} className="bg-white shadow-sm ring-1 ring-warm">
+              <td className="rounded-l-2xl px-4 py-4 font-mono text-xs text-plum">
                 {shortId(item.orderId)}
               </td>
-              <td className="px-4 py-4 font-mono text-xs text-gray-500">
+              <td className="px-4 py-4 font-mono text-xs text-olive">
                 {shortId(item.escrowId)}
               </td>
-              <td className="px-4 py-4 font-extrabold text-gray-900">
+              <td className="px-4 py-4 font-extrabold text-plum">
                 {formatKRW(item.amount)}
               </td>
               <td className="px-4 py-4">
@@ -75,12 +75,12 @@ export default function PendingEscrowTable({
                   {statusLabel(item.escrowStatus)}
                 </span>
               </td>
-              <td className="px-4 py-4 text-gray-500">{formatDate(item.createdAt)}</td>
+              <td className="px-4 py-4 text-olive">{formatDate(item.createdAt)}</td>
               <td className="rounded-r-2xl px-4 py-4 text-right">
                 <button
                   type="button"
                   onClick={() => onOpenTransactions(item.orderId)}
-                  className="text-sm font-bold text-violet-700 hover:text-violet-900"
+                  className="text-sm font-bold text-plum hover:text-plum"
                 >
                   거래 보기
                 </button>

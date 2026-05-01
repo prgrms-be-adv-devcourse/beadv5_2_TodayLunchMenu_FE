@@ -77,10 +77,10 @@ export default function MemberWithdrawPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-500">
               Danger Zone
             </p>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-plum">
               회원탈퇴
             </h1>
-            <p className="mt-3 text-sm leading-6 text-gray-600">
+            <p className="mt-3 text-sm leading-6 text-olive">
               회원탈퇴 후에는 계정을 복구할 수 없습니다. 진행 중인 주문, 정산, 환불이 있는 경우 탈퇴가 제한될 수 있습니다.
             </p>
           </div>

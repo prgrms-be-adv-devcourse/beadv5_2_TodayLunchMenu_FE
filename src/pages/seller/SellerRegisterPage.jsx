@@ -89,26 +89,26 @@ export default function SellerRegisterPage() {
       <PageContainer>
         <section className="mb-8">
           <div className="mb-2 flex items-end justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-blue-700">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-plum">
               Step 1 of 2
             </span>
-            <span className="text-sm font-bold text-gray-500">판매자 등록</span>
+            <span className="text-sm font-bold text-olive">판매자 등록</span>
           </div>
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
-            <div className="h-full w-1/2 rounded-full bg-blue-700" />
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-fog">
+            <div className="h-full w-1/2 rounded-full bg-brand" />
           </div>
         </section>
 
-        <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="mb-3 text-3xl font-extrabold tracking-tight text-plum">
           정산 계좌를 등록하고 판매를 시작해보세요
         </h1>
-        <p className="mb-8 text-sm leading-relaxed text-gray-500">
+        <p className="mb-8 text-sm leading-relaxed text-olive">
           계좌 정보를 먼저 등록하면 다음 단계에서 mock 인증 코드가 자동 입력된 계좌
           인증 화면으로 이동합니다.
         </p>
 
         <form className="space-y-8" onSubmit={handleSubmit}>
-          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-gray-200">
+          <section className="bg-white/80 p-5 shadow-sm ring-1 ring-sand">
             <div className="space-y-6">
               <FormField
                 label="은행명"
@@ -150,24 +150,24 @@ export default function SellerRegisterPage() {
           ) : null}
 
           <section className="grid grid-cols-2 gap-3">
-            <div className="col-span-2 bg-blue-50/80 p-4">
-              <h4 className="text-sm font-bold text-gray-900">다음 단계 자동 연결</h4>
-              <p className="mt-1 text-xs leading-relaxed text-gray-500">
+            <div className="col-span-2 bg-fog/80 p-4">
+              <h4 className="text-sm font-bold text-plum">다음 단계 자동 연결</h4>
+              <p className="mt-1 text-xs leading-relaxed text-olive">
                 등록이 완료되면 계좌 인증 후속 페이지로 이동하고, mock 인증 코드는 자동으로
                 입력됩니다.
               </p>
             </div>
 
-            <div className="bg-white p-4 shadow-sm ring-1 ring-gray-200">
-              <h4 className="text-xs font-bold text-gray-900">자동 입력 코드</h4>
-              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
+            <div className="bg-white p-4 shadow-sm ring-1 ring-sand">
+              <h4 className="text-xs font-bold text-plum">자동 입력 코드</h4>
+              <p className="mt-1 text-[11px] leading-relaxed text-olive">
                 개발용 인증 코드는 다음 화면에서 자동으로 채워집니다.
               </p>
             </div>
 
-            <div className="bg-white p-4 shadow-sm ring-1 ring-gray-200">
-              <h4 className="text-xs font-bold text-gray-900">판매자 전환</h4>
-              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
+            <div className="bg-white p-4 shadow-sm ring-1 ring-sand">
+              <h4 className="text-xs font-bold text-plum">판매자 전환</h4>
+              <p className="mt-1 text-[11px] leading-relaxed text-olive">
                 계좌 인증 완료 후 판매 기능 화면으로 자연스럽게 이어집니다.
               </p>
             </div>

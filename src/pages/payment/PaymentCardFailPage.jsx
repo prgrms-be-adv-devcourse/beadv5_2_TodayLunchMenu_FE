@@ -76,24 +76,24 @@ export default function PaymentCardFailPage() {
               !
             </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">결제에 실패했습니다</h1>
-          <p className="mt-2 text-sm text-gray-500">아래 내용을 확인하고 다시 시도해 주세요</p>
+          <h1 className="text-3xl font-bold tracking-tight text-plum">결제에 실패했습니다</h1>
+          <p className="mt-2 text-sm text-olive">아래 내용을 확인하고 다시 시도해 주세요</p>
         </div>
 
         <div className="space-y-7">
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>실패 사유</h2>
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>실패 사유</h2>
             <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-rose-100 space-y-3 text-sm">
-              <p className="font-bold text-gray-900">{result.errorTitle}</p>
-              <p className="whitespace-pre-line leading-6 text-gray-500">{result.errorMessage}</p>
+              <p className="font-bold text-plum">{result.errorTitle}</p>
+              <p className="whitespace-pre-line leading-6 text-olive">{result.errorMessage}</p>
               {result.amount > 0 && (
-                <div className="mt-2 space-y-3 border-t border-gray-100 pt-4">
+                <div className="mt-2 space-y-3 border-t border-warm pt-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">결제 수단</span>
-                    <span className="font-semibold text-gray-900">{result.paymentMethod}</span>
+                    <span className="text-silver">결제 수단</span>
+                    <span className="font-semibold text-plum">{result.paymentMethod}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-bold text-gray-900">총 결제 금액</span>
+                    <span className="font-bold text-plum">총 결제 금액</span>
                     <span className="font-extrabold text-rose-600">{formatPrice(result.amount)}</span>
                   </div>
                 </div>

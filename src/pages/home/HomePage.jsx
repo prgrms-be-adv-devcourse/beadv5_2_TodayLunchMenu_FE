@@ -17,9 +17,9 @@ import {
 function SectionHeader({ title, to }) {
   return (
     <div className="mb-4 flex items-center justify-between">
-      <h2 className="text-base font-bold text-gray-900 sm:text-lg">{title}</h2>
+      <h2 className="text-base font-bold text-plum sm:text-lg">{title}</h2>
       {to && (
-        <Link to={to} className="text-xs font-semibold text-blue-600 hover:text-blue-700">
+        <Link to={to} className="text-xs font-semibold text-plum hover:text-plum">
           전체 보기 →
         </Link>
       )}
@@ -28,7 +28,7 @@ function SectionHeader({ title, to }) {
 }
 
 function EmptyState({ message }) {
-  return <div className="py-10 text-center text-sm text-gray-400">{message}</div>;
+  return <div className="py-10 text-center text-sm text-silver">{message}</div>;
 }
 
 export default function HomePage() {
@@ -228,15 +228,15 @@ export default function HomePage() {
           />
 
           {/* Category Tab Filter */}
-          <div className="mb-4 flex overflow-x-auto border-b border-gray-200 scrollbar-hide">
+          <div className="mb-4 flex overflow-x-auto border-b border-sand scrollbar-hide">
             <button
               type="button"
               onClick={() => setSelectedCategoryId(null)}
               className={[
                 "whitespace-nowrap border-b-2 px-4 pb-3 text-sm font-semibold transition",
                 selectedCategoryId === null
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700",
+                  ? "border-brand text-plum"
+                  : "border-transparent text-olive hover:text-plum",
               ].join(" ")}
             >
               전체
@@ -249,8 +249,8 @@ export default function HomePage() {
                 className={[
                   "whitespace-nowrap border-b-2 px-4 pb-3 text-sm font-semibold transition",
                   category.id === selectedCategoryId
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700",
+                    ? "border-brand text-plum"
+                    : "border-transparent text-olive hover:text-plum",
                 ].join(" ")}
               >
                 {category.name}
@@ -277,7 +277,7 @@ export default function HomePage() {
       </div>
 
       {toast && (
-        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-dark-surface"}`}>
           {toast.error ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />

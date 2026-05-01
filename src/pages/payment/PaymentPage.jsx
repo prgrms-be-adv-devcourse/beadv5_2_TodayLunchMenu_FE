@@ -444,7 +444,7 @@ export default function PaymentPage() {
                 }
                 navigate("/orders/checkout", { state: location.state });
               }}
-              className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition"
+              className="inline-flex items-center gap-2 text-sm font-bold text-olive hover:text-plum transition"
             >
               <span aria-hidden="true">←</span> 주문서로 돌아가기
             </button>
@@ -452,10 +452,10 @@ export default function PaymentPage() {
 
           {/* 주문 상품 */}
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>주문 상품</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-warm">
               <div className="flex items-start gap-4">
-                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-violet-50">
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-fog">
                   {primaryItem?.image ? (
                     <img
                       src={primaryItem.image}
@@ -464,64 +464,64 @@ export default function PaymentPage() {
                       onError={(e) => { e.currentTarget.style.display = "none"; }}
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-violet-700">
+                    <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-plum">
                       {(primaryItem?.name || "P").slice(0, 1).toUpperCase()}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-900">
+                  <p className="font-bold text-plum">
                     {primaryItem?.name || "상품 정보 없음"}
                     {payment.items.length > 1 ? ` 외 ${payment.items.length - 1}건` : ""}
                   </p>
-                  <p className="mt-1.5 text-sm text-gray-500">수량: {primaryItem?.quantity || 1}개</p>
-                  <p className="mt-0.5 text-sm text-gray-500">결제 금액: {formatPrice(payment.totalPrice)}</p>
+                  <p className="mt-1.5 text-sm text-olive">수량: {primaryItem?.quantity || 1}개</p>
+                  <p className="mt-0.5 text-sm text-olive">결제 금액: {formatPrice(payment.totalPrice)}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <hr className="border-gray-100" />
+          <hr className="border-warm" />
 
           {/* 배송 정보 */}
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-4 text-sm">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>배송 정보</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-warm space-y-4 text-sm">
               <div>
-                <p className="text-gray-400">받는 분</p>
-                <p className="mt-1 font-semibold text-gray-900">{payment.shipping?.receiver || "-"}</p>
+                <p className="text-silver">받는 분</p>
+                <p className="mt-1 font-semibold text-plum">{payment.shipping?.receiver || "-"}</p>
               </div>
               <div>
-                <p className="text-gray-400">연락처</p>
-                <p className="mt-1 font-semibold text-gray-900">{payment.shipping?.receiverPhone || "-"}</p>
+                <p className="text-silver">연락처</p>
+                <p className="mt-1 font-semibold text-plum">{payment.shipping?.receiverPhone || "-"}</p>
               </div>
               <div>
-                <p className="text-gray-400">배송 주소</p>
-                <p className="mt-1 font-semibold text-gray-900">
+                <p className="text-silver">배송 주소</p>
+                <p className="mt-1 font-semibold text-plum">
                   {[payment.shipping?.address, payment.shipping?.addressDetail].filter(Boolean).join(" ") || "-"}
                 </p>
                 {payment.shipping?.zipCode && (
-                  <p className="mt-0.5 text-gray-500">({payment.shipping.zipCode})</p>
+                  <p className="mt-0.5 text-olive">({payment.shipping.zipCode})</p>
                 )}
               </div>
             </div>
           </div>
 
-          <hr className="border-gray-100" />
+          <hr className="border-warm" />
 
           {/* 결제 정보 */}
           <div>
-            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>결제 정보</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
+            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>결제 정보</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-warm space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">결제 수단</span>
-                <span className="font-semibold text-gray-900">{paymentMethodLabel}</span>
+                <span className="text-silver">결제 수단</span>
+                <span className="font-semibold text-plum">{paymentMethodLabel}</span>
               </div>
               {!isCardPayment && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">보유 예치금</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="text-silver">보유 예치금</span>
+                    <span className="font-semibold text-plum">
                       {walletLoading ? "확인 중..." : walletBalance === null ? "-" : formatPrice(walletBalance)}
                     </span>
                   </div>
@@ -531,17 +531,17 @@ export default function PaymentPage() {
                   {walletError && <p className="text-xs text-red-500">{walletError}</p>}
                 </>
               )}
-              <div className="flex justify-between border-t border-gray-100 pt-3">
-                <span className="text-gray-400">상품 금액</span>
-                <span className="font-semibold text-gray-900">{formatPrice(payment.itemPrice)}</span>
+              <div className="flex justify-between border-t border-warm pt-3">
+                <span className="text-silver">상품 금액</span>
+                <span className="font-semibold text-plum">{formatPrice(payment.itemPrice)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">배송비</span>
-                <span className="font-semibold text-gray-900">무료</span>
+                <span className="text-silver">배송비</span>
+                <span className="font-semibold text-plum">무료</span>
               </div>
-              <div className="flex justify-between border-t border-gray-100 pt-3">
-                <span className="font-bold text-gray-900">총 결제 금액</span>
-                <span className="font-extrabold text-violet-700">{formatPrice(payment.totalPrice)}</span>
+              <div className="flex justify-between border-t border-warm pt-3">
+                <span className="font-bold text-plum">총 결제 금액</span>
+                <span className="font-extrabold text-plum">{formatPrice(payment.totalPrice)}</span>
               </div>
             </div>
           </div>
@@ -552,9 +552,9 @@ export default function PaymentPage() {
 
       <footer className="fixed bottom-0 left-0 z-40 w-full bg-white/85 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl space-y-3 px-4 pb-8 pt-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm text-olive">
             <span>{paymentMethodLabel}</span>
-            <span className="text-lg font-extrabold text-blue-700">
+            <span className="text-lg font-extrabold text-plum">
               {formatPrice(payment.totalPrice)}
             </span>
           </div>

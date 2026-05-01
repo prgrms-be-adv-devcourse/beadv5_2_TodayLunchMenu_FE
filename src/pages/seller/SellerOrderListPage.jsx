@@ -122,7 +122,7 @@ export default function SellerOrderListPage() {
   if (authLoading) {
     return (
       <PageContainer>
-        <p className="py-16 text-center text-sm text-gray-400">
+        <p className="py-16 text-center text-sm text-silver">
           권한을 확인하는 중...
         </p>
       </PageContainer>
@@ -139,20 +139,20 @@ export default function SellerOrderListPage() {
       <PageContainer>
         <section className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-olive">
               Seller Orders
             </p>
-            <h1 className="mt-1 text-2xl font-bold text-gray-900">
+            <h1 className="mt-1 text-2xl font-bold text-plum">
               정산 대기 주문
             </h1>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-olive">
               정산 전에 확인이 필요한 주문을 모아 보여줍니다.
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate("/seller/settlements")}
-            className="rounded-full bg-violet-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-violet-500/20 transition hover:bg-violet-700"
+            className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-white shadow-lg shadow-sand/20 transition hover:bg-brand"
           >
             정산 페이지로 이동
           </button>
@@ -178,8 +178,8 @@ export default function SellerOrderListPage() {
                   className={[
                     "flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition",
                     isActive
-                      ? "bg-violet-600 text-white"
-                      : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                      ? "bg-brand text-white"
+                      : "bg-fog text-olive hover:bg-warm",
                   ].join(" ")}
                 >
                   {filter.label}
@@ -196,16 +196,16 @@ export default function SellerOrderListPage() {
         )}
 
         {loading ? (
-          <p className="py-16 text-center text-sm text-gray-400">
+          <p className="py-16 text-center text-sm text-silver">
             주문 목록을 불러오는 중...
           </p>
         ) : filteredItems.length === 0 ? (
-          <div className="rounded-2xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-violet-100">
-            <p className="text-sm text-gray-500">표시할 주문이 없습니다.</p>
+          <div className="rounded-2xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-warm">
+            <p className="text-sm text-olive">표시할 주문이 없습니다.</p>
             <button
               type="button"
               onClick={() => navigate("/seller/settlements")}
-              className="mt-4 text-sm font-semibold text-violet-700 underline underline-offset-2"
+              className="mt-4 text-sm font-semibold text-plum underline underline-offset-2"
             >
               정산 페이지에서 전체 내역 보기
             </button>
@@ -215,24 +215,24 @@ export default function SellerOrderListPage() {
             {pagedItems.map((item) => (
               <article
                 key={`${item.escrowId}-${item.orderId}`}
-                className="rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-violet-100"
+                className="rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-warm"
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="text-left md:text-right">
-                    <p className="text-xs font-semibold text-gray-500">
+                    <p className="text-xs font-semibold text-olive">
                       정산 대기 금액
                     </p>
-                    <p className="text-lg font-bold text-violet-700">
+                    <p className="text-lg font-bold text-plum">
                       {formatKRW(item.amount)}
                     </p>
-                    <span className="mt-1 inline-flex rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700">
+                    <span className="mt-1 inline-flex rounded-full bg-warm px-2 py-0.5 text-[11px] font-bold text-plum">
                       {getEscrowStatusLabel(item.escrowStatus)}
                     </span>
                     <div className="mt-2 flex justify-start gap-2 md:justify-end">
                       <button
                         type="button"
                         onClick={() => navigate(`/orders/${item.orderId}`)}
-                        className="rounded-full border border-violet-200 px-3 py-1 text-xs font-bold text-violet-700 transition hover:bg-violet-50"
+                        className="rounded-full border border-sand px-3 py-1 text-xs font-bold text-plum transition hover:bg-fog"
                       >
                         주문 상세
                       </button>
@@ -240,13 +240,13 @@ export default function SellerOrderListPage() {
                   </div>
 
                   <div className="text-left">
-                    <p className="text-xs font-semibold text-gray-500">
+                    <p className="text-xs font-semibold text-olive">
                       orderId
                     </p>
-                    <p className="font-mono text-sm font-bold text-gray-900">
+                    <p className="font-mono text-sm font-bold text-plum">
                       {item.orderId || "-"}
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">
+                    <p className="mt-1 text-xs text-olive">
                       생성일 {formatDate(item.createdAt)}
                     </p>
                   </div>
@@ -262,11 +262,11 @@ export default function SellerOrderListPage() {
                     setCurrentPage((page) => Math.max(1, page - 1))
                   }
                   disabled={currentPage === 1}
-                  className="rounded-full border border-violet-200 px-3 py-1 text-xs font-bold text-violet-700 transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-full border border-sand px-3 py-1 text-xs font-bold text-plum transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   이전
                 </button>
-                <span className="text-xs font-semibold text-gray-500">
+                <span className="text-xs font-semibold text-olive">
                   {currentPage} / {totalPages}
                 </span>
                 <button
@@ -275,7 +275,7 @@ export default function SellerOrderListPage() {
                     setCurrentPage((page) => Math.min(totalPages, page + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="rounded-full border border-violet-200 px-3 py-1 text-xs font-bold text-violet-700 transition hover:bg-violet-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-full border border-sand px-3 py-1 text-xs font-bold text-plum transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   다음
                 </button>

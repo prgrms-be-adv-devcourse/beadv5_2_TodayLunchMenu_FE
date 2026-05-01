@@ -8,10 +8,10 @@ import { useNotification } from "../../features/notification/useNotification";
 
 const navLinkClass = ({ isActive }) =>
   [
-    "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+    "rounded-pin px-3 py-2 text-sm font-medium transition-colors",
     isActive
-      ? "bg-gray-900 text-white"
-      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
+      ? "bg-sand text-plum"
+      : "text-olive hover:bg-fog hover:text-plum",
   ].join(" ");
 
 function NotificationBadge({ count }) {
@@ -20,7 +20,7 @@ function NotificationBadge({ count }) {
   }
 
   return (
-    <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-violet-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+    <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-brand px-1.5 py-0.5 text-[10px] font-bold text-white">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -31,49 +31,49 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
     <div className="group relative hidden sm:block">
       <button
         type="button"
-        className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        className="rounded-pin px-3 py-2 text-sm font-medium text-olive transition-colors hover:bg-fog hover:text-plum"
       >
         {displayName}님
       </button>
 
-      <div className="invisible absolute right-0 top-full z-50 w-44 -translate-y-1 rounded-2xl border border-gray-200 bg-white p-2 opacity-0 shadow-xl transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+      <div className="invisible absolute right-0 top-full z-50 w-44 -translate-y-1 rounded-card border border-sand bg-white p-2 shadow-lg transition duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 opacity-0">
         {isAdmin ? (
           <Link
             to="/admin"
-            className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+            className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
           >
             관리자 페이지
           </Link>
         ) : (
           <Link
             to="/me"
-            className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+            className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
           >
             마이페이지
           </Link>
         )}
         <Link
           to="/orders"
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
         >
           주문내역
         </Link>
         <Link
           to="/deposits"
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
         >
           예치금
         </Link>
         <Link
           to="/withdrawals"
-          className="block rounded-xl px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
         >
           출금
         </Link>
         {isSeller ? (
           <Link
             to="/seller/me"
-            className="block rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+            className="block rounded-pin px-3 py-2 text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
           >
             판매자 메뉴
           </Link>
@@ -81,7 +81,7 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
         <button
           type="button"
           onClick={onLogout}
-          className="block w-full rounded-xl px-3 py-2 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          className="block w-full rounded-pin px-3 py-2 text-center text-sm font-medium text-olive transition hover:bg-fog hover:text-plum"
         >
           로그아웃
         </button>
@@ -121,12 +121,12 @@ export default function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-sand bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
           <Link
             to="/"
-            className="text-xl font-bold tracking-tight text-gray-900"
+            className="text-xl font-bold tracking-tight text-plum"
           >
             GoodsMall
           </Link>
@@ -153,7 +153,7 @@ export default function AppHeader() {
                 "hidden rounded-full px-3 py-1 text-xs font-semibold sm:block",
                 isExpiringSoon
                   ? "bg-amber-100 text-amber-700"
-                  : "bg-slate-100 text-slate-600",
+                  : "bg-fog text-olive",
               ].join(" ")}
             >
               세션 {formattedRemaining}
@@ -162,11 +162,11 @@ export default function AppHeader() {
 
           <Link
             to={isLoggedIn ? "/cart" : cartLoginPath}
-            className="relative rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            className="relative rounded-pin px-3 py-2 text-sm font-medium text-olive transition-colors hover:bg-fog hover:text-plum"
           >
             장바구니
             {cartCount > 0 && (
-              <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 py-0.5 text-xs font-semibold text-white">
+              <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-brand px-1.5 py-0.5 text-xs font-semibold text-white">
                 {cartCount}
               </span>
             )}
@@ -175,7 +175,7 @@ export default function AppHeader() {
           {isLoggedIn ? (
             <Link
               to="/notifications"
-              className="relative rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="relative rounded-pin px-3 py-2 text-sm font-medium text-olive transition-colors hover:bg-fog hover:text-plum"
             >
               <span className="inline-flex items-center">
                 알림
@@ -195,13 +195,13 @@ export default function AppHeader() {
             <>
               <Link
                 to="/login"
-                className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+                className="rounded-pin px-3 py-2 text-sm font-medium text-olive transition-colors hover:bg-fog hover:text-plum"
               >
                 로그인
               </Link>
               <Link
                 to="/signup"
-                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                className="rounded-pin bg-brand px-3 py-2 text-sm font-medium text-black transition hover:bg-brand-hover"
               >
                 회원가입
               </Link>

@@ -27,9 +27,9 @@ function CategoryTreeNode({ node, depth = 0 }) {
   return (
     <>
       <div className="flex items-center gap-2 py-1.5" style={{ paddingLeft: `${8 + indent}px` }}>
-        {depth > 0 && <span className="text-gray-300 select-none text-xs">└</span>}
-        <span className="text-sm text-gray-600">{node.name}</span>
-        <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400">
+        {depth > 0 && <span className="text-silver select-none text-xs">└</span>}
+        <span className="text-sm text-olive">{node.name}</span>
+        <span className="rounded-full bg-fog px-1.5 py-0.5 text-[10px] text-silver">
           depth {node.depth}
         </span>
       </div>
@@ -188,7 +188,7 @@ export default function SellerCategoryPage() {
   if (authLoading) {
     return (
       <PageContainer>
-        <p className="py-16 text-center text-sm text-gray-400">권한을 확인하는 중...</p>
+        <p className="py-16 text-center text-sm text-silver">권한을 확인하는 중...</p>
       </PageContainer>
     );
   }
@@ -202,8 +202,8 @@ export default function SellerCategoryPage() {
   return (
     <PageContainer>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">카테고리 관리</h1>
-        <p className="mt-1 text-sm text-gray-500">하위 카테고리를 추가하고 관리합니다.</p>
+        <h1 className="text-2xl font-bold text-plum">카테고리 관리</h1>
+        <p className="mt-1 text-sm text-olive">하위 카테고리를 추가하고 관리합니다.</p>
       </div>
 
       {errorMessage && (
@@ -214,12 +214,12 @@ export default function SellerCategoryPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* 전체 카테고리 트리 (참조용) */}
-        <div className="border border-gray-100 bg-gray-50 p-6">
-          <h2 className="mb-4 text-sm font-bold text-gray-500 uppercase tracking-wider">전체 카테고리 (참조)</h2>
+        <div className="border border-warm bg-fog p-6">
+          <h2 className="mb-4 text-sm font-bold text-olive uppercase tracking-wider">전체 카테고리 (참조)</h2>
           {loading ? (
-            <p className="py-8 text-center text-sm text-gray-400">불러오는 중...</p>
+            <p className="py-8 text-center text-sm text-silver">불러오는 중...</p>
           ) : tree.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-400">등록된 카테고리가 없습니다.</p>
+            <p className="py-8 text-center text-sm text-silver">등록된 카테고리가 없습니다.</p>
           ) : (
             <div className="space-y-0.5">
               {tree.map((node) => (
@@ -232,45 +232,45 @@ export default function SellerCategoryPage() {
         {/* 내 카테고리 */}
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">내 카테고리</h2>
+            <h2 className="text-sm font-bold text-olive uppercase tracking-wider">내 카테고리</h2>
             <button
               type="button"
               onClick={openCreate}
-              className="bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand"
             >
               + 하위 카테고리 추가
             </button>
           </div>
 
           {loading ? (
-            <p className="py-8 text-center text-sm text-gray-400">불러오는 중...</p>
+            <p className="py-8 text-center text-sm text-silver">불러오는 중...</p>
           ) : myCategories.length === 0 ? (
-            <div className="border-2 border-dashed border-gray-200 p-10 text-center">
-              <p className="text-sm text-gray-400">등록한 카테고리가 없습니다.</p>
-              <p className="mt-1 text-xs text-gray-300">상위 카테고리를 선택해 하위 카테고리를 추가해 보세요.</p>
+            <div className="border-2 border-dashed border-sand p-10 text-center">
+              <p className="text-sm text-silver">등록한 카테고리가 없습니다.</p>
+              <p className="mt-1 text-xs text-silver">상위 카테고리를 선택해 하위 카테고리를 추가해 보세요.</p>
             </div>
           ) : (
             <div className="space-y-3">
               {myCategories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="border border-gray-100 bg-white p-4 shadow-sm"
+                  className="border border-warm bg-white p-4 shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-gray-800">{cat.name}</span>
-                        <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+                        <span className="font-semibold text-plum">{cat.name}</span>
+                        <span className="rounded-full bg-fog px-2 py-0.5 text-[10px] font-bold text-plum">
                           depth {cat.depth}
                         </span>
                       </div>
                       {cat.parentId && (
-                        <p className="mt-0.5 text-xs text-gray-400">
+                        <p className="mt-0.5 text-xs text-silver">
                           상위: {getCategoryPath(categories, cat.parentId)}
                         </p>
                       )}
                       {cat.description && (
-                        <p className="mt-1 text-xs text-gray-500 truncate">{cat.description}</p>
+                        <p className="mt-1 text-xs text-olive truncate">{cat.description}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -287,7 +287,7 @@ export default function SellerCategoryPage() {
                           <button
                             type="button"
                             onClick={() => setDeleteConfirm(null)}
-                            className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-600 transition hover:bg-gray-200"
+                            className="rounded-lg bg-fog px-3 py-1.5 text-xs font-bold text-olive transition hover:bg-warm"
                           >
                             취소
                           </button>
@@ -297,7 +297,7 @@ export default function SellerCategoryPage() {
                           <button
                             type="button"
                             onClick={() => openEdit(cat)}
-                            className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-50"
+                            className="rounded-lg border border-sand bg-white px-3 py-1.5 text-xs font-medium text-olive transition hover:bg-fog"
                           >
                             편집
                           </button>
@@ -322,19 +322,19 @@ export default function SellerCategoryPage() {
       {modal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="w-full max-w-md bg-white p-8 shadow-2xl">
-            <h2 className="mb-6 text-xl font-bold text-gray-900">
+            <h2 className="mb-6 text-xl font-bold text-plum">
               {modal.mode === 'create' ? '하위 카테고리 추가' : '카테고리 편집'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               {modal.mode === 'create' && (
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold text-gray-500">
+                  <label className="mb-1.5 block text-xs font-semibold text-olive">
                     상위 카테고리 <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={form.parentId}
                     onChange={(e) => { setForm((p) => ({ ...p, parentId: e.target.value })); setFormErrors((p) => ({ ...p, parentId: '' })); }}
-                    className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
+                    className="h-11 w-full rounded border border-sand px-4 text-sm outline-none focus:border-silver focus:ring-2 focus:ring-sand"
                   >
                     <option value="">상위 카테고리를 선택하세요</option>
                     {selectableParents.map((cat) => (
@@ -348,7 +348,7 @@ export default function SellerCategoryPage() {
               )}
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-500">
+                <label className="mb-1.5 block text-xs font-semibold text-olive">
                   카테고리명 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -356,31 +356,31 @@ export default function SellerCategoryPage() {
                   onChange={(e) => { setForm((p) => ({ ...p, name: e.target.value })); setFormErrors((p) => ({ ...p, name: '' })); }}
                   placeholder="카테고리명을 입력하세요"
                   maxLength={50}
-                  className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
+                  className="h-11 w-full rounded border border-sand px-4 text-sm outline-none focus:border-silver focus:ring-2 focus:ring-sand"
                 />
                 {formErrors.name && <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>}
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-500">설명</label>
+                <label className="mb-1.5 block text-xs font-semibold text-olive">설명</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => { setForm((p) => ({ ...p, description: e.target.value })); setFormErrors((p) => ({ ...p, description: '' })); }}
                   placeholder="카테고리 설명 (선택)"
                   maxLength={500}
                   rows={3}
-                  className="w-full rounded border border-gray-200 px-4 py-3 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200 resize-none"
+                  className="w-full rounded border border-sand px-4 py-3 text-sm outline-none focus:border-silver focus:ring-2 focus:ring-sand resize-none"
                 />
                 {formErrors.description && <p className="mt-1 text-xs text-red-500">{formErrors.description}</p>}
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold text-gray-500">정렬 순서</label>
+                <label className="mb-1.5 block text-xs font-semibold text-olive">정렬 순서</label>
                 <input
                   type="number"
                   value={form.sortOrder}
                   onChange={(e) => setForm((p) => ({ ...p, sortOrder: e.target.value }))}
-                  className="h-11 w-full rounded border border-gray-200 px-4 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-gray-200"
+                  className="h-11 w-full rounded border border-sand px-4 text-sm outline-none focus:border-silver focus:ring-2 focus:ring-sand"
                 />
               </div>
 
@@ -393,14 +393,14 @@ export default function SellerCategoryPage() {
                   type="button"
                   onClick={closeModal}
                   disabled={isSubmitting}
-                  className="flex-1 border border-gray-200 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
+                  className="flex-1 border border-sand py-3 text-sm font-semibold text-olive transition hover:bg-fog disabled:opacity-50"
                 >
                   취소
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+                  className="flex-1 bg-brand py-3 text-sm font-semibold text-white transition hover:bg-brand disabled:opacity-50"
                 >
                   {isSubmitting ? '저장 중...' : '저장'}
                 </button>
