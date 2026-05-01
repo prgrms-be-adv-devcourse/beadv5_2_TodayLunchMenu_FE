@@ -7,7 +7,10 @@ import CheckboxField from "../../components/common/CheckboxField";
 import FormField from "../../components/common/FormField";
 import Input from "../../components/common/Input";
 import { signupApi } from "../../features/auth/authApi";
-import { getPendingKakaoLink } from "../../features/auth/kakaoLinkStorage";
+import {
+  clearPendingKakaoLink,
+  getPendingKakaoLink,
+} from "../../features/auth/kakaoLinkStorage";
 import {
   presignProfileImageUploadApi,
   uploadProfileImageToS3,
@@ -23,7 +26,7 @@ export default function SignupPage() {
   const initialEmail = searchParams.get("email") || pendingKakaoLink?.email || "";
 
   const [form, setForm] = useState({
-    name: "",
+    name: pendingKakaoLink?.nickname || "",
     email: initialEmail,
     password: "",
     confirmPassword: "",
@@ -128,7 +131,12 @@ export default function SignupPage() {
         address: null,
         profileImageKey,
         role: "USER",
+        kakaoLinkToken: pendingKakaoLink?.linkToken || null,
       });
+
+      if (pendingKakaoLink?.linkToken) {
+        clearPendingKakaoLink();
+      }
 
       if (signupData?.status === "PENDING_VERIFICATION") {
         navigate(

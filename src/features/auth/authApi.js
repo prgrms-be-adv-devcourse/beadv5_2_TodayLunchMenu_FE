@@ -37,6 +37,7 @@ async function signupApi({
   address = null,
   profileImageKey = null,
   role = "USER",
+  kakaoLinkToken = null,
 }) {
   const response = await apiClient("/api/auth", {
     method: "POST",
@@ -48,6 +49,7 @@ async function signupApi({
       address,
       profileImageKey,
       role,
+      kakaoLinkToken,
     },
   });
 
