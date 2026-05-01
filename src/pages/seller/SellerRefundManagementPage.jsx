@@ -17,7 +17,7 @@ import {
 const REFUND_STATUS = {
   RECEIVED: { label: "검수 대기", className: "bg-amber-100 text-amber-700" },
   PENDING: { label: "수령 대기", className: "bg-amber-100 text-amber-700" },
-  SHIPPED: { label: "배송 중", className: "bg-warm text-plum" },
+  SHIPPED: { label: "배송 중", className: "bg-blue-100 text-blue-700" },
   DELIVERED: { label: "수령 완료", className: "bg-indigo-100 text-indigo-700" },
   COMPLETED: { label: "환불 완료", className: "bg-emerald-100 text-emerald-700" },
   CONFIRMED: { label: "검수 완료", className: "bg-emerald-100 text-emerald-700" },
@@ -60,17 +60,17 @@ function calcTotal(items) {
 
 function RefundCard({ refund, onInspect }) {
   const totalPrice = calcTotal(refund.items);
-  const status = REFUND_STATUS[refund.status] || { label: refund.status, className: "bg-fog text-plum" };
+  const status = REFUND_STATUS[refund.status] || { label: refund.status, className: "bg-gray-100 text-gray-700" };
   const canInspect = ["RECEIVED", "DELIVERED", "PENDING"].includes(refund.status);
   const isCompleted = refund.status === "COMPLETED";
   const isFailed = refund.status === "FAILED" || refund.status === "REJECTED";
 
   return (
-    <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-warm space-y-4 text-left">
+    <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-4 text-left">
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1 text-sm">
-          <p className="text-silver">주문번호</p>
-          <p className="font-semibold text-plum">{refund.orderId}</p>
+          <p className="text-gray-400">주문번호</p>
+          <p className="font-semibold text-gray-900">{refund.orderId}</p>
         </div>
         <span className={`inline-flex shrink-0 rounded-full px-3 py-1 text-xs font-bold ${status.className}`}>
           {status.label}
@@ -78,70 +78,70 @@ function RefundCard({ refund, onInspect }) {
       </div>
 
       <div className="text-sm">
-        <p className="text-silver">구매자</p>
-        <p className="mt-1 font-semibold text-plum">{refund.buyerName || "-"}</p>
+        <p className="text-gray-400">구매자</p>
+        <p className="mt-1 font-semibold text-gray-900">{refund.buyerName || "-"}</p>
       </div>
 
-      <hr className="border-warm" />
+      <hr className="border-gray-100" />
 
       <div>
-        <p className="mb-2 text-xs font-bold text-olive">반품 상품</p>
-        <div className="space-y-2 rounded-xl bg-fog/50 p-4 text-sm">
+        <p className="mb-2 text-xs font-bold text-gray-500">반품 상품</p>
+        <div className="space-y-2 rounded-xl bg-violet-50/50 p-4 text-sm">
           {refund.items?.length > 0 ? (
             refund.items.map((item, idx) => (
               <div key={idx} className="flex items-start justify-between gap-3">
-                <span className="text-plum">{item.productName} × {item.quantity}</span>
-                <span className="font-semibold text-plum">{formatPrice(item.price * item.quantity)}</span>
+                <span className="text-gray-700">{item.productName} × {item.quantity}</span>
+                <span className="font-semibold text-gray-900">{formatPrice(item.price * item.quantity)}</span>
               </div>
             ))
           ) : (
-            <p className="text-silver">상품 정보 없음</p>
+            <p className="text-gray-400">상품 정보 없음</p>
           )}
         </div>
       </div>
 
       {refund.reason && (
         <div className="text-sm">
-          <p className="text-silver">반품 사유</p>
-          <p className="mt-1 whitespace-pre-line font-semibold text-plum">{refund.reason}</p>
+          <p className="text-gray-400">반품 사유</p>
+          <p className="mt-1 whitespace-pre-line font-semibold text-gray-900">{refund.reason}</p>
         </div>
       )}
 
       <div className="text-sm">
-        <p className="text-silver">신청 일시</p>
-        <p className="mt-1 font-semibold text-plum">{formatDate(refund.createdAt)}</p>
+        <p className="text-gray-400">신청 일시</p>
+        <p className="mt-1 font-semibold text-gray-900">{formatDate(refund.createdAt)}</p>
       </div>
 
       {/* 처리 결과 (완료/거절) */}
       {(isCompleted || isFailed) && (
         <>
-          <hr className="border-warm" />
+          <hr className="border-gray-100" />
           <div className="space-y-3 text-sm">
-            <p className="text-xs font-bold text-olive">처리 결과</p>
+            <p className="text-xs font-bold text-gray-500">처리 결과</p>
             {refund.processedAt && (
               <div className="flex justify-between">
-                <span className="text-silver">처리 일시</span>
-                <span className="font-semibold text-plum">{formatDate(refund.processedAt)}</span>
+                <span className="text-gray-400">처리 일시</span>
+                <span className="font-semibold text-gray-900">{formatDate(refund.processedAt)}</span>
               </div>
             )}
             {isCompleted && refund.responsibilityType && (
               <div className="flex justify-between">
-                <span className="text-silver">귀책</span>
-                <span className="font-semibold text-plum">
+                <span className="text-gray-400">귀책</span>
+                <span className="font-semibold text-gray-900">
                   {refund.responsibilityType === "BUYER" ? "구매자" : "판매자"}
                 </span>
               </div>
             )}
             {isCompleted && refund.refundedAmount != null && (
-              <div className="flex justify-between border-t border-warm pt-3">
-                <span className="font-bold text-plum">환불 금액</span>
-                <span className="font-extrabold text-plum">{formatPrice(refund.refundedAmount)}</span>
+              <div className="flex justify-between border-t border-gray-100 pt-3">
+                <span className="font-bold text-gray-900">환불 금액</span>
+                <span className="font-extrabold text-violet-700">{formatPrice(refund.refundedAmount)}</span>
               </div>
             )}
             {isFailed && refund.rejectReason && (
               <div>
-                <p className="text-silver">거절 사유</p>
-                <p className="mt-1 whitespace-pre-line font-semibold text-plum">{refund.rejectReason}</p>
+                <p className="text-gray-400">거절 사유</p>
+                <p className="mt-1 whitespace-pre-line font-semibold text-gray-900">{refund.rejectReason}</p>
               </div>
             )}
           </div>
@@ -151,10 +151,10 @@ function RefundCard({ refund, onInspect }) {
       {/* 검수 대기 상태일 때만 환불 예정액 + 검수 버튼 */}
       {canInspect && (
         <>
-          <hr className="border-warm" />
+          <hr className="border-gray-100" />
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-plum">환불 예정액</span>
-            <span className="text-lg font-extrabold text-plum">{formatPrice(totalPrice)}</span>
+            <span className="text-sm font-bold text-gray-900">환불 예정액</span>
+            <span className="text-lg font-extrabold text-violet-700">{formatPrice(totalPrice)}</span>
           </div>
           <Button size="lg" className="w-full" onClick={() => onInspect(refund)}>
             검수하기
@@ -187,34 +187,34 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
     <Modal open onClose={submitting ? undefined : onClose} title="반품 검수">
       <div className="space-y-5 text-left">
         {/* 상품 요약 */}
-        <div className="rounded-xl bg-fog/50 p-4 text-sm">
-          <p className="text-silver">반품 상품</p>
+        <div className="rounded-xl bg-violet-50/50 p-4 text-sm">
+          <p className="text-gray-400">반품 상품</p>
           <div className="mt-1 space-y-1">
             {refund.items?.map((item, idx) => (
-              <p key={idx} className="font-semibold text-plum">
-                {item.productName} × {item.quantity} <span className="text-olive">({formatPrice(item.price * item.quantity)})</span>
+              <p key={idx} className="font-semibold text-gray-900">
+                {item.productName} × {item.quantity} <span className="text-gray-500">({formatPrice(item.price * item.quantity)})</span>
               </p>
             ))}
           </div>
           {refund.reason && (
             <>
-              <p className="mt-3 text-silver">반품 사유</p>
-              <p className="mt-1 whitespace-pre-line font-semibold text-plum">{refund.reason}</p>
+              <p className="mt-3 text-gray-400">반품 사유</p>
+              <p className="mt-1 whitespace-pre-line font-semibold text-gray-900">{refund.reason}</p>
             </>
           )}
         </div>
 
         {/* 검수 결과 */}
         <div>
-          <p className="mb-2 text-sm font-bold text-plum">검수 결과</p>
+          <p className="mb-2 text-sm font-bold text-gray-700">검수 결과</p>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setResult("APPROVED")}
               className={`rounded-xl border px-4 py-3 text-sm font-bold transition ${
                 result === "APPROVED"
-                  ? "border-silver bg-fog text-plum ring-2 ring-sand"
-                  : "border-sand bg-white text-olive hover:border-sand"
+                  ? "border-violet-300 bg-violet-50 text-violet-700 ring-2 ring-violet-200"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-violet-200"
               }`}
             >
               승인 (환불 진행)
@@ -225,7 +225,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
               className={`rounded-xl border px-4 py-3 text-sm font-bold transition ${
                 result === "REJECTED"
                   ? "border-rose-300 bg-rose-50 text-rose-700 ring-2 ring-rose-200"
-                  : "border-sand bg-white text-olive hover:border-rose-200"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-rose-200"
               }`}
             >
               거절
@@ -237,7 +237,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
         {result === "APPROVED" && (
           <>
             <div>
-              <p className="mb-2 text-sm font-bold text-plum">귀책</p>
+              <p className="mb-2 text-sm font-bold text-gray-700">귀책</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -245,7 +245,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
                   className={`rounded-xl border px-4 py-3 text-sm font-bold transition ${
                     responsibility === "BUYER"
                       ? "border-amber-300 bg-amber-50 text-amber-700 ring-2 ring-amber-200"
-                      : "border-sand bg-white text-olive hover:border-amber-200"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-amber-200"
                   }`}
                 >
                   구매자 귀책
@@ -256,13 +256,13 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
                   className={`rounded-xl border px-4 py-3 text-sm font-bold transition ${
                     responsibility === "SELLER"
                       ? "border-indigo-300 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-200"
-                      : "border-sand bg-white text-olive hover:border-indigo-200"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-indigo-200"
                   }`}
                 >
                   판매자 귀책
                 </button>
               </div>
-              <p className="mt-3 text-xs leading-5 text-olive">
+              <p className="mt-3 text-xs leading-5 text-gray-500">
                 {responsibility === "BUYER"
                   ? "구매자 귀책: 반품 배송비가 환불 금액에서 차감됩니다."
                   : "판매자 귀책: 전액 환불 + 반품 배송비를 판매자가 부담합니다."}
@@ -270,13 +270,13 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-plum">검수 메모 (선택)</label>
+              <label className="mb-2 block text-sm font-bold text-gray-700">검수 메모 (선택)</label>
               <textarea
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
                 rows={2}
                 placeholder="구매자에게 전달할 내용이 있다면 작성해 주세요."
-                className="w-full rounded-lg bg-fog/70 p-3 text-sm text-plum outline-none focus:ring-2 focus:ring-sand resize-none"
+                className="w-full rounded-lg bg-blue-50/70 p-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-violet-200 resize-none"
               />
             </div>
           </>
@@ -285,7 +285,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
         {/* 거절 시: 거절 사유 필수 */}
         {result === "REJECTED" && (
           <div>
-            <label className="mb-2 block text-sm font-bold text-plum">
+            <label className="mb-2 block text-sm font-bold text-gray-700">
               거절 사유 <span className="text-rose-500">*</span>
             </label>
             <textarea
@@ -293,24 +293,24 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
               onChange={(e) => { setRejectReason(e.target.value); setError(""); }}
               rows={3}
               placeholder="예: 사용 흔적이 있음, 구성품 누락, 임의 분해 등"
-              className="w-full rounded-lg bg-fog/70 p-3 text-sm text-plum outline-none focus:ring-2 focus:ring-rose-200 resize-none"
+              className="w-full rounded-lg bg-blue-50/70 p-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-rose-200 resize-none"
             />
-            <p className="mt-2 text-xs leading-5 text-olive">
+            <p className="mt-2 text-xs leading-5 text-gray-500">
               거절 사유는 구매자에게 그대로 전달됩니다.
             </p>
           </div>
         )}
 
         {/* 환불 요약 */}
-        <div className="rounded-xl bg-fog p-4 text-sm">
+        <div className="rounded-xl bg-gray-50 p-4 text-sm">
           <div className="flex justify-between">
-            <span className="text-olive">상품 합계</span>
-            <span className="font-semibold text-plum">{formatPrice(totalPrice)}</span>
+            <span className="text-gray-500">상품 합계</span>
+            <span className="font-semibold text-gray-900">{formatPrice(totalPrice)}</span>
           </div>
           {result === "APPROVED" && (
-            <div className="mt-2 flex justify-between border-t border-sand pt-2">
-              <span className="font-bold text-plum">예상 환불 금액</span>
-              <span className="font-extrabold text-plum">{formatPrice(totalPrice)}</span>
+            <div className="mt-2 flex justify-between border-t border-gray-200 pt-2">
+              <span className="font-bold text-gray-900">예상 환불 금액</span>
+              <span className="font-extrabold text-violet-700">{formatPrice(totalPrice)}</span>
             </div>
           )}
         </div>
@@ -427,14 +427,14 @@ export default function SellerRefundManagementPage() {
           <PageHeader
             title="환불 관리"
             action={
-              <span className="text-sm font-medium text-olive">
+              <span className="text-sm font-medium text-gray-500">
                 총 {refunds.length}건
               </span>
             }
           />
 
           {/* 탭 */}
-          <div className="mb-5 flex rounded-xl bg-fog p-1">
+          <div className="mb-5 flex rounded-xl bg-gray-100 p-1">
             {TABS.map((tab) => (
               <button
                 key={tab.value}
@@ -442,8 +442,8 @@ export default function SellerRefundManagementPage() {
                 onClick={() => setActiveTab(tab.value)}
                 className={`flex-1 rounded-lg py-2 text-sm font-bold transition ${
                   activeTab === tab.value
-                    ? "bg-white text-plum shadow-sm"
-                    : "text-olive hover:text-plum"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 {tab.label}
@@ -468,17 +468,17 @@ export default function SellerRefundManagementPage() {
           {loading ? (
             <div className="space-y-4">
               {[...Array(2)].map((_, i) => (
-                <div key={i} className="h-64 animate-pulse rounded-[20px] bg-fog" />
+                <div key={i} className="h-64 animate-pulse rounded-[20px] bg-gray-100" />
               ))}
             </div>
           ) : refunds.length === 0 ? (
             <div className="px-6 py-20 text-center">
-              <p className="text-base font-semibold text-plum">
+              <p className="text-base font-semibold text-gray-700">
                 {activeTab === "RECEIVED" && "처리할 반품이 없습니다"}
                 {activeTab === "COMPLETED" && "완료된 반품이 없습니다"}
                 {activeTab === "FAILED" && "거절한 반품이 없습니다"}
               </p>
-              <p className="mt-2 text-sm text-silver">
+              <p className="mt-2 text-sm text-gray-400">
                 {activeTab === "RECEIVED" && "고객이 반품을 신청하면 이곳에 표시됩니다."}
                 {activeTab === "COMPLETED" && "검수 완료된 반품이 이곳에 기록됩니다."}
                 {activeTab === "FAILED" && "거절한 반품 내역이 이곳에 기록됩니다."}

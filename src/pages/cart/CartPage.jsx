@@ -61,7 +61,7 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-sm text-silver">
+      <div className="py-16 text-center text-sm text-gray-400">
         장바구니를 불러오는 중입니다.
       </div>
     );
@@ -82,18 +82,18 @@ export default function CartPage() {
       <div className="pb-32 text-left">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-xl font-bold text-plum">장바구니</h1>
-          <p className="mt-0.5 text-sm text-olive">총 {cartItems.length}개 상품</p>
+          <h1 className="text-xl font-bold text-gray-900">장바구니</h1>
+          <p className="mt-0.5 text-sm text-gray-500">총 {cartItems.length}개 상품</p>
         </div>
 
         {cartItems.length === 0 ? (
-          <div className="border border-sand bg-white py-20 text-center">
-            <p className="text-base font-bold text-plum">장바구니가 비어 있어요</p>
-            <p className="mt-2 text-sm text-olive">상품을 담고 다시 찾아와 주세요.</p>
+          <div className="border border-gray-200 bg-white py-20 text-center">
+            <p className="text-base font-bold text-gray-900">장바구니가 비어 있어요</p>
+            <p className="mt-2 text-sm text-gray-500">상품을 담고 다시 찾아와 주세요.</p>
             <button
               type="button"
               onClick={() => navigate("/products")}
-              className="mt-6 border border-brand px-6 py-2 text-sm font-bold text-plum transition hover:bg-fog"
+              className="mt-6 border border-blue-600 px-6 py-2 text-sm font-bold text-blue-600 transition hover:bg-blue-50"
             >
               상품 보러가기
             </button>
@@ -132,11 +132,11 @@ export default function CartPage() {
                     key={item.cartId}
                     className={[
                       "flex gap-4 border bg-white p-4 transition",
-                      soldOut ? "border-warm opacity-60" : "border-sand",
+                      soldOut ? "border-gray-100 opacity-60" : "border-gray-200",
                     ].join(" ")}
                   >
                     {/* Image */}
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden border border-warm bg-fog">
+                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden border border-gray-100 bg-gray-50">
                       {item.image ? (
                         <img
                           src={item.image}
@@ -144,7 +144,7 @@ export default function CartPage() {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-silver">
+                        <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-gray-300">
                           {(item.name || "P").slice(0, 1).toUpperCase()}
                         </div>
                       )}
@@ -154,10 +154,10 @@ export default function CartPage() {
                     <div className="flex min-w-0 flex-1 flex-col justify-between">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <h3 className="truncate text-sm font-bold text-plum">
+                          <h3 className="truncate text-sm font-bold text-gray-900">
                             {item.name}
                           </h3>
-                          <p className="mt-0.5 text-xs text-silver">{item.category}</p>
+                          <p className="mt-0.5 text-xs text-gray-400">{item.category}</p>
                           {soldOut && (
                             <p className="mt-1 text-xs font-semibold text-red-500">품절</p>
                           )}
@@ -166,7 +166,7 @@ export default function CartPage() {
                           type="button"
                           onClick={() => setDeleteTarget(item)}
                           disabled={isPending}
-                          className="flex-shrink-0 p-1 text-silver transition hover:text-red-400 disabled:opacity-40"
+                          className="flex-shrink-0 p-1 text-gray-300 transition hover:text-red-400 disabled:opacity-40"
                         >
                           ×
                         </button>
@@ -174,30 +174,30 @@ export default function CartPage() {
 
                       <div className="flex items-center justify-between">
                         {/* Quantity */}
-                        <div className="flex items-center border border-sand">
+                        <div className="flex items-center border border-gray-200">
                           <button
                             type="button"
                             onClick={() => handleDecrease(item)}
                             disabled={soldOut || isPending || item.quantity <= 1}
-                            className="flex h-7 w-7 items-center justify-center text-olive transition hover:bg-fog disabled:opacity-30"
+                            className="flex h-7 w-7 items-center justify-center text-gray-500 transition hover:bg-gray-100 disabled:opacity-30"
                           >
                             −
                           </button>
-                          <span className="min-w-8 text-center text-sm font-bold text-plum">
+                          <span className="min-w-8 text-center text-sm font-bold text-gray-900">
                             {item.quantity}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleIncrease(item)}
                             disabled={soldOut || isPending || item.quantity >= item.stockCount}
-                            className="flex h-7 w-7 items-center justify-center text-olive transition hover:bg-fog disabled:opacity-30"
+                            className="flex h-7 w-7 items-center justify-center text-gray-500 transition hover:bg-gray-100 disabled:opacity-30"
                           >
                             +
                           </button>
                         </div>
 
                         {/* Price */}
-                        <span className="text-base font-bold text-plum tabular-nums">
+                        <span className="text-base font-bold text-gray-900 tabular-nums">
                           {formatPrice(item.price * item.quantity)}원
                         </span>
                       </div>
@@ -208,41 +208,41 @@ export default function CartPage() {
             </section>
 
             {/* Info Banner */}
-            <section className="border border-warm bg-fog p-4">
-              <p className="text-sm font-bold text-plum">예치금으로 바로 결제</p>
-              <p className="mt-1 text-xs leading-relaxed text-plum">
+            <section className="border border-blue-100 bg-blue-50 p-4">
+              <p className="text-sm font-bold text-blue-900">예치금으로 바로 결제</p>
+              <p className="mt-1 text-xs leading-relaxed text-blue-700">
                 예치금이 부족하면 먼저 충전한 뒤 주문을 진행해 보세요.
               </p>
               <button
                 type="button"
                 onClick={() => navigate("/deposits")}
-                className="mt-3 border border-silver px-4 py-1.5 text-xs font-semibold text-plum transition hover:bg-warm"
+                className="mt-3 border border-blue-300 px-4 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-100"
               >
                 예치금 페이지로 이동 →
               </button>
             </section>
 
             {/* Order Summary */}
-            <section className="border border-sand bg-white p-5">
-              <h2 className="mb-3 text-sm font-bold text-plum">결제 금액</h2>
+            <section className="border border-gray-200 bg-white p-5">
+              <h2 className="mb-3 text-sm font-bold text-gray-900">결제 금액</h2>
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-olive">상품 금액</span>
-                  <span className="font-semibold text-plum">
+                  <span className="text-gray-500">상품 금액</span>
+                  <span className="font-semibold text-gray-900">
                     {formatPrice(summary.subtotal)}원
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-olive">배송비</span>
-                  <span className="font-semibold text-plum">
+                  <span className="text-gray-500">배송비</span>
+                  <span className="font-semibold text-gray-900">
                     {summary.shippingFee === 0 ? "무료" : `${formatPrice(summary.shippingFee)}원`}
                   </span>
                 </div>
               </div>
-              <div className="mt-4 border-t border-warm pt-4">
+              <div className="mt-4 border-t border-gray-100 pt-4">
                 <div className="flex items-end justify-between">
-                  <span className="text-sm font-bold text-plum">총 결제 금액</span>
-                  <span className="text-xl font-bold tabular-nums text-plum">
+                  <span className="text-sm font-bold text-gray-900">총 결제 금액</span>
+                  <span className="text-xl font-bold tabular-nums text-blue-600">
                     {formatPrice(summary.total)}원
                   </span>
                 </div>
@@ -262,13 +262,13 @@ export default function CartPage() {
 
       {/* Sticky Checkout Button */}
       {cartItems.length > 0 && (
-        <div className="fixed bottom-0 left-0 z-40 w-full border-t border-sand bg-white p-4">
+        <div className="fixed bottom-0 left-0 z-40 w-full border-t border-gray-200 bg-white p-4">
           <div className="mx-auto max-w-7xl">
             <button
               type="button"
               disabled={summary.availableCount === 0}
               onClick={proceedToCheckout}
-              className="h-12 w-full bg-brand text-sm font-bold text-white transition hover:bg-brand disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-12 w-full bg-blue-600 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {summary.availableCount === 0
                 ? "구매 가능한 상품이 없습니다"

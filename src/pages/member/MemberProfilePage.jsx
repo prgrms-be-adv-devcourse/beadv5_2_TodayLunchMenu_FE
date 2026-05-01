@@ -92,7 +92,7 @@ export default function MemberProfilePage() {
     <PageContainer>
       <div className="mx-auto max-w-3xl">
         {loading ? (
-          <div className="border border-sand bg-white px-6 py-16 text-center text-sm font-medium text-olive shadow-sm">
+          <div className="border border-gray-200 bg-white px-6 py-16 text-center text-sm font-medium text-gray-500 shadow-sm">
             회원 정보를 불러오는 중입니다...
           </div>
         ) : errorMessage ? (
@@ -100,12 +100,12 @@ export default function MemberProfilePage() {
             {errorMessage}
           </div>
         ) : !member ? (
-          <div className="border border-sand bg-white px-4 py-3 text-sm font-medium text-olive shadow-sm">
+          <div className="border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-600 shadow-sm">
             회원 정보를 찾을 수 없습니다.
           </div>
         ) : (
           <>
-            <section className="border border-sand bg-fog p-8 shadow-sm">
+            <section className="border border-gray-200 bg-blue-50 p-8 shadow-sm">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-5">
                   {member.profileImageUrl ? (
@@ -115,15 +115,15 @@ export default function MemberProfilePage() {
                       className="h-24 w-24 rounded-full object-cover shadow-lg ring-4 ring-white"
                     />
                   ) : (
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-brand text-2xl font-extrabold text-white shadow-lg">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-600 text-2xl font-extrabold text-white shadow-lg">
                       {getInitials(member.nickname)}
                     </div>
                   )}
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-olive">Public Profile</p>
-                    <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-plum">{member.nickname}</h1>
-                    <p className="mt-2 text-sm text-olive">{member.email}</p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-plum">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-blue-500">Public Profile</p>
+                    <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{member.nickname}</h1>
+                    <p className="mt-2 text-sm text-gray-500">{member.email}</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
                       Joined {formatJoinedAt(member.createdAt)}
                     </p>
                   </div>
@@ -133,7 +133,7 @@ export default function MemberProfilePage() {
                     <Button size="lg" className="min-w-40">신고하기</Button>
                   </Link>
                 ) : (
-                  <div className="rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-plum ring-1 ring-sand">
+                  <div className="rounded-full bg-white/80 px-4 py-2 text-sm font-bold text-blue-700 ring-1 ring-gray-200">
                     본인 계정
                   </div>
                 )}
@@ -141,17 +141,17 @@ export default function MemberProfilePage() {
             </section>
 
             <section className="mt-6 grid gap-4 sm:grid-cols-3">
-              <div className="bg-white p-5 shadow-sm ring-1 ring-sand">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-silver">Member ID</p>
-                <p className="mt-3 break-all text-sm font-semibold text-plum">{member.memberId}</p>
+              <div className="bg-white p-5 shadow-sm ring-1 ring-gray-200">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Member ID</p>
+                <p className="mt-3 break-all text-sm font-semibold text-gray-700">{member.memberId}</p>
               </div>
-              <div className="bg-white p-5 shadow-sm ring-1 ring-sand">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-silver">Role</p>
-                <p className="mt-3 text-sm font-semibold text-plum">{member.role || '-'}</p>
+              <div className="bg-white p-5 shadow-sm ring-1 ring-gray-200">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Role</p>
+                <p className="mt-3 text-sm font-semibold text-gray-700">{member.role || '-'}</p>
               </div>
-              <div className="bg-white p-5 shadow-sm ring-1 ring-sand">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-silver">Status</p>
-                <p className="mt-3 text-sm font-semibold text-plum">{member.status || '-'}</p>
+              <div className="bg-white p-5 shadow-sm ring-1 ring-gray-200">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Status</p>
+                <p className="mt-3 text-sm font-semibold text-gray-700">{member.status || '-'}</p>
               </div>
             </section>
           </>

@@ -9,7 +9,7 @@ export default function RequireAdmin() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center px-6 py-16 text-sm font-medium text-olive">
+      <div className="flex min-h-[50vh] items-center justify-center px-6 py-16 text-sm font-medium text-slate-500">
         {"\uAD00\uB9AC\uC790 \uAD8C\uD55C\uC744 \uD655\uC778\uD558\uB294 \uC911\uC785\uB2C8\uB2E4..."}
       </div>
     );

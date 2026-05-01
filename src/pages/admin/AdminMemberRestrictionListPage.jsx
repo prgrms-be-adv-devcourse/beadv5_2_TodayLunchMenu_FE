@@ -90,7 +90,7 @@ function getStatusBadge(status) {
   if (status === "EXPIRED") {
     return "text-amber-600";
   }
-  return "text-olive";
+  return "text-slate-500";
 }
 
 function getStatusDot(status) {
@@ -100,7 +100,7 @@ function getStatusDot(status) {
   if (status === "EXPIRED") {
     return "bg-amber-500";
   }
-  return "bg-silver";
+  return "bg-slate-400";
 }
 
 function getInitials(memberId) {
@@ -217,10 +217,10 @@ export default function AdminMemberRestrictionListPage() {
   return (
     <>
       <header className="mb-8">
-        <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-plum">
+        <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-gray-900">
           제재 이력 목록
         </h1>
-        <p className="text-sm text-olive">
+        <p className="text-sm text-slate-500">
           전체 회원의 제재 이력을 조회하고 필요하면 즉시 해제할 수 있습니다.
         </p>
       </header>
@@ -240,13 +240,13 @@ export default function AdminMemberRestrictionListPage() {
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-4 bg-white p-4 shadow-sm">
           <div className="relative min-w-[240px] flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-olive">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
               #
             </span>
             <input
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
-              className="w-full rounded border-none bg-fog py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-silver"
+              className="w-full rounded border-none bg-blue-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="회원 ID, 관리자 ID, 닉네임, 사유, 제재 유형으로 검색"
               type="text"
             />
@@ -254,7 +254,7 @@ export default function AdminMemberRestrictionListPage() {
           <select
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
-            className="min-w-[140px] rounded border-none bg-fog px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-silver"
+            className="min-w-[140px] rounded border-none bg-blue-50 px-4 py-2.5 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="ALL">전체 상태</option>
             <option value="ACTIVE">활성</option>
@@ -264,7 +264,7 @@ export default function AdminMemberRestrictionListPage() {
           <button
             type="button"
             onClick={applyKeywordFilter}
-            className="flex items-center gap-2 rounded bg-brand px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-brand"
+            className="flex items-center gap-2 rounded bg-blue-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:bg-blue-700"
           >
             필터 적용
           </button>
@@ -279,7 +279,7 @@ export default function AdminMemberRestrictionListPage() {
                 return next;
               });
             }}
-            className="rounded bg-white px-5 py-2.5 text-sm font-bold text-olive shadow-sm ring-1 ring-sand transition hover:bg-fog"
+            className="rounded bg-white px-5 py-2.5 text-sm font-bold text-slate-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-slate-50"
           >
             초기화
           </button>
@@ -289,7 +289,7 @@ export default function AdminMemberRestrictionListPage() {
           <div className="overflow-x-auto">
             <table className="min-w-[1180px] border-collapse text-left">
               <thead>
-                <tr className="bg-fog text-[11px] font-bold uppercase tracking-[0.18em] text-olive">
+                <tr className="bg-blue-50 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
                   <th className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-4">
                     대상 회원
                   </th>
@@ -304,16 +304,16 @@ export default function AdminMemberRestrictionListPage() {
                   <th className="min-w-[110px] px-6 py-4 text-right">작업</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-warm">
+              <tbody className="divide-y divide-blue-100">
                 {loading ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-16 text-center text-sm text-olive">
+                    <td colSpan="8" className="px-6 py-16 text-center text-sm text-slate-500">
                       제재 목록을 불러오는 중입니다...
                     </td>
                   </tr>
                 ) : filteredRestrictions.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-16 text-center text-sm text-olive">
+                    <td colSpan="8" className="px-6 py-16 text-center text-sm text-slate-500">
                       조건에 맞는 제재 이력이 없습니다.
                     </td>
                   </tr>
@@ -328,20 +328,20 @@ export default function AdminMemberRestrictionListPage() {
                         key={restriction.restrictionId}
                         className={
                           isArchived
-                            ? "bg-fog/40 opacity-70"
-                            : "transition-colors hover:bg-fog/60"
+                            ? "bg-blue-50/40 opacity-70"
+                            : "transition-colors hover:bg-blue-50/60"
                         }
                       >
                         <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-warm text-xs font-bold text-plum">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
                               {getInitials(restriction.memberId)}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold text-olive">
+                              <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold text-slate-900">
                                 {restriction.memberNickname || restriction.memberId}
                               </div>
-                              <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-olive">
+                              <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-slate-500">
                                 회원 ID: {restriction.memberId}
                               </div>
                             </div>
@@ -353,12 +353,12 @@ export default function AdminMemberRestrictionListPage() {
                               restriction.restrictionType}
                           </span>
                         </td>
-                        <td className="px-6 py-5 align-top text-sm text-olive">
+                        <td className="px-6 py-5 align-top text-sm text-slate-500">
                           <div className="max-w-[260px] truncate">
                             {restriction.reason}
                           </div>
                         </td>
-                        <td className="whitespace-nowrap px-6 py-5 align-top text-sm text-olive">
+                        <td className="whitespace-nowrap px-6 py-5 align-top text-sm text-slate-900">
                           {restriction.durationHours >= 87600
                             ? "영구"
                             : `${restriction.durationHours}시간`}
@@ -367,7 +367,7 @@ export default function AdminMemberRestrictionListPage() {
                           <div className="whitespace-nowrap text-sm font-medium">
                             {formatDateOnly(restriction.endAt)}
                           </div>
-                          <div className="whitespace-nowrap text-[10px] text-olive">
+                          <div className="whitespace-nowrap text-[10px] text-slate-500">
                             {formatDateTime(restriction.endAt).split(" ").slice(-1)[0] || "-"}
                           </div>
                         </td>
@@ -388,8 +388,8 @@ export default function AdminMemberRestrictionListPage() {
                             {getStatusLabel(status)}
                           </span>
                         </td>
-                        <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top text-xs text-olive">
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-olive">
+                        <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top text-xs text-slate-500">
+                          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-slate-700">
                             {restriction.adminNickname || restriction.adminId || "-"}
                           </div>
                           <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -404,7 +404,7 @@ export default function AdminMemberRestrictionListPage() {
                             type="button"
                             disabled={!isActive || deactivatingId === restriction.restrictionId}
                             onClick={() => handleDeactivate(restriction.restrictionId)}
-                            className="rounded-lg px-3 py-1.5 text-xs font-bold text-rose-600 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:text-olive"
+                            className="rounded-lg px-3 py-1.5 text-xs font-bold text-rose-600 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:text-slate-400"
                           >
                             {isArchived
                               ? "종료됨"
@@ -420,8 +420,8 @@ export default function AdminMemberRestrictionListPage() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between border-t border-sand bg-fog px-6 py-4">
-            <span className="text-xs text-olive">
+          <div className="flex items-center justify-between border-t border-gray-200 bg-blue-50 px-6 py-4">
+            <span className="text-xs text-slate-500">
               총 {restrictions.length}건 중 {filteredRestrictions.length}건 표시
             </span>
           </div>

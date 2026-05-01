@@ -40,27 +40,27 @@ export default function SignupPendingVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-fog px-6 py-16 text-plum">
+    <div className="min-h-screen bg-blue-50 px-6 py-16 text-gray-900">
       <div className="mx-auto flex min-h-[80vh] max-w-3xl items-center justify-center">
         <section className="w-full bg-white p-8 shadow-xl md:p-12">
           <div className="mx-auto max-w-xl text-center">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-warm text-4xl text-plum">
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-4xl text-blue-700">
               @
             </div>
             <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
               이메일 인증이 필요합니다
             </h1>
-            <p className="mt-4 text-base font-medium leading-7 text-olive">
+            <p className="mt-4 text-base font-medium leading-7 text-gray-600">
               회원가입은 완료되었지만 아직 계정이 활성화되지 않았습니다.
               <br />
               메일함에서 인증 링크를 확인한 뒤 로그인해 주세요.
             </p>
 
-            <div className="mt-8 bg-fog px-6 py-5 text-left">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-plum">
+            <div className="mt-8 bg-blue-50 px-6 py-5 text-left">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
                 Verification Email
               </p>
-              <p className="mt-2 break-all text-lg font-semibold text-plum">
+              <p className="mt-2 break-all text-lg font-semibold text-blue-900">
                 {email || "이메일 정보 없음"}
               </p>
             </div>
@@ -86,9 +86,9 @@ export default function SignupPendingVerificationPage() {
               </Button>
             </div>
 
-            <p className="mt-8 text-sm font-medium text-olive">
+            <p className="mt-8 text-sm font-medium text-gray-500">
               이메일 주소를 잘못 입력했다면
-              <Link to="/signup" className="ml-1 font-bold text-plum hover:underline">
+              <Link to="/signup" className="ml-1 font-bold text-blue-700 hover:underline">
                 다시 회원가입
               </Link>
               해 주세요.

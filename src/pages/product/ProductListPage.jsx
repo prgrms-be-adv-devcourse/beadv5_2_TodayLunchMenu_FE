@@ -30,8 +30,8 @@ function CategoryTree({ tree, selectedId, onSelect }) {
         className={[
           "w-full px-4 py-2 text-left text-sm transition",
           !selectedId
-            ? "bg-fog font-semibold text-plum"
-            : "text-plum hover:bg-fog",
+            ? "bg-blue-50 font-semibold text-blue-700"
+            : "text-gray-700 hover:bg-gray-50",
         ].join(" ")}
       >
         전체 상품
@@ -45,8 +45,8 @@ function CategoryTree({ tree, selectedId, onSelect }) {
             className={[
               "w-full px-4 py-2 text-left text-sm font-semibold transition",
               selectedId === root.id
-                ? "bg-fog text-plum"
-                : "text-plum hover:bg-fog",
+                ? "bg-blue-50 text-blue-700"
+                : "text-gray-800 hover:bg-gray-50",
             ].join(" ")}
           >
             {root.name}
@@ -60,8 +60,8 @@ function CategoryTree({ tree, selectedId, onSelect }) {
                 className={[
                   "w-full py-1.5 pl-7 pr-4 text-left text-sm transition",
                   selectedId === child.id
-                    ? "bg-fog font-semibold text-plum"
-                    : "text-olive hover:bg-fog",
+                    ? "bg-blue-50 font-semibold text-blue-700"
+                    : "text-gray-600 hover:bg-gray-50",
                 ].join(" ")}
               >
                 {child.name}
@@ -75,8 +75,8 @@ function CategoryTree({ tree, selectedId, onSelect }) {
                   className={[
                     "w-full py-1 pl-11 pr-4 text-left text-xs transition",
                     selectedId === grandchild.id
-                      ? "bg-fog font-semibold text-plum"
-                      : "text-olive hover:bg-fog",
+                      ? "bg-blue-50 font-semibold text-blue-700"
+                      : "text-gray-500 hover:bg-gray-50",
                   ].join(" ")}
                 >
                   {grandchild.name}
@@ -183,8 +183,8 @@ export default function ProductListPage() {
     <div className="text-left">
       {/* Page Header */}
       <div className="mb-5">
-        <h1 className="text-xl font-bold text-plum">상품 목록</h1>
-        <p className="mt-0.5 text-sm text-olive">다양한 상품을 탐색하고 원하는 상품을 찾아보세요</p>
+        <h1 className="text-xl font-bold text-gray-900">상품 목록</h1>
+        <p className="mt-0.5 text-sm text-gray-500">다양한 상품을 탐색하고 원하는 상품을 찾아보세요</p>
       </div>
 
       <div className="flex items-start gap-0">
@@ -195,8 +195,8 @@ export default function ProductListPage() {
             sidebarOpen ? "w-48" : "w-0 overflow-hidden",
           ].join(" ")}
         >
-          <div className="mr-4 overflow-hidden border border-sand bg-white">
-            <div className="bg-brand px-4 py-2.5">
+          <div className="mr-4 overflow-hidden border border-gray-200 bg-white">
+            <div className="bg-blue-700 px-4 py-2.5">
               <h2 className="text-sm font-bold text-white">카테고리</h2>
             </div>
             <CategoryTree
@@ -210,7 +210,7 @@ export default function ProductListPage() {
         {/* Main Content */}
         <div className="min-w-0 flex-1">
           {/* Top Bar */}
-          <div className="mb-4 border-b border-sand pb-3">
+          <div className="mb-4 border-b border-gray-200 pb-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <button
@@ -219,8 +219,8 @@ export default function ProductListPage() {
                   className={[
                     "flex h-8 items-center gap-1.5 border px-2 text-xs font-semibold transition",
                     sidebarOpen
-                      ? "border-silver text-olive hover:bg-fog"
-                      : "border-silver bg-fog text-plum hover:bg-warm",
+                      ? "border-gray-300 text-gray-500 hover:bg-gray-100"
+                      : "border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100",
                   ].join(" ")}
                   title="카테고리 열기/닫기"
                 >
@@ -232,20 +232,20 @@ export default function ProductListPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedCategoryId(null)}
-                    className="text-olive hover:text-plum"
+                    className="text-gray-500 hover:text-blue-600"
                   >
                     전체
                   </button>
                   {categoryPath.map((cat) => (
                     <span key={cat.id} className="flex items-center gap-1">
-                      <span className="text-silver">›</span>
+                      <span className="text-gray-400">›</span>
                       {cat.id === selectedCategoryId ? (
-                        <span className="font-semibold text-plum">{cat.name}</span>
+                        <span className="font-semibold text-gray-900">{cat.name}</span>
                       ) : (
                         <button
                           type="button"
                           onClick={() => setSelectedCategoryId(cat.id)}
-                          className="text-olive hover:text-plum"
+                          className="text-gray-500 hover:text-blue-600"
                         >
                           {cat.name}
                         </button>
@@ -254,7 +254,7 @@ export default function ProductListPage() {
                   ))}
                 </div>
 
-                <span className="text-xs text-silver">
+                <span className="text-xs text-gray-400">
                   {pageInfo.totalElements}개
                   {totalPages > 1 && ` · ${currentPage + 1}/${totalPages}페이지`}
                 </span>
@@ -265,13 +265,13 @@ export default function ProductListPage() {
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   placeholder="상품명 검색"
-                  className="h-8 border border-silver px-3 text-sm outline-none focus:border-brand"
+                  className="h-8 border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
                 />
 
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="h-8 border border-silver px-2 text-sm outline-none focus:border-brand"
+                  className="h-8 border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
                 >
                   {STATUS_OPTIONS.map((o) => (
                     <option key={o} value={o}>{o}</option>
@@ -281,7 +281,7 @@ export default function ProductListPage() {
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
-                  className="h-8 border border-silver px-2 text-sm outline-none focus:border-brand"
+                  className="h-8 border border-gray-300 px-2 text-sm outline-none focus:border-blue-500"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -292,7 +292,7 @@ export default function ProductListPage() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="h-8 border border-silver px-2.5 text-xs text-olive transition hover:bg-fog"
+                    className="h-8 border border-gray-300 px-2.5 text-xs text-gray-600 transition hover:bg-gray-100"
                   >
                     초기화
                   </button>
@@ -303,7 +303,7 @@ export default function ProductListPage() {
 
           {/* Product Grid */}
           {loading ? (
-            <div className="py-20 text-center text-sm text-silver">
+            <div className="py-20 text-center text-sm text-gray-400">
               상품을 불러오는 중입니다…
             </div>
           ) : error ? (
@@ -314,13 +314,13 @@ export default function ProductListPage() {
             <div className={fetching ? "pointer-events-none opacity-50 transition-opacity" : ""}>
               {filteredProducts.length === 0 ? (
                 <div className="py-20 text-center">
-                  <p className="mb-3 text-sm font-semibold text-plum">
+                  <p className="mb-3 text-sm font-semibold text-gray-700">
                     조건에 맞는 상품이 없습니다.
                   </p>
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog"
+                    className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100"
                   >
                     필터 초기화
                   </button>
@@ -343,18 +343,18 @@ export default function ProductListPage() {
                         type="button"
                         disabled={currentPage === 0}
                         onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-                        className="border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-40"
+                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         이전
                       </button>
-                      <span className="text-sm text-olive">
+                      <span className="text-sm text-gray-500">
                         {currentPage + 1} / {totalPages}
                       </span>
                       <button
                         type="button"
                         disabled={currentPage >= totalPages - 1}
                         onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
-                        className="border border-silver px-4 py-1.5 text-sm text-olive transition hover:bg-fog disabled:cursor-not-allowed disabled:opacity-40"
+                        className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         다음
                       </button>
@@ -368,7 +368,7 @@ export default function ProductListPage() {
       </div>
 
       {toast && (
-        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-dark-surface"}`}>
+        <div className={`fixed bottom-6 left-1/2 z-50 -translate-x-1/2 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-lg ${toast.error ? "bg-red-500" : "bg-gray-800"}`}>
           {toast.error ? (
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />

@@ -8,9 +8,9 @@ export default function CountdownPill({ endsAt, status }) {
   const isWaiting = status === "WAITING";
 
   const tone = isWaiting
-    ? "bg-brand text-white"
+    ? "bg-blue-500 text-white"
     : ended
-      ? "bg-silver text-white"
+      ? "bg-gray-500 text-white"
       : urgent
         ? "bg-red-600 text-white"
         : "bg-black/75 text-white";

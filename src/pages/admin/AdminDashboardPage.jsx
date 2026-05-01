@@ -29,7 +29,7 @@ const SECTIONS = [
     to: "/admin/categories",
     cta: "카테고리 편집",
     accent: "border-l-blue-500",
-    badge: "bg-warm text-plum",
+    badge: "bg-blue-100 text-blue-700",
     badgeLabel: "카테고리",
   },
   {
@@ -49,7 +49,7 @@ const SECTIONS = [
     to: "/admin/embeddings",
     cta: "임베딩 관리",
     accent: "border-l-violet-500",
-    badge: "bg-warm text-plum",
+    badge: "bg-violet-100 text-violet-700",
     badgeLabel: "AI",
   },
 ];
@@ -74,20 +74,20 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       {/* 환영 배너 */}
-      <div className="rounded-lg border border-warm bg-gradient-to-r from-brand to-brand-hover px-8 py-6 text-white shadow-sm">
-        <p className="text-sm font-medium text-warm">{today}</p>
+      <div className="rounded-lg border border-blue-100 bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6 text-white shadow-sm">
+        <p className="text-sm font-medium text-blue-200">{today}</p>
         <h1 className="mt-1 text-2xl font-bold">
           안녕하세요, {user?.nickname || "관리자"}님
         </h1>
-        <p className="mt-1 text-sm text-warm">
+        <p className="mt-1 text-sm text-blue-200">
           GoodsMall 관리자 센터에 오신 것을 환영합니다.
         </p>
       </div>
 
       {/* 빠른 이동 */}
-      <div className="rounded-lg border border-sand bg-white shadow-sm">
-        <div className="border-b border-sand px-6 py-4">
-          <h2 className="text-sm font-bold uppercase tracking-wide text-olive">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-6 py-4">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-gray-500">
             빠른 이동
           </h2>
         </div>
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
             <Link
               key={link.label}
               to={link.to}
-              className="rounded-full border border-sand bg-fog px-4 py-1.5 text-sm font-medium text-plum transition hover:bg-warm hover:border-silver"
+              className="rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-700 transition hover:bg-blue-100 hover:border-blue-400"
             >
               {link.label}
             </Link>
@@ -106,12 +106,12 @@ export default function AdminDashboardPage() {
 
       {/* 관리 섹션 카드 */}
       <div>
-        <h2 className="mb-4 text-lg font-bold text-plum">관리 메뉴</h2>
+        <h2 className="mb-4 text-lg font-bold text-gray-900">관리 메뉴</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {SECTIONS.map((section) => (
             <div
               key={section.id}
-              className={`flex flex-col rounded-lg border border-sand border-l-4 bg-white shadow-sm transition hover:shadow-md ${section.accent}`}
+              className={`flex flex-col rounded-lg border border-gray-200 border-l-4 bg-white shadow-sm transition hover:shadow-md ${section.accent}`}
             >
               <div className="flex items-start justify-between p-5">
                 <div className="flex-1">
@@ -122,18 +122,18 @@ export default function AdminDashboardPage() {
                       {section.badgeLabel}
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-plum">
+                  <h3 className="text-base font-bold text-gray-900">
                     {section.title}
                   </h3>
-                  <p className="mt-1 text-sm leading-relaxed text-olive">
+                  <p className="mt-1 text-sm leading-relaxed text-gray-500">
                     {section.description}
                   </p>
                 </div>
               </div>
-              <div className="mt-auto border-t border-warm px-5 py-3">
+              <div className="mt-auto border-t border-gray-100 px-5 py-3">
                 <Link
                   to={section.to}
-                  className="text-sm font-semibold text-plum hover:text-plum hover:underline"
+                  className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline"
                 >
                   {section.cta} →
                 </Link>

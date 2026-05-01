@@ -33,8 +33,8 @@ const ICON_MAP = [
 ];
 
 const TILE_COLORS = [
-  { bg: "bg-fog", icon: "text-plum" },
-  { bg: "bg-fog", icon: "text-plum" },
+  { bg: "bg-blue-50", icon: "text-blue-600" },
+  { bg: "bg-purple-50", icon: "text-purple-600" },
   { bg: "bg-green-50", icon: "text-green-600" },
   { bg: "bg-orange-50", icon: "text-orange-600" },
   { bg: "bg-pink-50", icon: "text-pink-600" },
@@ -60,7 +60,7 @@ export default function CategoryTiles({ categories }) {
           <Link
             key={category.id}
             to={`/products?categoryId=${category.id}`}
-            className="flex flex-col items-center gap-2 rounded-lg border border-warm bg-white p-3 text-center transition hover:border-sand hover:shadow-sm"
+            className="flex flex-col items-center gap-2 rounded-lg border border-gray-100 bg-white p-3 text-center transition hover:border-blue-200 hover:shadow-sm"
           >
             <div
               className={[
@@ -70,7 +70,7 @@ export default function CategoryTiles({ categories }) {
             >
               <Icon className={["h-5 w-5", color.icon].join(" ")} />
             </div>
-            <span className="text-[11px] font-medium leading-tight text-plum">
+            <span className="text-[11px] font-medium leading-tight text-gray-700">
               {category.name}
             </span>
           </Link>

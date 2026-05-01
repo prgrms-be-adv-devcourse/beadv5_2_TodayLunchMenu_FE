@@ -43,7 +43,7 @@ export default function SellerProductForm({
 
   return (
     <form className="space-y-8" onSubmit={onSubmit}>
-      <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-warm">
+      <section className="rounded-[28px] bg-white/80 p-5 shadow-sm ring-1 ring-purple-100">
         <div className="grid grid-cols-1 gap-4">
           <FormField
             label="상품 이미지"
@@ -57,15 +57,15 @@ export default function SellerProductForm({
               accept={imageConstraints.accept}
               multiple
               onChange={onImagesChange}
-              className="block w-full rounded-2xl border border-sand bg-white px-4 py-3 text-sm text-plum file:mr-4 file:rounded-full file:border-0 file:bg-warm file:px-4 file:py-2 file:font-semibold file:text-plum hover:file:bg-sand"
+              className="block w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-100 file:px-4 file:py-2 file:font-semibold file:text-violet-700 hover:file:bg-violet-200"
             />
           </FormField>
 
           {form.images.length > 0 ? (
-            <div className="rounded-2xl bg-fog/80 p-4 ring-1 ring-warm">
+            <div className="rounded-2xl bg-purple-50/80 p-4 ring-1 ring-purple-100">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-plum">선택한 이미지</h3>
-                <span className="text-xs text-olive">총 {form.images.length}개</span>
+                <h3 className="text-sm font-bold text-gray-900">선택한 이미지</h3>
+                <span className="text-xs text-gray-500">총 {form.images.length}개</span>
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -77,10 +77,10 @@ export default function SellerProductForm({
                       key={`${image.file.name}-${index}`}
                       className={[
                         "overflow-hidden rounded-2xl bg-white ring-1 transition",
-                        isThumbnail ? "ring-brand shadow-md" : "ring-warm",
+                        isThumbnail ? "ring-violet-500 shadow-md" : "ring-purple-100",
                       ].join(" ")}
                     >
-                      <div className="aspect-square bg-fog">
+                      <div className="aspect-square bg-purple-50">
                         <img
                           src={image.previewUrl}
                           alt={image.file.name}
@@ -90,12 +90,12 @@ export default function SellerProductForm({
 
                       <div className="space-y-3 p-4">
                         <div>
-                          <p className="truncate text-sm font-semibold text-plum">{image.file.name}</p>
-                          <p className="mt-1 text-xs text-olive">{formatFileSize(image.file.size)}</p>
+                          <p className="truncate text-sm font-semibold text-gray-900">{image.file.name}</p>
+                          <p className="mt-1 text-xs text-gray-500">{formatFileSize(image.file.size)}</p>
                         </div>
 
                         <div className="flex items-center justify-between gap-3">
-                          <label className="flex items-center gap-2 text-xs font-medium text-plum">
+                          <label className="flex items-center gap-2 text-xs font-medium text-violet-700">
                             <input
                               type="radio"
                               name="thumbnailImage"
@@ -106,7 +106,7 @@ export default function SellerProductForm({
                           </label>
 
                           {isThumbnail ? (
-                            <span className="rounded-full bg-warm px-2 py-1 text-[10px] font-bold text-plum">
+                            <span className="rounded-full bg-violet-100 px-2 py-1 text-[10px] font-bold text-violet-700">
                               대표 이미지
                             </span>
                           ) : null}
@@ -138,8 +138,8 @@ export default function SellerProductForm({
                     className={[
                       "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition",
                       checked
-                        ? "bg-brand text-white shadow-sm"
-                        : "bg-warm/70 text-plum hover:bg-sand/70",
+                        ? "bg-violet-600 text-white shadow-sm"
+                        : "bg-purple-100/70 text-gray-700 hover:bg-purple-200/70",
                     ].join(" ")}
                   >
                     <input
@@ -180,7 +180,7 @@ export default function SellerProductForm({
                 value={categorySelection.depth0Id}
                 onChange={(event) => onCategoryChange("depth0Id", event.target.value)}
                 disabled={categoriesLoading.depth0}
-                className="h-14 w-full rounded-xl bg-warm/70 px-4 text-sm text-plum outline-none transition focus:ring-2 focus:ring-silver disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="">대분류 선택</option>
                 {categories.depth0.map((category) => (
@@ -210,7 +210,7 @@ export default function SellerProductForm({
                 value={categorySelection.depth1Id}
                 onChange={(event) => onCategoryChange("depth1Id", event.target.value)}
                 disabled={!categorySelection.depth0Id || categoriesLoading.depth1 || categories.depth1.length === 0}
-                className="h-14 w-full rounded-xl bg-warm/70 px-4 text-sm text-plum outline-none transition focus:ring-2 focus:ring-silver disabled:cursor-not-allowed disabled:opacity-60"
+                className="h-14 w-full rounded-xl bg-purple-100/70 px-4 text-sm text-gray-900 outline-none transition focus:ring-2 focus:ring-violet-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="">중분류 선택</option>
                 {categories.depth1.map((category) => (
@@ -222,8 +222,8 @@ export default function SellerProductForm({
             </FormField>
           </div>
 
-          <div className="rounded-2xl bg-fog/80 px-4 py-3 text-sm text-plum ring-1 ring-warm">
-            최종 선택 카테고리: <span className="font-semibold text-plum">{form.categoryId || "선택 없음"}</span>
+          <div className="rounded-2xl bg-purple-50/80 px-4 py-3 text-sm text-gray-700 ring-1 ring-purple-100">
+            최종 선택 카테고리: <span className="font-semibold text-violet-700">{form.categoryId || "선택 없음"}</span>
           </div>
 
           {isAuction ? (
@@ -240,11 +240,11 @@ export default function SellerProductForm({
                 error={errors.stockQuantity}
                 helpText="최소 1개 이상"
               >
-                <div className="flex h-14 items-center rounded-xl bg-warm/70 px-2">
+                <div className="flex h-14 items-center rounded-xl bg-purple-100/70 px-2">
                   <button
                     type="button"
                     onClick={onDecreaseStock}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg text-plum transition hover:bg-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
                   >
                     -
                   </button>
@@ -262,7 +262,7 @@ export default function SellerProductForm({
                   <button
                     type="button"
                     onClick={onIncreaseStock}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg text-plum transition hover:bg-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-violet-700 transition hover:bg-white"
                   >
                     +
                   </button>
@@ -277,7 +277,7 @@ export default function SellerProductForm({
                 helpText="1,000원 이상 정수"
               >
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-olive">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500">
                     원
                   </span>
                   <Input
@@ -308,7 +308,7 @@ export default function SellerProductForm({
               placeholder="상품 설명을 입력해 주세요."
               value={form.description}
               onChange={onChange("description")}
-              className="w-full rounded-xl bg-warm/70 p-4 text-sm text-plum outline-none transition placeholder:text-olive/60 focus:ring-2 focus:ring-silver"
+              className="w-full rounded-xl bg-purple-100/70 p-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-500/60 focus:ring-2 focus:ring-violet-300"
             />
           </FormField>
         </div>

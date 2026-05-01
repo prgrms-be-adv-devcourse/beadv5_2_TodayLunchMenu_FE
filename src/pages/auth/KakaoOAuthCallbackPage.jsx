@@ -164,12 +164,12 @@ export default function KakaoOAuthCallbackPage() {
           <h1 className="text-2xl font-bold tracking-tight">
             잘못된 콜백 요청
           </h1>
-          <p className="mt-3 text-sm leading-6 text-olive">
+          <p className="mt-3 text-sm leading-6 text-slate-600">
             OAuth 결과 키가 없습니다.
           </p>
           <Link
             to={isLinkFlow ? "/me/external-accounts" : "/login"}
-            className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-brand px-6 text-sm font-semibold text-white"
+            className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-violet-700 px-6 text-sm font-semibold text-white"
           >
             {isLinkFlow ? "외부 계정 관리로 돌아가기" : "로그인으로 돌아가기"}
           </Link>
@@ -190,10 +190,10 @@ export default function KakaoOAuthCallbackPage() {
             <h1 className="text-2xl font-bold tracking-tight">
               카카오 인증에 실패했어요
             </h1>
-            <p className="mt-3 text-sm leading-6 text-olive">{error}</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{error}</p>
             <Link
               to="/login"
-              className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-brand px-6 text-sm font-semibold text-white"
+              className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-violet-700 px-6 text-sm font-semibold text-white"
             >
               로그인으로 돌아가기
             </Link>
@@ -205,7 +205,7 @@ export default function KakaoOAuthCallbackPage() {
                 ? "카카오 계정을 연결하고 있어요"
                 : "카카오 로그인 처리 중"}
             </h1>
-            <p className="mt-3 text-sm leading-6 text-olive">{message}</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
           </>
         )}
       </div>

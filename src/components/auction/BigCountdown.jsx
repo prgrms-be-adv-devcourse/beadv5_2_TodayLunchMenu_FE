@@ -7,12 +7,12 @@ function TimeUnit({ value, label, urgent }) {
       <span
         className={[
           "block text-2xl font-bold leading-none tabular-nums",
-          urgent ? "text-red-600" : "text-plum",
+          urgent ? "text-red-600" : "text-gray-900",
         ].join(" ")}
       >
         {pad2(value)}
       </span>
-      <span className="mt-1 block text-[10px] text-silver">{label}</span>
+      <span className="mt-1 block text-[10px] text-gray-400">{label}</span>
     </div>
   );
 }
@@ -22,14 +22,14 @@ export default function BigCountdown({ endsAt }) {
   const urgent = !ended && total < 60 * 1000;
 
   if (ended) {
-    return <p className="text-sm font-semibold text-olive">경매 종료</p>;
+    return <p className="text-sm font-semibold text-gray-500">경매 종료</p>;
   }
 
   const sep = (
     <span
       className={[
         "mt-1 text-xl font-bold",
-        urgent ? "text-red-300" : "text-silver",
+        urgent ? "text-red-300" : "text-gray-300",
       ].join(" ")}
     >
       :

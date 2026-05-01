@@ -10,16 +10,16 @@ export default function Button({
   ...props
 }) {
   const variants = {
-    primary: "bg-brand text-black hover:bg-brand-hover",
-    secondary: "bg-sand text-plum hover:bg-warm",
-    ghost: "bg-transparent text-plum hover:bg-sand",
-    danger: "bg-[#9e0a0a] text-white hover:bg-[#7a0808]",
+    primary: "bg-blue-600 text-white hover:bg-blue-700",
+    secondary: "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100",
+    ghost: "bg-transparent text-blue-600 hover:bg-blue-50",
+    danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
   const sizes = {
-    sm: "h-9 px-4 text-xs rounded-pin",
-    md: "h-11 px-5 text-sm rounded-pin",
-    lg: "h-13 px-6 text-sm rounded-pin font-bold",
+    sm: "h-10 px-4 text-sm rounded",
+    md: "h-12 px-5 text-sm rounded",
+    lg: "h-14 px-6 text-base rounded font-bold",
   };
 
   return (

@@ -45,7 +45,7 @@ function ToastMetaBadge({ children, className = "" }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-sand bg-fog px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-plum",
+        "inline-flex items-center rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-violet-700",
         className
       )}
     >
@@ -61,10 +61,10 @@ function ToastCard({ toast, onDismiss, navigate }) {
   return (
     <article
       className={cn(
-        "pointer-events-auto relative overflow-hidden rounded-[24px] border border-warm bg-white p-4 text-left shadow-[0_16px_40px_rgba(93,63,211,0.14)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(93,63,211,0.18)]"
+        "pointer-events-auto relative overflow-hidden rounded-[24px] border border-violet-100 bg-white p-4 text-left shadow-[0_16px_40px_rgba(93,63,211,0.14)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_56px_rgba(93,63,211,0.18)]"
       )}
     >
-      <div className="absolute inset-y-0 left-0 w-1.5 rounded-l-[24px] bg-brand/90" />
+      <div className="absolute inset-y-0 left-0 w-1.5 rounded-l-[24px] bg-violet-600/90" />
 
       <div className="flex items-start gap-4 pl-2">
         <div
@@ -81,11 +81,11 @@ function ToastCard({ toast, onDismiss, navigate }) {
             <div className="min-w-0 text-left">
               <ToastMetaBadge>{meta.label}</ToastMetaBadge>
 
-              <h3 className="mt-3 text-sm font-extrabold tracking-tight text-olive">
+              <h3 className="mt-3 text-sm font-extrabold tracking-tight text-slate-900">
                 {toast.title}
               </h3>
               {toast.subtitle ? (
-                <p className="mt-1 text-xs font-semibold text-plum/80">
+                <p className="mt-1 text-xs font-semibold text-violet-700/80">
                   {toast.subtitle}
                 </p>
               ) : null}
@@ -93,14 +93,14 @@ function ToastCard({ toast, onDismiss, navigate }) {
 
             <div className="flex shrink-0 items-center gap-2">
               {elapsed ? (
-                <span className="rounded-full bg-fog px-2.5 py-1 text-[10px] font-semibold text-plum/75">
+                <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-700/75">
                   {elapsed}
                 </span>
               ) : null}
               <button
                 type="button"
                 onClick={() => onDismiss(toast.id)}
-                className="rounded-full p-1 text-olive transition hover:bg-fog hover:text-plum"
+                className="rounded-full p-1 text-slate-400 transition hover:bg-violet-50 hover:text-violet-700"
                 aria-label="알림 닫기"
               >
                 x
@@ -109,7 +109,7 @@ function ToastCard({ toast, onDismiss, navigate }) {
           </div>
 
           {toast.message ? (
-            <p className="mt-3 text-sm leading-6 text-olive">
+            <p className="mt-3 text-sm leading-6 text-slate-600">
               {toast.message}
             </p>
           ) : null}
@@ -128,7 +128,7 @@ function ToastCard({ toast, onDismiss, navigate }) {
                 <button
                   type="button"
                   onClick={() => onDismiss(toast.id)}
-                  className="rounded-full bg-warm px-3 py-1.5 text-[11px] font-bold text-plum transition hover:bg-sand"
+                  className="rounded-full bg-violet-100 px-3 py-1.5 text-[11px] font-bold text-violet-700 transition hover:bg-violet-200"
                 >
                 닫기
               </button>

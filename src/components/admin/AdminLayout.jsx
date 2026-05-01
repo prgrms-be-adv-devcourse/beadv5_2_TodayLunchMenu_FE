@@ -15,7 +15,7 @@ export default function AdminLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-fog">
+    <div className="min-h-screen bg-gray-50">
       <AdminNav />
       <AdminSidebar />
 

@@ -11,11 +11,11 @@ const Input = forwardRef(function Input(
       disabled={disabled}
       aria-invalid={error}
       className={cn(
-        "w-full h-14 rounded-pin px-4 outline-none transition",
-        "border border-silver bg-white text-plum placeholder:text-silver",
-        "focus:ring-2 focus:ring-[#435ee5] focus:border-[#435ee5]",
+        "w-full h-14 rounded-xl px-4 outline-none transition",
+        "bg-purple-100/70 text-gray-900 placeholder:text-gray-500/60",
+        "focus:ring-2 focus:ring-violet-300",
         error &&
-          "border-[#9e0a0a] bg-red-50 text-red-950 placeholder:text-red-300 focus:ring-[#9e0a0a]",
+          "bg-red-50 text-red-950 placeholder:text-red-300 focus:ring-red-300",
         disabled && "cursor-not-allowed opacity-50",
         className
       )}

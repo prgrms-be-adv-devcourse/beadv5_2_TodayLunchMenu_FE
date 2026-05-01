@@ -67,14 +67,14 @@ function BidRow({ bid, isTop, isYou, bidderName }) {
   return (
     <li
       className={[
-        "flex items-center gap-3 border-b border-warm py-2.5 text-sm last:border-0",
-        isTop ? "bg-fog" : "",
+        "flex items-center gap-3 border-b border-gray-100 py-2.5 text-sm last:border-0",
+        isTop ? "bg-blue-50" : "",
       ].join(" ")}
     >
       <span
         className={[
           "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-          isYou ? "bg-brand text-white" : "bg-fog text-olive",
+          isYou ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600",
         ].join(" ")}
       >
         {name.slice(0, 1).toUpperCase()}
@@ -83,25 +83,25 @@ function BidRow({ bid, isTop, isYou, bidderName }) {
       <span
         className={[
           "flex-1 truncate",
-          isYou ? "font-bold text-plum" : "text-plum",
+          isYou ? "font-bold text-blue-700" : "text-gray-700",
         ].join(" ")}
       >
         {name}
         {isTop && (
-          <span className="ml-2 text-xs font-semibold text-plum">
+          <span className="ml-2 text-xs font-semibold text-blue-600">
             최고가
           </span>
         )}
       </span>
 
-      <span className="w-20 text-right text-xs text-silver">
+      <span className="w-20 text-right text-xs text-gray-400">
         {relativeTime(bid.createdAt)}
       </span>
 
       <span
         className={[
           "w-28 text-right font-bold tabular-nums",
-          isTop ? "text-plum" : "text-plum",
+          isTop ? "text-blue-700" : "text-gray-900",
         ].join(" ")}
       >
         {formatKRW(bid.amount)}원
@@ -113,14 +113,14 @@ function BidRow({ bid, isTop, isYou, bidderName }) {
 function StatusBadge({ status, ended }) {
   if (ended || ["COMPLETED", "PENDING_PAYMENT", "FAILED"].includes(status)) {
     return (
-      <span className="border border-silver bg-fog px-2 py-0.5 text-xs font-semibold text-olive">
+      <span className="border border-gray-300 bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
         종료
       </span>
     );
   }
   if (status === "WAITING") {
     return (
-      <span className="border border-silver bg-fog px-2 py-0.5 text-xs font-semibold text-plum">
+      <span className="border border-blue-300 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-600">
         시작 전
       </span>
     );
@@ -399,7 +399,7 @@ export default function AuctionDetailPage() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-olive">
+      <div className="py-16 text-center text-gray-500">
         경매 정보를 불러오는 중입니다.
       </div>
     );
@@ -415,7 +415,7 @@ export default function AuctionDetailPage() {
 
   if (!auction) {
     return (
-      <div className="py-16 text-center text-olive">경매를 찾을 수 없습니다.</div>
+      <div className="py-16 text-center text-gray-500">경매를 찾을 수 없습니다.</div>
     );
   }
 
@@ -432,12 +432,12 @@ export default function AuctionDetailPage() {
   return (
     <div className="py-2">
       {/* Breadcrumb */}
-      <nav className="mb-4 flex items-center gap-1 text-sm text-olive">
-        <Link to="/auctions" className="hover:text-plum hover:underline">
+      <nav className="mb-4 flex items-center gap-1 text-sm text-gray-500">
+        <Link to="/auctions" className="hover:text-blue-600 hover:underline">
           경매장
         </Link>
-        <span className="text-silver">›</span>
-        <span className="max-w-xs truncate font-medium text-plum">
+        <span className="text-gray-300">›</span>
+        <span className="max-w-xs truncate font-medium text-gray-800">
           {auction.productTitle ?? productName ?? "경매 상품"}
         </span>
       </nav>
@@ -446,7 +446,7 @@ export default function AuctionDetailPage() {
         {/* ── LEFT COLUMN ── */}
         <div>
           {/* Main Image */}
-          <div className="relative aspect-[4/3] overflow-hidden border border-sand bg-fog">
+          <div className="relative aspect-[4/3] overflow-hidden border border-gray-200 bg-gray-50">
             <img
               src={productImages[selectedImageIndex]?.url || "/default-product.svg"}
               alt={auction.productTitle || "경매 상품"}
@@ -462,7 +462,7 @@ export default function AuctionDetailPage() {
                       (i) => (i - 1 + productImages.length) % productImages.length,
                     )
                   }
-                  className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center bg-white/90 text-xl text-plum shadow transition hover:bg-white"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center bg-white/90 text-xl text-gray-700 shadow transition hover:bg-white"
                   aria-label="이전 이미지"
                 >
                   ‹
@@ -472,7 +472,7 @@ export default function AuctionDetailPage() {
                   onClick={() =>
                     setSelectedImageIndex((i) => (i + 1) % productImages.length)
                   }
-                  className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center bg-white/90 text-xl text-plum shadow transition hover:bg-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center bg-white/90 text-xl text-gray-700 shadow transition hover:bg-white"
                   aria-label="다음 이미지"
                 >
                   ›
@@ -492,8 +492,8 @@ export default function AuctionDetailPage() {
                   className={[
                     "h-14 w-14 shrink-0 overflow-hidden border-2 transition",
                     idx === selectedImageIndex
-                      ? "border-brand"
-                      : "border-sand opacity-60 hover:opacity-90",
+                      ? "border-blue-600"
+                      : "border-gray-200 opacity-60 hover:opacity-90",
                   ].join(" ")}
                 >
                   <img
@@ -507,19 +507,19 @@ export default function AuctionDetailPage() {
           )}
 
           {/* Item Details */}
-          <div className="mt-5 border border-sand bg-white">
-            <div className="border-b border-sand px-5 py-3">
-              <h2 className="text-sm font-bold text-plum">상품 정보</h2>
+          <div className="mt-5 border border-gray-200 bg-white">
+            <div className="border-b border-gray-200 px-5 py-3">
+              <h2 className="text-sm font-bold text-gray-700">상품 정보</h2>
             </div>
-            <dl className="grid grid-cols-3 divide-x divide-warm px-0">
+            <dl className="grid grid-cols-3 divide-x divide-gray-100 px-0">
               {[
                 { label: "시작가", value: `${formatKRW(auction.startPrice)}원` },
                 { label: "입찰 단위", value: `${formatKRW(auction.bidUnit)}원` },
                 { label: "총 입찰", value: `${validBids.length}회` },
               ].map(({ label, value }) => (
                 <div key={label} className="px-5 py-3">
-                  <dt className="text-xs text-olive">{label}</dt>
-                  <dd className="mt-0.5 font-bold text-plum">{value}</dd>
+                  <dt className="text-xs text-gray-500">{label}</dt>
+                  <dd className="mt-0.5 font-bold text-gray-900">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -527,12 +527,12 @@ export default function AuctionDetailPage() {
 
           {/* Description */}
           {productDescription && (
-            <div className="mt-4 border border-sand bg-white">
-              <div className="border-b border-sand px-5 py-3">
-                <h2 className="text-sm font-bold text-plum">상품 설명</h2>
+            <div className="mt-4 border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 px-5 py-3">
+                <h2 className="text-sm font-bold text-gray-700">상품 설명</h2>
               </div>
               <div className="px-5 py-4">
-                <p className="whitespace-pre-line text-sm leading-relaxed text-olive">
+                <p className="whitespace-pre-line text-sm leading-relaxed text-gray-600">
                   {productDescription}
                 </p>
               </div>
@@ -540,14 +540,14 @@ export default function AuctionDetailPage() {
           )}
 
           {/* Bid History */}
-          <div className="mt-4 border border-sand bg-white">
-            <div className="flex items-center justify-between border-b border-sand px-5 py-3">
-              <h2 className="text-sm font-bold text-plum">입찰 내역</h2>
-              <span className="text-xs text-silver">{validBids.length}건</span>
+          <div className="mt-4 border border-gray-200 bg-white">
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
+              <h2 className="text-sm font-bold text-gray-700">입찰 내역</h2>
+              <span className="text-xs text-gray-400">{validBids.length}건</span>
             </div>
 
             {validBids.length === 0 ? (
-              <p className="py-10 text-center text-sm text-silver">
+              <p className="py-10 text-center text-sm text-gray-400">
                 아직 입찰이 없습니다.
               </p>
             ) : (
@@ -569,34 +569,34 @@ export default function AuctionDetailPage() {
         {/* ── RIGHT COLUMN ── */}
         <aside className="flex flex-col gap-3 lg:sticky lg:top-6 lg:self-start">
           {/* Title & Status */}
-          <div className="border border-sand bg-white px-5 py-4">
+          <div className="border border-gray-200 bg-white px-5 py-4">
             <div className="mb-2 flex items-center gap-2">
               <StatusBadge status={auction.status} ended={ended} />
-              <span className="text-xs text-silver">{statusLabel(auction.status)}</span>
+              <span className="text-xs text-gray-400">{statusLabel(auction.status)}</span>
             </div>
-            <h1 className="text-lg font-bold leading-snug text-plum">
+            <h1 className="text-lg font-bold leading-snug text-gray-900">
               {auction.productTitle ?? productName ?? "경매 상품"}
             </h1>
           </div>
 
           {/* Current Price & Countdown */}
-          <div className="border border-sand bg-white px-5 py-4">
-            <p className="text-xs text-olive">
+          <div className="border border-gray-200 bg-white px-5 py-4">
+            <p className="text-xs text-gray-500">
               {ended ? "낙찰가" : "현재 입찰가"}
             </p>
-            <p className="mt-1 tabular-nums text-3xl font-bold text-plum">
+            <p className="mt-1 tabular-nums text-3xl font-bold text-gray-900">
               {formatKRW(animatedPrice)}
-              <span className="ml-1 text-lg font-medium text-olive">원</span>
+              <span className="ml-1 text-lg font-medium text-gray-600">원</span>
             </p>
-            <p className="mt-1 text-xs text-silver">
+            <p className="mt-1 text-xs text-gray-400">
               {auction.hasBid
                 ? `최고 입찰 · ${topBid ? relativeTime(topBid.createdAt) : ""}`
                 : "첫 입찰을 기다리고 있습니다"}
             </p>
 
             {!ended && (
-              <div className="mt-4 border-t border-warm pt-4 text-center">
-                <p className="mb-2 text-xs text-olive">남은 시간</p>
+              <div className="mt-4 border-t border-gray-100 pt-4 text-center">
+                <p className="mb-2 text-xs text-gray-500">남은 시간</p>
                 <BigCountdown endsAt={auction.endsAt} />
               </div>
             )}
@@ -604,12 +604,12 @@ export default function AuctionDetailPage() {
 
           {/* Waiting State */}
           {isWaiting && (
-            <div className="border border-sand bg-fog px-5 py-4">
-              <p className="text-sm font-semibold text-plum">
+            <div className="border border-blue-200 bg-blue-50 px-5 py-4">
+              <p className="text-sm font-semibold text-blue-800">
                 경매가 아직 시작되지 않았습니다.
               </p>
               {auction.startedAt && (
-                <p className="mt-1 text-sm text-plum">
+                <p className="mt-1 text-sm text-blue-700">
                   시작 예정:{" "}
                   {new Date(auction.startedAt).toLocaleString("ko-KR")}
                 </p>
@@ -632,9 +632,9 @@ export default function AuctionDetailPage() {
 
           {/* Bid Panel */}
           {!ended && !isSeller && !isWaiting && !isHighestBidder && (
-            <div className="border border-sand bg-white px-5 py-4">
+            <div className="border border-gray-200 bg-white px-5 py-4">
               {/* Quick Bids */}
-              <p className="mb-2 text-xs font-semibold text-olive">빠른 입찰</p>
+              <p className="mb-2 text-xs font-semibold text-gray-600">빠른 입찰</p>
               {quicks.length > 0 ? (
                 <div className="grid grid-cols-2 gap-2">
                   {quicks.map((value) => {
@@ -647,8 +647,8 @@ export default function AuctionDetailPage() {
                         className={[
                           "h-10 border text-sm font-semibold tabular-nums transition",
                           active
-                            ? "border-brand bg-brand text-white"
-                            : "border-silver bg-white text-plum hover:border-silver hover:text-plum",
+                            ? "border-blue-600 bg-blue-600 text-white"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-blue-400 hover:text-blue-600",
                         ].join(" ")}
                       >
                         {formatKRW(value)}원
@@ -657,7 +657,7 @@ export default function AuctionDetailPage() {
                   })}
                 </div>
               ) : (
-                <p className="text-xs text-silver">아래 입력란에 직접 금액을 입력해 주세요.</p>
+                <p className="text-xs text-gray-400">아래 입력란에 직접 금액을 입력해 주세요.</p>
               )}
 
               {/* AI Recommendation */}
@@ -678,7 +678,7 @@ export default function AuctionDetailPage() {
 
               {/* Direct Input */}
               <div className="mt-4">
-                <p className="mb-2 text-xs font-semibold text-olive">직접 입력</p>
+                <p className="mb-2 text-xs font-semibold text-gray-600">직접 입력</p>
                 <div className="relative">
                   <input
                     type="number"
@@ -689,27 +689,27 @@ export default function AuctionDetailPage() {
                     step={bidUnit || 1}
                     onChange={(e) => { setBidInput(e.target.value); setBidError(""); }}
                     className={[
-                      "h-11 w-full border pl-3 pr-10 text-base font-bold tabular-nums text-plum outline-none transition focus:border-brand",
-                      bidError ? "border-red-500" : "border-silver",
+                      "h-11 w-full border pl-3 pr-10 text-base font-bold tabular-nums text-gray-900 outline-none transition focus:border-blue-500",
+                      bidError ? "border-red-500" : "border-gray-300",
                     ].join(" ")}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-olive">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
                     원
                   </span>
                 </div>
                 {bidError ? (
                   <p className="mt-1 text-xs font-semibold text-red-600">{bidError}</p>
                 ) : (
-                  <p className="mt-1 text-xs text-silver">
+                  <p className="mt-1 text-xs text-gray-400">
                     최소{" "}
-                    <span className="font-semibold text-plum">
+                    <span className="font-semibold text-gray-700">
                       {formatKRW(nextMin)}원
                     </span>
                     부터
                     {bidUnit > 0 && (
                       <>
                         {" "}·{" "}
-                        <span className="font-semibold text-plum">
+                        <span className="font-semibold text-gray-700">
                           {formatKRW(bidUnit)}원
                         </span>{" "}
                         단위로
@@ -725,14 +725,14 @@ export default function AuctionDetailPage() {
                 type="button"
                 disabled={submitting}
                 onClick={place}
-                className="mt-4 h-14 w-full bg-brand text-base font-bold text-white transition hover:bg-brand active:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-4 h-14 w-full bg-blue-600 text-base font-bold text-white transition hover:bg-blue-700 active:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {submitting
                   ? "입찰 처리 중..."
                   : `${formatKRW(Number(bidInput) || nextMin)}원 입찰하기`}
               </button>
 
-              <p className="mt-2 text-center text-xs text-silver">
+              <p className="mt-2 text-center text-xs text-gray-400">
                 낙찰 후 48시간 안에 결제해 주세요.
               </p>
             </div>
@@ -740,7 +740,7 @@ export default function AuctionDetailPage() {
 
           {/* Seller Notice */}
           {isSeller && (
-            <div className="border border-sand bg-fog px-5 py-4 text-sm text-olive">
+            <div className="border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-500">
               본인이 등록한 경매에는 입찰할 수 없어요.
             </div>
           )}
@@ -772,7 +772,7 @@ export default function AuctionDetailPage() {
 
           {/* Ended (not payment pending) */}
           {ended && auction.status !== "PENDING_PAYMENT" && (
-            <div className="border border-sand bg-fog px-5 py-4 text-sm text-olive">
+            <div className="border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-500">
               경매가 종료됐어요. 낙찰자에게 안내가 발송됩니다.
             </div>
           )}
@@ -784,7 +784,7 @@ export default function AuctionDetailPage() {
         <div
           className={[
             "fixed left-1/2 top-20 z-[200] -translate-x-1/2 px-5 py-3 text-sm font-semibold text-white shadow-lg",
-            toast.type === "error" ? "bg-red-600" : toast.type === "info" ? "bg-brand" : "bg-dark-surface",
+            toast.type === "error" ? "bg-red-600" : toast.type === "info" ? "bg-blue-600" : "bg-gray-900",
           ].join(" ")}
         >
           {toast.message}

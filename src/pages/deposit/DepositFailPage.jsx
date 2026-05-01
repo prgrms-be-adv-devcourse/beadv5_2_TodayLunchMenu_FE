@@ -117,12 +117,12 @@ export default function DepositFailPage() {
             <button
               type="button"
               onClick={() => navigate("/deposits", { replace: true })}
-              className="flex h-10 w-10 items-center justify-center rounded-full p-2 text-plum transition hover:bg-warm/50"
+              className="flex h-10 w-10 items-center justify-center rounded-full p-2 text-blue-700 transition hover:bg-blue-100/50"
               aria-label="뒤로 가기"
             >
               ←
             </button>
-            <h1 className="text-lg font-extrabold tracking-tight text-plum">
+            <h1 className="text-lg font-extrabold tracking-tight text-gray-900">
               Transaction Details
             </h1>
           </div>
@@ -134,14 +134,14 @@ export default function DepositFailPage() {
             <div className="mb-2 flex h-20 w-20 items-center justify-center rounded-full bg-rose-100">
               <span className="text-5xl text-rose-600">!</span>
             </div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-plum">충전 실패</h2>
-            <p className="leading-relaxed text-olive">{result.errorMessage}</p>
+            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">충전 실패</h2>
+            <p className="leading-relaxed text-gray-500">{result.errorMessage}</p>
           </div>
 
-          <section className="space-y-6 bg-white px-8 py-8 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.06)] ring-1 ring-sand">
+          <section className="space-y-6 bg-white px-8 py-8 shadow-[0_40px_40px_-10px_rgba(0,0,0,0.06)] ring-1 ring-gray-200">
             <div className="space-y-4">
-              <div className="flex items-start justify-between border-b border-sand pb-4">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-olive">
+              <div className="flex items-start justify-between border-b border-blue-200 pb-4">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   실패 사유
                 </span>
                 <span className="max-w-[60%] text-right font-semibold text-rose-600">
@@ -149,26 +149,26 @@ export default function DepositFailPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-olive">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   시도 금액
                 </span>
-                <span className="text-lg font-extrabold text-plum">
+                <span className="text-lg font-extrabold text-blue-700">
                   {formatPrice(result.amount)}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-olive">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   에러 코드
                 </span>
-                <span className="rounded bg-fog px-2 py-1 font-mono text-xs text-plum">
+                <span className="rounded bg-gray-100 px-2 py-1 font-mono text-xs text-gray-900">
                   {result.errorCode}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-xs font-medium uppercase tracking-[0.16em] text-olive">
+                <span className="text-xs font-medium uppercase tracking-[0.16em] text-gray-500">
                   주문 ID
                 </span>
-                <span className="text-sm font-medium text-plum">
+                <span className="text-sm font-medium text-gray-900">
                   {result.orderId}
                 </span>
               </div>
@@ -187,13 +187,13 @@ export default function DepositFailPage() {
             <div className="flex flex-col items-center space-y-4 pt-2">
               <button
                 type="button"
-                className="text-sm font-semibold text-plum transition hover:underline"
+                className="text-sm font-semibold text-blue-700 transition hover:underline"
                 onClick={() => navigate("/deposits")}
               >
                 충전 페이지로 돌아가기
               </button>
               <a
-                className="flex items-center gap-1 text-sm font-medium text-olive transition hover:text-plum"
+                className="flex items-center gap-1 text-sm font-medium text-gray-500 transition hover:text-gray-900"
                 href="mailto:support@example.com"
               >
                 고객센터 문의하기

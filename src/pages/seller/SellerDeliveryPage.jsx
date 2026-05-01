@@ -15,7 +15,7 @@ const STATUS_META = {
   PREPARING: { label: "배송 준비", className: "bg-red-100 text-red-600" },
   SHIPPED:   { label: "배송 중",   className: "bg-amber-100 text-amber-600" },
   DELIVERED: { label: "배송 완료", className: "bg-emerald-100 text-emerald-700" },
-  CANCELED:  { label: "취소됨",    className: "bg-fog text-olive" },
+  CANCELED:  { label: "취소됨",    className: "bg-gray-100 text-gray-500" },
 };
 
 const STATUS_OPTIONS = [
@@ -43,8 +43,8 @@ function DetailRow({ label, value }) {
   if (!value) return null;
   return (
     <div className="flex gap-3">
-      <span className="w-20 flex-shrink-0 text-xs text-silver">{label}</span>
-      <span className="text-xs text-plum">{value}</span>
+      <span className="w-20 flex-shrink-0 text-xs text-gray-400">{label}</span>
+      <span className="text-xs text-gray-800">{value}</span>
     </div>
   );
 }
@@ -162,8 +162,8 @@ export default function SellerDeliveryPage() {
       <SellerNav currentPage="delivery" />
       <div className="py-8">
         <div className="mb-6">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-olive">Seller Delivery</p>
-          <h1 className="mt-1 text-2xl font-bold text-plum">배송 관리</h1>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-violet-500">Seller Delivery</p>
+          <h1 className="mt-1 text-2xl font-bold text-gray-900">배송 관리</h1>
         </div>
 
         {/* 요약 카드 */}
@@ -179,7 +179,7 @@ export default function SellerDeliveryPage() {
               onClick={() => { setStatusFilter(statusFilter === item.status ? "ALL" : item.status); setPage(0); }}
               className={`rounded-2xl p-8 text-left shadow-sm ring-1 transition hover:opacity-80 ${item.bg} ${statusFilter === item.status ? "ring-2" : ""}`}
             >
-              <p className="text-sm font-semibold text-olive">{item.label}</p>
+              <p className="text-sm font-semibold text-gray-500">{item.label}</p>
               <p className={`mt-3 text-5xl font-bold ${item.color}`}>
                 {counts[item.key]}<span className="text-2xl">건</span>
               </p>
@@ -188,20 +188,20 @@ export default function SellerDeliveryPage() {
         </div>
 
         {/* 필터 */}
-        <div className="mb-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-warm">
+        <div className="mb-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
             <input type="text" placeholder="주문번호 검색" value={orderNumberQ} onChange={(e) => setOrderNumberQ(e.target.value)}
-              className="rounded-lg border border-sand px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-silver" />
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-300" />
             <input type="text" placeholder="수령인 검색" value={receiverQ} onChange={(e) => setReceiverQ(e.target.value)}
-              className="rounded-lg border border-sand px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-silver" />
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-300" />
             <input type="text" placeholder="상품명 검색" value={productQ} onChange={(e) => setProductQ(e.target.value)}
-              className="rounded-lg border border-sand px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-silver" />
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-300" />
             <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
-              className="rounded-lg border border-sand px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-silver">
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-300">
               {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
             <select value={courierFilter} onChange={(e) => { setCourierFilter(e.target.value); setPage(0); }}
-              className="rounded-lg border border-sand px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-silver">
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-violet-300">
               <option value="ALL">전체 택배사</option>
               {COURIERS.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
@@ -209,31 +209,31 @@ export default function SellerDeliveryPage() {
           <div className="mt-3 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
-                className="rounded-lg border border-sand px-3 py-2 text-sm text-olive outline-none focus:ring-2 focus:ring-silver" />
-              <span className="text-xs text-silver">~</span>
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-violet-300" />
+              <span className="text-xs text-gray-300">~</span>
               <input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
-                className="rounded-lg border border-sand px-3 py-2 text-sm text-olive outline-none focus:ring-2 focus:ring-silver" />
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 outline-none focus:ring-2 focus:ring-violet-300" />
             </div>
             <button type="button" onClick={resetFilters}
-              className="flex-shrink-0 rounded-lg border border-sand px-4 py-2 text-sm font-semibold text-silver transition hover:bg-fog hover:text-olive">
+              className="flex-shrink-0 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-400 transition hover:bg-gray-50 hover:text-gray-600">
               초기화
             </button>
           </div>
         </div>
 
         {loading ? (
-          <p className="py-16 text-center text-sm text-silver">불러오는 중...</p>
+          <p className="py-16 text-center text-sm text-gray-400">불러오는 중...</p>
         ) : error ? (
           <div className="rounded-2xl bg-red-50 px-6 py-10 text-center">
             <p className="text-sm font-bold text-red-600">{error}</p>
           </div>
         ) : deliveries.length === 0 ? (
-          <div className="rounded-2xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-warm">
-            <p className="text-sm text-olive">해당 조건의 배송 건이 없습니다.</p>
+          <div className="rounded-2xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-gray-100">
+            <p className="text-sm text-gray-500">해당 조건의 배송 건이 없습니다.</p>
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-warm">
+            <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
               <table className="w-full table-fixed text-sm">
                 <colgroup>
                   <col style={{ width: "130px" }} />
@@ -246,7 +246,7 @@ export default function SellerDeliveryPage() {
                   <col style={{ width: "115px" }} />
                 </colgroup>
                 <thead>
-                  <tr className="border-b border-warm bg-fog text-xs font-bold uppercase tracking-wider text-silver">
+                  <tr className="border-b border-gray-100 bg-gray-50 text-xs font-bold uppercase tracking-wider text-gray-400">
                     <th className="px-4 py-3 text-center">주문번호</th>
                     <th className="px-4 py-3 text-center">상품명</th>
                     <th className="px-4 py-3 text-center">수량</th>
@@ -257,41 +257,41 @@ export default function SellerDeliveryPage() {
                     <th className="px-4 py-3 text-center">액션</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-fog">
+                <tbody className="divide-y divide-gray-50">
                   {deliveries.map((d) => {
-                    const meta = STATUS_META[d.status] ?? { label: d.status, className: "bg-fog text-olive" };
+                    const meta = STATUS_META[d.status] ?? { label: d.status, className: "bg-gray-100 text-gray-600" };
                     return (
                       <tr
                         key={d.deliveryId}
-                        className="h-16 cursor-pointer transition hover:bg-fog/50"
+                        className="h-16 cursor-pointer transition hover:bg-violet-50/50"
                         onClick={() => setDetailModal(d)}
                       >
                         <td className="px-4 py-3 align-middle">
-                          <p className="font-mono text-xs font-semibold text-plum leading-relaxed">
+                          <p className="font-mono text-xs font-semibold text-gray-800 leading-relaxed">
                             {(d.orderNumber || d.orderId || "").replace(/-/g, "​-")}
                           </p>
                         </td>
                         <td className="px-4 py-3 align-middle max-w-[180px]">
-                          <p className="truncate font-semibold text-plum" title={d.productName}>{d.productName}</p>
+                          <p className="truncate font-semibold text-gray-900" title={d.productName}>{d.productName}</p>
                         </td>
-                        <td className="px-4 py-3 align-middle text-center text-plum">{d.quantity}</td>
+                        <td className="px-4 py-3 align-middle text-center text-gray-700">{d.quantity}</td>
                         <td className="px-4 py-3 align-middle">
-                          <p className="truncate font-semibold text-plum">{d.receiver || "-"}</p>
-                          <p className="whitespace-nowrap text-xs text-silver">{d.receiverPhone || ""}</p>
+                          <p className="truncate font-semibold text-gray-900">{d.receiver || "-"}</p>
+                          <p className="whitespace-nowrap text-xs text-gray-400">{d.receiverPhone || ""}</p>
                         </td>
                         <td className="px-4 py-3 align-middle">
-                          <p className="truncate text-xs text-olive">
+                          <p className="truncate text-xs text-gray-600">
                             {[d.address, d.addressDetail].filter(Boolean).join(" ") || "-"}
                           </p>
                         </td>
                         <td className="px-4 py-3 align-middle">
                           {d.courierName ? (
                             <>
-                              <p className="text-xs font-semibold text-plum">{d.courierName}</p>
-                              <p className="font-mono text-xs text-silver">{d.invoiceNumber}</p>
+                              <p className="text-xs font-semibold text-gray-700">{d.courierName}</p>
+                              <p className="font-mono text-xs text-gray-400">{d.invoiceNumber}</p>
                             </>
                           ) : (
-                            <span className="text-xs text-silver">미입력</span>
+                            <span className="text-xs text-gray-300">미입력</span>
                           )}
                         </td>
                         <td className="px-4 py-3 align-middle text-center">
@@ -304,7 +304,7 @@ export default function SellerDeliveryPage() {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); openShipModal(d); }}
-                              className="whitespace-nowrap rounded-full bg-silver px-3 py-1 text-xs font-bold text-white transition hover:bg-brand"
+                              className="whitespace-nowrap rounded-full bg-blue-400 px-3 py-1 text-xs font-bold text-white transition hover:bg-blue-500"
                             >
                               송장 입력
                             </button>
@@ -313,13 +313,13 @@ export default function SellerDeliveryPage() {
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); window.open(`https://tracker.delivery/#/${d.courierCode}/${d.invoiceNumber}`, "_blank"); }}
-                              className="whitespace-nowrap rounded-full border border-sand px-3 py-1 text-xs font-bold text-olive transition hover:bg-fog"
+                              className="whitespace-nowrap rounded-full border border-gray-200 px-3 py-1 text-xs font-bold text-gray-600 transition hover:bg-gray-50"
                             >
                               배송 조회
                             </button>
                           )}
                           {d.status === "DELIVERED" && (
-                            <div className="text-xs text-silver">
+                            <div className="text-xs text-gray-400">
                               <p>{d.deliveredAt ? new Date(d.deliveredAt).toLocaleDateString("ko-KR", { dateStyle: "short" }) : "-"}</p>
                               <p>{d.deliveredAt ? new Date(d.deliveredAt).toLocaleTimeString("ko-KR", { timeStyle: "short" }) : ""}</p>
                             </div>
@@ -339,7 +339,7 @@ export default function SellerDeliveryPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="rounded-lg border border-sand px-3 py-1.5 text-xs font-semibold text-olive disabled:opacity-30 hover:bg-fog"
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 disabled:opacity-30 hover:bg-gray-50"
                 >
                   이전
                 </button>
@@ -350,8 +350,8 @@ export default function SellerDeliveryPage() {
                     onClick={() => setPage(i)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                       i === page
-                        ? "bg-brand text-white"
-                        : "border border-sand text-olive hover:bg-fog"
+                        ? "bg-violet-600 text-white"
+                        : "border border-gray-200 text-gray-500 hover:bg-gray-50"
                     }`}
                   >
                     {i + 1}
@@ -361,7 +361,7 @@ export default function SellerDeliveryPage() {
                   type="button"
                   onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={page === totalPages - 1}
-                  className="rounded-lg border border-sand px-3 py-1.5 text-xs font-semibold text-olive disabled:opacity-30 hover:bg-fog"
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-500 disabled:opacity-30 hover:bg-gray-50"
                 >
                   다음
                 </button>
@@ -377,18 +377,18 @@ export default function SellerDeliveryPage() {
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-start justify-between">
               <div>
-                <p className="font-mono text-xs text-silver">{detailModal.orderNumber || detailModal.orderId}</p>
-                <h2 className="mt-0.5 text-base font-bold text-plum leading-snug">{detailModal.productName}</h2>
+                <p className="font-mono text-xs text-gray-400">{detailModal.orderNumber || detailModal.orderId}</p>
+                <h2 className="mt-0.5 text-base font-bold text-gray-900 leading-snug">{detailModal.productName}</h2>
               </div>
-              <button type="button" onClick={() => setDetailModal(null)} className="ml-4 text-silver hover:text-olive text-xl leading-none">✕</button>
+              <button type="button" onClick={() => setDetailModal(null)} className="ml-4 text-gray-300 hover:text-gray-500 text-xl leading-none">✕</button>
             </div>
-            <div className="space-y-2 rounded-xl bg-fog p-4">
+            <div className="space-y-2 rounded-xl bg-gray-50 p-4">
               <DetailRow label="수령인" value={detailModal.receiver} />
               <DetailRow label="연락처" value={detailModal.receiverPhone} />
               <DetailRow label="주소" value={[detailModal.address, detailModal.addressDetail].filter(Boolean).join(" ")} />
               <DetailRow label="우편번호" value={detailModal.zipCode} />
             </div>
-            <div className="mt-3 space-y-2 rounded-xl bg-fog p-4">
+            <div className="mt-3 space-y-2 rounded-xl bg-gray-50 p-4">
               <DetailRow label="수량" value={`${detailModal.quantity}개`} />
               <DetailRow label="택배사" value={detailModal.courierName} />
               <DetailRow label="송장번호" value={detailModal.invoiceNumber} />
@@ -399,19 +399,19 @@ export default function SellerDeliveryPage() {
               {detailModal.status === "PREPARING" && (
                 <button type="button"
                   onClick={() => { setDetailModal(null); openShipModal(detailModal); }}
-                  className="flex-1 rounded-lg bg-silver py-2.5 text-sm font-bold text-white hover:bg-brand">
+                  className="flex-1 rounded-lg bg-blue-400 py-2.5 text-sm font-bold text-white hover:bg-blue-500">
                   송장 입력
                 </button>
               )}
               {detailModal.status === "SHIPPED" && (
                 <button type="button"
                   onClick={() => window.open(`https://tracker.delivery/#/${detailModal.courierCode}/${detailModal.invoiceNumber}`, "_blank")}
-                  className="flex-1 rounded-lg border border-sand py-2.5 text-sm font-bold text-olive hover:bg-fog">
+                  className="flex-1 rounded-lg border border-gray-200 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50">
                   배송 조회
                 </button>
               )}
               <button type="button" onClick={() => setDetailModal(null)}
-                className="flex-1 rounded-lg border border-sand py-2.5 text-sm font-bold text-olive hover:bg-fog">
+                className="flex-1 rounded-lg border border-gray-200 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50">
                 닫기
               </button>
             </div>
@@ -423,33 +423,33 @@ export default function SellerDeliveryPage() {
       {shipModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-1 text-lg font-bold text-plum">송장 입력</h2>
-            <p className="mb-1 truncate text-sm font-semibold text-plum">{shipModal.productName}</p>
-            <p className="mb-5 text-xs text-silver">수령인: {shipModal.receiver || "-"}</p>
+            <h2 className="mb-1 text-lg font-bold text-gray-900">송장 입력</h2>
+            <p className="mb-1 truncate text-sm font-semibold text-gray-700">{shipModal.productName}</p>
+            <p className="mb-5 text-xs text-gray-400">수령인: {shipModal.receiver || "-"}</p>
             <div className="space-y-3">
               <div>
-                <label className="mb-1 block text-xs font-bold text-olive">택배사 선택</label>
+                <label className="mb-1 block text-xs font-bold text-gray-500">택배사 선택</label>
                 <select value={courier} onChange={(e) => setCourier(e.target.value)}
-                  className="w-full rounded-lg border border-sand px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-silver">
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300">
                   <option value="">택배사 선택</option>
                   {COURIERS.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-bold text-olive">송장번호</label>
+                <label className="mb-1 block text-xs font-bold text-gray-500">송장번호</label>
                 <input type="text" value={invoiceNumber} onChange={(e) => setInvoiceNumber(e.target.value)}
                   placeholder="송장번호 입력"
-                  className="w-full rounded-lg border border-sand px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-silver" />
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300" />
               </div>
             </div>
             {shipError && <p className="mt-3 text-sm font-medium text-red-500">{shipError}</p>}
             <div className="mt-5 flex gap-2">
               <button type="button" onClick={() => setShipModal(null)}
-                className="flex-1 rounded-lg border border-sand py-2.5 text-sm font-bold text-olive hover:bg-fog">
+                className="flex-1 rounded-lg border border-gray-200 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50">
                 취소
               </button>
               <button type="button" onClick={handleShip} disabled={shipLoading}
-                className="flex-1 rounded-lg bg-brand py-2.5 text-sm font-bold text-white hover:bg-brand disabled:opacity-50">
+                className="flex-1 rounded-lg bg-blue-500 py-2.5 text-sm font-bold text-white hover:bg-blue-600 disabled:opacity-50">
                 {shipLoading ? "처리 중..." : "송장 등록"}
               </button>
             </div>

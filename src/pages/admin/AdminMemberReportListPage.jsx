@@ -21,7 +21,7 @@ const reportTypeLabels = {
 const statusStyles = {
   PENDING: "bg-rose-100 text-rose-700",
   APPROVED: "bg-emerald-100 text-emerald-700",
-  REJECTED: "bg-sand text-olive",
+  REJECTED: "bg-slate-200 text-slate-700",
 };
 
 function formatDateTime(value) {
@@ -148,36 +148,36 @@ export default function AdminMemberReportListPage() {
     <>
       <header className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-plum">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
             신고 관리 대시보드
           </h1>
-          <p className="mt-2 text-sm text-olive">
+          <p className="mt-2 text-sm text-slate-500">
             전체 회원 신고를 확인하고 처리 상태를 빠르게 점검할 수 있습니다.
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-sand">
+          <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-gray-200">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-600">
               !
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-olive">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 검토 대기
               </p>
-              <p className="text-2xl font-bold text-plum">
+              <p className="text-2xl font-bold text-gray-900">
                 {pendingCount}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-sand">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warm text-plum">
+          <div className="flex items-center gap-4 bg-white p-4 shadow-sm ring-1 ring-gray-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
               OK
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-olive">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
                 처리 완료
               </p>
-              <p className="text-2xl font-bold text-plum">
+              <p className="text-2xl font-bold text-gray-900">
                 {processedCount}
               </p>
             </div>
@@ -185,27 +185,27 @@ export default function AdminMemberReportListPage() {
         </div>
       </header>
 
-      <section className="mb-8 flex flex-col gap-4 bg-fog p-6 shadow-sm ring-1 ring-sand xl:flex-row xl:items-end xl:justify-between">
+      <section className="mb-8 flex flex-col gap-4 bg-blue-50 p-6 shadow-sm ring-1 ring-gray-200 xl:flex-row xl:items-end xl:justify-between">
         <div className="grid flex-1 gap-4 md:grid-cols-[1.2fr_0.6fr_0.6fr]">
           <div>
-            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-olive">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               검색
             </label>
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="신고 ID, 회원 ID, 닉네임, 신고 사유로 검색"
-              className="h-12 w-full rounded border-none bg-white px-4 text-sm shadow-sm ring-1 ring-sand outline-none focus:ring-2 focus:ring-silver"
+              className="h-12 w-full rounded border-none bg-white px-4 text-sm shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
           <div>
-            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-olive">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               상태
             </label>
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-sand outline-none focus:ring-2 focus:ring-silver"
+              className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
             >
               {statusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -215,13 +215,13 @@ export default function AdminMemberReportListPage() {
             </select>
           </div>
           <div>
-            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-olive">
+            <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
               유형
             </label>
             <select
               value={typeFilter}
               onChange={(event) => setTypeFilter(event.target.value)}
-              className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-sand outline-none focus:ring-2 focus:ring-silver"
+              className="h-12 w-full rounded border-none bg-white px-4 text-sm font-medium shadow-sm ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-blue-300"
             >
               {reportTypes.map((type) => (
                 <option key={type} value={type}>
@@ -239,10 +239,10 @@ export default function AdminMemberReportListPage() {
         </div>
       ) : null}
 
-      <section className="overflow-hidden bg-white shadow-xl ring-1 ring-sand">
+      <section className="overflow-hidden bg-white shadow-xl ring-1 ring-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-[1180px] text-left">
-            <thead className="bg-fog/70 text-[11px] font-bold uppercase tracking-[0.18em] text-olive">
+            <thead className="bg-blue-50/70 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
               <tr>
                 <th className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-4">
                   신고 ID
@@ -262,12 +262,12 @@ export default function AdminMemberReportListPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-warm text-sm">
+            <tbody className="divide-y divide-blue-100 text-sm">
               {loading ? (
                 <tr>
                   <td
                     colSpan="8"
-                    className="px-6 py-16 text-center font-medium text-olive"
+                    className="px-6 py-16 text-center font-medium text-slate-500"
                   >
                     관리자 신고 목록을 불러오는 중입니다...
                   </td>
@@ -276,7 +276,7 @@ export default function AdminMemberReportListPage() {
                 <tr>
                   <td
                     colSpan="8"
-                    className="px-6 py-16 text-center text-olive"
+                    className="px-6 py-16 text-center text-slate-500"
                   >
                     조건에 맞는 신고가 없습니다.
                   </td>
@@ -285,47 +285,47 @@ export default function AdminMemberReportListPage() {
                 filteredReports.map((report) => (
                   <tr
                     key={report.reportId}
-                    className="cursor-pointer transition hover:bg-fog/70"
+                    className="cursor-pointer transition hover:bg-blue-50/70"
                     onClick={() =>
                       navigate(`/admin/member-reports/${report.reportId}`)
                     }
                   >
-                    <td className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-5 align-top font-bold text-plum">
+                    <td className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-5 align-top font-bold text-blue-700">
                       <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                         {report.reportId}
                       </div>
                     </td>
                     <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sand text-xs font-bold text-plum">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-blue-700">
                           {getInitials(report.reporterId)}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium text-plum">
+                          <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium text-gray-900">
                             {report.reporterNickname || report.reporterId}
                           </div>
-                          <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-olive">
+                          <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-slate-500">
                             신고자 ID: {report.reporterId}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top text-olive">
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium text-olive">
+                    <td className="w-[240px] min-w-[240px] max-w-[240px] px-6 py-5 align-top text-slate-500">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-medium text-slate-900">
                         {report.reportedMemberNickname ||
                           report.reportedMemberId}
                       </div>
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-olive">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-slate-500">
                         피신고자 ID: {report.reportedMemberId}
                       </div>
                     </td>
                     <td className="px-6 py-5 align-top">
-                      <span className="inline-flex whitespace-nowrap rounded-full bg-fog px-3 py-1 text-xs font-bold text-olive">
+                      <span className="inline-flex whitespace-nowrap rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-slate-600">
                         {getDisplayType(report.reportType)}
                       </span>
                     </td>
                     <td className="px-6 py-5 align-top">
-                      <p className="max-w-[260px] truncate text-sm text-plum">
+                      <p className="max-w-[260px] truncate text-sm text-gray-900">
                         {report.reason}
                       </p>
                     </td>
@@ -334,17 +334,17 @@ export default function AdminMemberReportListPage() {
                         className={[
                           "inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.14em]",
                           statusStyles[report.status] ||
-                            "bg-fog text-olive",
+                            "bg-slate-100 text-slate-600",
                         ].join(" ")}
                       >
                         {report.status}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-6 py-5 align-top text-xs text-olive">
+                    <td className="whitespace-nowrap px-6 py-5 align-top text-xs text-slate-500">
                       {formatDateTime(report.createdAt)}
                     </td>
-                    <td className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-5 align-top text-xs text-olive">
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-olive">
+                    <td className="w-[220px] min-w-[220px] max-w-[220px] px-6 py-5 align-top text-xs text-slate-500">
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-slate-700">
                         {report.reviewedByNickname || report.reviewedBy || "-"}
                       </div>
                       <div className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -357,26 +357,26 @@ export default function AdminMemberReportListPage() {
             </tbody>
           </table>
         </div>
-        <div className="flex items-center justify-between bg-fog/70 px-6 py-4 text-xs font-medium text-olive">
+        <div className="flex items-center justify-between bg-blue-50/70 px-6 py-4 text-xs font-medium text-slate-500">
           <p>
             총 {reports.length}건 중 {filteredReports.length}건 표시 중
           </p>
           <div className="flex gap-2">
             <button
               type="button"
-              className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-sand"
+              className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200"
             >
               이전
             </button>
             <button
               type="button"
-              className="rounded-lg bg-brand px-3 py-2 font-bold text-white"
+              className="rounded-lg bg-blue-600 px-3 py-2 font-bold text-white"
             >
               1
             </button>
             <button
               type="button"
-              className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-sand"
+              className="rounded-lg bg-white px-3 py-2 shadow-sm ring-1 ring-gray-200"
             >
               다음
             </button>
@@ -384,7 +384,7 @@ export default function AdminMemberReportListPage() {
         </div>
       </section>
 
-      <div className="mt-6 text-sm text-olive">
+      <div className="mt-6 text-sm text-slate-500">
         신고 항목을 클릭하면 상세 검토 화면으로 이동합니다.
       </div>
     </>

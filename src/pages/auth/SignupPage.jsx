@@ -166,14 +166,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-fog text-plum">
+    <div className="min-h-screen bg-blue-50 text-gray-900">
       <header className="fixed top-0 z-50 w-full bg-white/70 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
             aria-label="뒤로 가기"
             onClick={() => navigate(-1)}
-            className="rounded-full p-2 text-plum transition hover:bg-warm active:scale-95"
+            className="rounded-full p-2 text-blue-700 transition hover:bg-blue-100 active:scale-95"
           >
             {"<"}
           </button>
@@ -188,10 +188,10 @@ export default function SignupPage() {
 
       <main className="flex min-h-screen items-center justify-center px-6 pb-12 pt-24">
         <div className="grid w-full max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-2">
-          <section className="relative hidden aspect-[4/5] overflow-hidden bg-fog p-12 md:flex md:flex-col md:justify-end">
-            <div className="absolute inset-0 bg-brand/30" />
+          <section className="relative hidden aspect-[4/5] overflow-hidden bg-gray-100 p-12 md:flex md:flex-col md:justify-end">
+            <div className="absolute inset-0 bg-blue-500/30" />
             <div className="relative z-10 space-y-4">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-plum">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-blue-700">
                 TodayLunch Market
               </span>
               <h2 className="text-5xl font-extrabold leading-[1.08] tracking-tighter">
@@ -201,7 +201,7 @@ export default function SignupPage() {
                 <br />
                 마켓
               </h2>
-              <p className="max-w-xs font-medium text-olive">
+              <p className="max-w-xs font-medium text-gray-600">
                 마음에 드는 메뉴를 발견하고, 매일의 선택을 즐겁게 기록해 보세요.
               </p>
             </div>
@@ -210,7 +210,7 @@ export default function SignupPage() {
           <section className="mx-auto w-full max-w-md space-y-10">
             <div className="space-y-2">
               <h2 className="text-4xl font-extrabold tracking-tight">회원가입</h2>
-              <p className="font-medium text-olive">
+              <p className="font-medium text-gray-500">
                 TodayLunch 계정을 만들고 서비스를 시작해 보세요.
               </p>
             </div>
@@ -254,14 +254,14 @@ export default function SignupPage() {
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     onChange={handleProfileImageChange}
-                    className="block w-full rounded border border-sand bg-white px-4 py-3 text-sm text-plum file:mr-4 file:rounded-full file:border-0 file:bg-warm file:px-4 file:py-2 file:font-semibold file:text-plum hover:file:bg-sand"
+                    className="block w-full rounded border border-blue-200 bg-white px-4 py-3 text-sm text-gray-700 file:mr-4 file:rounded-full file:border-0 file:bg-blue-100 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-200"
                   />
                   {profileImage ? (
-                    <p className="mt-2 text-xs font-medium text-olive">
+                    <p className="mt-2 text-xs font-medium text-gray-500">
                       선택한 파일: {profileImage.name}
                     </p>
                   ) : (
-                    <p className="mt-2 text-xs font-medium text-olive">
+                    <p className="mt-2 text-xs font-medium text-gray-500">
                       jpg, png, webp 형식 / 최대 1MB
                     </p>
                   )}
@@ -305,7 +305,7 @@ export default function SignupPage() {
                 label={
                   <>
                     이용약관 및{" "}
-                    <a href="#" className="font-semibold text-plum hover:underline">
+                    <a href="#" className="font-semibold text-blue-700 hover:underline">
                       개인정보 처리방침
                     </a>
                     에 동의합니다.
@@ -327,9 +327,9 @@ export default function SignupPage() {
             </form>
 
             <div className="pt-4 text-center">
-              <p className="font-medium text-olive">
+              <p className="font-medium text-gray-500">
                 이미 계정이 있으신가요?
-                <Link to="/login" className="ml-1 font-bold text-plum hover:underline">
+                <Link to="/login" className="ml-1 font-bold text-blue-700 hover:underline">
                   로그인
                 </Link>
               </p>

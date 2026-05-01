@@ -176,43 +176,43 @@ export default function PaymentCardSuccessPage() {
   return (
     <PageContainer>
       <section className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-xl flex-col justify-center px-4 py-10">
-        <div className="bg-white p-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-sand">
+        <div className="bg-white p-8 shadow-[0_40px_40px_-10px_rgba(56,39,76,0.06)] ring-1 ring-gray-200">
           <div className="mb-6 text-center">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-4xl text-emerald-600">
               {confirming ? "..." : "✓"}
             </div>
-            <h1 className="mt-5 text-3xl font-bold tracking-tight text-plum">
+            <h1 className="mt-5 text-3xl font-bold tracking-tight text-gray-900">
               {confirming ? "카드 결제 승인 중" : "카드 결제 승인 완료"}
             </h1>
-            <p className="mt-2 text-sm leading-6 text-olive">
+            <p className="mt-2 text-sm leading-6 text-gray-500">
               {confirming
                 ? "결제 정보를 검증하고 최종 승인 처리 중입니다."
                 : "카드 결제 승인이 완료되었습니다. 주문 완료 화면으로 이동할 수 있습니다."}
             </p>
           </div>
 
-          <div className="space-y-3 bg-fog/70 p-4 text-sm">
+          <div className="space-y-3 bg-blue-50/70 p-4 text-sm">
             <div className="flex items-center justify-between gap-4">
-              <span className="text-olive">paymentKey</span>
-              <span className="font-mono font-semibold text-plum">
+              <span className="text-gray-500">paymentKey</span>
+              <span className="font-mono font-semibold text-gray-900">
                 {result.paymentKey || "-"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-olive">orderId</span>
-              <span className="font-mono font-semibold text-plum">
+              <span className="text-gray-500">orderId</span>
+              <span className="font-mono font-semibold text-gray-900">
                 {result.orderId || "-"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-olive">amount</span>
-              <span className="font-semibold text-plum">
+              <span className="text-gray-500">amount</span>
+              <span className="font-semibold text-gray-900">
                 {formatPrice(result.amount)}
               </span>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <span className="text-olive">승인 상태</span>
-              <span className="font-semibold text-plum">
+              <span className="text-gray-500">승인 상태</span>
+              <span className="font-semibold text-gray-900">
                 {confirmResult?.status || (confirming ? "PENDING" : "-")}
               </span>
             </div>

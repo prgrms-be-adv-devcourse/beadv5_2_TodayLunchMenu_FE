@@ -41,18 +41,18 @@ export default function Modal({
 
       <div
         className={cn(
-          "relative z-[101] w-full max-w-md overflow-hidden rounded-container",
-          "bg-white shadow-lg"
+          "relative z-[101] w-full max-w-md overflow-hidden rounded-[28px]",
+          "border border-white/30 bg-white/85 shadow-2xl backdrop-blur-xl"
         )}
       >
         <div className="space-y-2 px-6 pt-6">
           {title ? (
-            <h2 className="text-2xl font-extrabold tracking-tight text-plum">
+            <h2 className="text-2xl font-extrabold tracking-tight text-gray-900">
               {title}
             </h2>
           ) : null}
           {description ? (
-            <p className="text-sm leading-6 text-olive">{description}</p>
+            <p className="text-sm leading-6 text-gray-600">{description}</p>
           ) : null}
         </div>
 

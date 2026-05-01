@@ -128,34 +128,34 @@ export default function DepositConfirmPage() {
     <PageContainer>
       <section className="mx-auto flex min-h-[calc(100vh-9rem)] w-full max-w-md flex-col items-center justify-center overflow-hidden px-8 text-center">
         <div className="relative mb-12">
-          <div className="absolute inset-0 scale-150 rounded-full bg-sand/30 blur-3xl" />
+          <div className="absolute inset-0 scale-150 rounded-full bg-violet-200/30 blur-3xl" />
 
           <div className="relative flex h-24 w-24 items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-4 border-sand/40" />
+            <div className="absolute inset-0 rounded-full border-4 border-violet-200/40" />
             <div className="absolute inset-0 animate-spin rounded-full border-4 border-transparent border-t-violet-700 border-r-fuchsia-500" />
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl ring-1 ring-warm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-warm text-xl font-bold text-plum">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl ring-1 ring-purple-100">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
                 ₩
               </div>
             </div>
           </div>
         </div>
 
-        <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-plum">
+        <h1 className="mb-4 text-2xl font-extrabold tracking-tight text-gray-900">
           충전 승인 처리 중입니다
         </h1>
 
-        <p className="mb-12 leading-relaxed text-olive">
+        <p className="mb-12 leading-relaxed text-gray-500">
           잠시만 기다려 주세요. 결제가 완료되면
           <br />
           자동으로 결과 페이지로 이동합니다.
         </p>
 
-        <div className="mb-4 h-1 w-12 rounded-full bg-warm" />
-        <p className="text-sm font-medium text-plum">{message || "승인 정보를 확인하고 있습니다..."}</p>
+        <div className="mb-4 h-1 w-12 rounded-full bg-purple-100" />
+        <p className="text-sm font-medium text-violet-700">{message || "승인 정보를 확인하고 있습니다..."}</p>
 
         <footer className="fixed bottom-12 w-full max-w-xs px-6 text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-silver">
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-gray-400">
             너무 오래 걸릴 경우 새로고침을 하지 마시고
             <br />
             잠시만 더 기다려 주세요.

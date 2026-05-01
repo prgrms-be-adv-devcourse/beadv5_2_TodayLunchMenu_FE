@@ -228,7 +228,7 @@ export default function OrderCancellationPage() {
   if (loading) {
     return (
       <PageContainer>
-        <p className="py-16 text-center text-sm text-olive">주문 정보를 불러오는 중입니다...</p>
+        <p className="py-16 text-center text-sm text-gray-500">주문 정보를 불러오는 중입니다...</p>
       </PageContainer>
     );
   }
@@ -249,19 +249,19 @@ export default function OrderCancellationPage() {
       <PageContainer>
         <div className="mx-auto max-w-2xl space-y-7 pb-32 text-left">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-plum">{headerLabel}</h1>
-            <p className="mt-2 text-sm text-olive">취소/반품할 상품을 선택하고 상품별 사유를 작성해 주세요.</p>
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">{headerLabel}</h1>
+            <p className="mt-2 text-sm text-gray-500">취소/반품할 상품을 선택하고 상품별 사유를 작성해 주세요.</p>
           </div>
 
           {/* 상품 선택 + 상품별 사유 */}
           <div>
             <div className="mb-3.5 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-plum">상품 선택 및 사유</h2>
+              <h2 className="text-lg font-extrabold text-gray-900">상품 선택 및 사유</h2>
               {selectableRows.length > 1 && (
                 <button
                   type="button"
                   onClick={toggleAll}
-                  className="text-sm font-bold text-plum hover:text-plum transition"
+                  className="text-sm font-bold text-violet-700 hover:text-violet-900 transition"
                 >
                   {allSelected ? "전체 해제" : "전체 선택"}
                 </button>
@@ -281,9 +281,9 @@ export default function OrderCancellationPage() {
                       "rounded-[20px] bg-white shadow-sm ring-1 transition",
                       action.canSelect
                         ? checked
-                          ? "ring-silver"
-                          : "ring-warm"
-                        : "ring-warm opacity-60",
+                          ? "ring-violet-300"
+                          : "ring-purple-100"
+                        : "ring-gray-100 opacity-60",
                     ].join(" ")}
                   >
                     <label className={[
@@ -295,28 +295,28 @@ export default function OrderCancellationPage() {
                         checked={checked}
                         disabled={!action.canSelect}
                         onChange={() => toggleItem(item.orderItemId)}
-                        className="mt-1 h-5 w-5 accent-brand"
+                        className="mt-1 h-5 w-5 accent-violet-600"
                       />
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-fog">
+                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-violet-50">
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-plum">
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-violet-700">
                             {(item.productName || "O").slice(0, 1).toUpperCase()}
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-plum">{item.productName}</p>
-                        <p className="mt-1.5 text-sm text-olive">수량 {item.quantity}개</p>
-                        <p className="mt-0.5 text-sm text-olive">{formatPrice(item.totalPrice)}원</p>
+                        <p className="font-bold text-gray-900">{item.productName}</p>
+                        <p className="mt-1.5 text-sm text-gray-500">수량 {item.quantity}개</p>
+                        <p className="mt-0.5 text-sm text-gray-500">{formatPrice(item.totalPrice)}원</p>
                         <p className={[
                           "mt-2 inline-flex rounded-full px-2 py-0.5 text-xs font-bold",
                           action.canSelect
                             ? action.type === "CANCEL"
                               ? "bg-amber-100 text-amber-700"
                               : "bg-indigo-100 text-indigo-700"
-                            : "bg-fog text-olive",
+                            : "bg-gray-100 text-gray-500",
                         ].join(" ")}>
                           {action.label}
                         </p>
@@ -324,13 +324,13 @@ export default function OrderCancellationPage() {
                     </label>
 
                     {checked && (
-                      <div className="border-t border-warm px-5 py-5" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                      <div className="border-t border-gray-100 px-5 py-5" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                         <div>
-                          <label className="block text-xs font-bold text-olive mb-1.5">사유</label>
+                          <label className="block text-xs font-bold text-gray-500 mb-1.5">사유</label>
                           <select
                             value={reasonState.reason}
                             onChange={(e) => updateReason(item.orderItemId, "reason", e.target.value)}
-                            className="h-11 w-full bg-fog/70 pl-3 pr-10 text-sm text-plum outline-none focus:ring-2 focus:ring-sand rounded-lg"
+                            className="h-11 w-full bg-blue-50/70 pl-3 pr-10 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-violet-200 rounded-lg"
                           >
                             <option value="">선택해 주세요</option>
                             {REASON_OPTIONS
@@ -368,7 +368,7 @@ export default function OrderCancellationPage() {
                           })()}
                         </div>
                         <div>
-                          <label className="block text-xs font-bold text-olive mb-1.5">
+                          <label className="block text-xs font-bold text-gray-500 mb-1.5">
                             상세 내용 {reasonState.reason === "OTHER" && <span className="text-rose-500">*</span>}
                           </label>
                           <textarea
@@ -376,14 +376,14 @@ export default function OrderCancellationPage() {
                             onChange={(e) => updateReason(item.orderItemId, "detail", e.target.value)}
                             rows={2}
                             placeholder="추가 내용이 있다면 작성해 주세요."
-                            className="w-full bg-fog/70 p-3 text-sm text-plum outline-none focus:ring-2 focus:ring-sand rounded-lg resize-none"
+                            className="w-full bg-blue-50/70 p-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-violet-200 rounded-lg resize-none"
                           />
                         </div>
                         {selectedIds.length > 1 && reasonState.reason && (
                           <button
                             type="button"
                             onClick={() => applyReasonToAll(item.orderItemId)}
-                            className="text-xs font-bold text-plum hover:text-plum transition"
+                            className="text-xs font-bold text-violet-700 hover:text-violet-900 transition"
                           >
                             동일 사유 모든 선택 상품에 적용
                           </button>
@@ -396,19 +396,19 @@ export default function OrderCancellationPage() {
             </div>
           </div>
 
-          <hr className="border-warm" />
+          <hr className="border-gray-100" />
 
           {/* 환불 정보 */}
           <div>
-            <h2 className="text-lg font-extrabold text-plum" style={{ marginBottom: "0.875rem" }}>환불 정보</h2>
-            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-warm space-y-3 text-sm">
+            <h2 className="text-lg font-extrabold text-gray-900" style={{ marginBottom: "0.875rem" }}>환불 정보</h2>
+            <div className="rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-purple-100 space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-silver">선택 상품 수</span>
-                <span className="font-semibold text-plum">{selectedIds.length}개</span>
+                <span className="text-gray-400">선택 상품 수</span>
+                <span className="font-semibold text-gray-900">{selectedIds.length}개</span>
               </div>
-              <div className="flex justify-between border-t border-warm pt-3">
-                <span className="font-bold text-plum">환불 예정 금액</span>
-                <span className="font-extrabold text-plum">{formatPrice(refundAmount)}원</span>
+              <div className="flex justify-between border-t border-gray-100 pt-3">
+                <span className="font-bold text-gray-900">환불 예정 금액</span>
+                <span className="font-extrabold text-violet-700">{formatPrice(refundAmount)}원</span>
               </div>
             </div>
           </div>
