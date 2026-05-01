@@ -6,7 +6,7 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
-import { getSellerProductsApi } from "../../features/product/productApi";
+import { getProductDetailApi, getSellerProductsApi } from "../../features/product/productApi";
 
 const FILTERS = [
   { value: "ALL", label: "전체" },
@@ -54,7 +54,10 @@ export default function SellerProductListPage() {
         setLoading(true);
         setError("");
         const { items } = await getSellerProductsApi({ page: 0, size: 50 });
-        if (!cancelled) setProducts(items);
+        const resolved = await Promise.all(
+          items.map((p) => p.image ? p : getProductDetailApi(p.id).catch(() => p))
+        );
+        if (!cancelled) setProducts(resolved);
       } catch (err) {
         if (!cancelled)
           setError(err instanceof ApiError ? err.message : "상품 목록을 불러오지 못했습니다.");
