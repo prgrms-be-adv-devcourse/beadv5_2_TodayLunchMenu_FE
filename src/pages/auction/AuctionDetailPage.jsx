@@ -17,7 +17,7 @@ import {
 import { useAuctionSocket } from "../../features/auction/useAuctionSocket";
 import { useCountdown } from "../../features/auction/useCountdown";
 
-const SHOW_BID_STATUSES = new Set(["ACTIVE", "OUTBID", "WINNING", "PAYMENT_COMPLETED"]);
+const SHOW_BID_STATUSES = new Set(["PENDING", "ACTIVE", "OUTBID", "WINNING", "PAYMENT_COMPLETED"]);
 
 function useAnimatedNumber(value) {
   const [display, setDisplay] = useState(value);
