@@ -208,6 +208,12 @@ async function updateProductApi(productId, { title, description, price, stockQua
   return toUiProduct(response.data);
 }
 
+async function deleteProductApi(productId) {
+  await apiClient(`/api/products/${productId}`, {
+    method: "DELETE",
+  });
+}
+
 async function createProductApi({
   title,
   description,
@@ -335,6 +341,7 @@ async function reindexProductsEsApi() {
 export {
   createProductApi,
   updateProductApi,
+  deleteProductApi,
   uploadProductImageApi,
   deleteProductImageApi,
   setImageThumbnailApi,

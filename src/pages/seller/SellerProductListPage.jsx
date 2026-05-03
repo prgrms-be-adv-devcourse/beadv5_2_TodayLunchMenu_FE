@@ -7,7 +7,7 @@ import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
 import { useRequireRole } from "../../features/auth/useRequireRole";
-import { getSellerProductsApi } from "../../features/product/productApi";
+import { deleteProductApi, getSellerProductsApi } from "../../features/product/productApi";
 
 const FILTERS = [
   { value: "ALL", label: "전체" },
@@ -43,6 +43,7 @@ export default function SellerProductListPage() {
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -92,9 +93,19 @@ export default function SellerProductListPage() {
   const soldOutCount = products.filter((p) => p.status === "SOLD_OUT").length;
   const inactiveCount = products.filter((p) => p.status === "INACTIVE").length;
 
-  const handleDelete = () => {
-    setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
-    setDeleteTarget(null);
+  const handleDelete = async () => {
+    if (!deleteTarget || deleting) return;
+    try {
+      setDeleting(true);
+      setError("");
+      await deleteProductApi(deleteTarget.id);
+      setProducts((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "상품을 삭제하지 못했습니다.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
