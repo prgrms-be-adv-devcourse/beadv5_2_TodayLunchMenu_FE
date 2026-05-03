@@ -186,7 +186,7 @@ export default function CheckoutPage() {
         totalPrice: summary.total,
         paymentMethod: paymentMethodLabel,
         paymentMethodCode: selectedPaymentMethod,
-        depositLabel: "Deposit / Vivid Pay",
+        depositLabel: "예치금",
         selectedPaymentMethod,
         pendingOrder: true,
       };
