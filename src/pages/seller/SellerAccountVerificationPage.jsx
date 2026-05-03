@@ -319,9 +319,8 @@ export default function SellerAccountVerificationPage() {
 
       const promotedAuth = result?.auth;
       if (!promotedAuth?.accessToken || !promotedAuth?.refreshToken) {
-        throw new Error(
-          "판매자 권한 토큰이 응답에 포함되지 않았습니다. confirm 응답을 확인해 주세요."
-        );
+        setError("판매자 권한 토큰이 응답에 포함되지 않았습니다. confirm 응답을 확인해 주세요.");
+        return;
       }
 
       setAuthTokens({
@@ -340,7 +339,8 @@ export default function SellerAccountVerificationPage() {
       );
       const refreshedUser = await refreshUser();
       if (refreshedUser?.role !== "SELLER") {
-        throw new Error("새 토큰으로 사용자 정보를 갱신했지만 판매자 권한이 반영되지 않았습니다.");
+        setError("새 토큰으로 사용자 정보를 갱신했지만 판매자 권한이 반영되지 않았습니다.");
+        return;
       }
 
       clearPendingSellerVerification();
