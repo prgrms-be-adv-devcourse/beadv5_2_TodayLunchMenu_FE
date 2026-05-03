@@ -31,6 +31,10 @@ export default function AuctionCard({ auction }) {
           <img
             src={imageSrc}
             alt={title}
+            onError={(e) => {
+              if (e.currentTarget.src.endsWith("/default-product.svg")) return;
+              e.currentTarget.src = "/default-product.svg";
+            }}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />
           <CountdownPill endsAt={auction.endsAt} status={auction.status} />

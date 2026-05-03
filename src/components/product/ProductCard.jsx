@@ -14,6 +14,10 @@ export default function ProductCard({ product, onAddToCart }) {
           <img
             src={product.image || "/default-product.svg"}
             alt={product.name}
+            onError={(e) => {
+              if (e.currentTarget.src.endsWith("/default-product.svg")) return;
+              e.currentTarget.src = "/default-product.svg";
+            }}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />
           {soldOut && (

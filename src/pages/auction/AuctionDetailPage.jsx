@@ -450,6 +450,10 @@ export default function AuctionDetailPage() {
             <img
               src={productImages[selectedImageIndex]?.url || "/default-product.svg"}
               alt={auction.productTitle || "경매 상품"}
+              onError={(e) => {
+                if (e.currentTarget.src.endsWith("/default-product.svg")) return;
+                e.currentTarget.src = "/default-product.svg";
+              }}
               className="h-full w-full object-cover"
             />
 
@@ -499,6 +503,10 @@ export default function AuctionDetailPage() {
                   <img
                     src={img.url || "/default-product.svg"}
                     alt={`이미지 ${idx + 1}`}
+                    onError={(e) => {
+                      if (e.currentTarget.src.endsWith("/default-product.svg")) return;
+                      e.currentTarget.src = "/default-product.svg";
+                    }}
                     className="h-full w-full object-cover"
                   />
                 </button>
