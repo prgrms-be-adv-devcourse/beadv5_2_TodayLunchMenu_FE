@@ -354,9 +354,14 @@ export default function ProductDetailPage() {
             )}
 
             <div className="flex flex-col gap-2">
+              {isSellerMe && (
+                <p className="text-xs font-medium text-gray-500">
+                  본인이 등록한 상품은 구매할 수 없습니다.
+                </p>
+              )}
               <button
                 type="button"
-                disabled={soldOut || isAddingToCart}
+                disabled={soldOut || isAddingToCart || isSellerMe}
                 onClick={handleAddToCart}
                 className="h-12 w-full border border-blue-600 text-sm font-bold text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -364,7 +369,7 @@ export default function ProductDetailPage() {
               </button>
               <button
                 type="button"
-                disabled={soldOut}
+                disabled={soldOut || isSellerMe}
                 onClick={() => setOpenModal(true)}
                 className="h-12 w-full bg-blue-600 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
               >
