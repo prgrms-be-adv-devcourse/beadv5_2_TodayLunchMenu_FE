@@ -15,7 +15,7 @@ import {
 import { pushToast } from "../../features/notification/notificationToastStore";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_PROFILE_IMAGE_SIZE = 1 * 1024 * 1024;
+const MAX_PROFILE_IMAGE_SIZE = 1024 * 1024;
 
 export default function MemberEditPage() {
   const navigate = useNavigate();
@@ -27,8 +27,20 @@ export default function MemberEditPage() {
     address: "",
   });
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // 새 파일 선택 시 객체 URL로 즉시 미리보기, 변경/언마운트 시 revoke
+  useEffect(() => {
+    if (!profileImage) {
+      setProfileImagePreview(null);
+      return undefined;
+    }
+    const url = URL.createObjectURL(profileImage);
+    setProfileImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [profileImage]);
 
   useEffect(() => {
     if (!user) {
@@ -190,10 +202,10 @@ export default function MemberEditPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow-sm ring-1 ring-gray-200">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            {user?.profileImageUrl ? (
+            {(profileImagePreview || user?.profileImageUrl) ? (
               <img
-                src={user.profileImageUrl}
-                alt="현재 프로필 이미지"
+                src={profileImagePreview || user.profileImageUrl}
+                alt={profileImagePreview ? "선택한 프로필 이미지" : "현재 프로필 이미지"}
                 className="h-24 w-24 rounded-full object-cover ring-2 ring-blue-200"
               />
             ) : (
