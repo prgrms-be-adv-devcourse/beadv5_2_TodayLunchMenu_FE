@@ -13,7 +13,6 @@ const FILTERS = [
   { value: "ALL", label: "전체" },
   { value: "ACTIVE", label: "판매중" },
   { value: "SOLD_OUT", label: "품절" },
-  { value: "INACTIVE", label: "비공개" },
 ];
 
 function formatPrice(value) {
@@ -57,7 +56,7 @@ export default function SellerProductListPage() {
         setLoading(true);
         setError("");
         const { items } = await getSellerProductsApi({ page: 0, size: 50 });
-        if (!cancelled) setProducts(items);
+        if (!cancelled) setProducts(items.filter((p) => p.status !== "INACTIVE"));
       } catch (err) {
         if (!cancelled)
           setError(err instanceof ApiError ? err.message : "상품 목록을 불러오지 못했습니다.");
@@ -91,7 +90,6 @@ export default function SellerProductListPage() {
 
   const activeCount = products.filter((p) => p.status === "ACTIVE").length;
   const soldOutCount = products.filter((p) => p.status === "SOLD_OUT").length;
-  const inactiveCount = products.filter((p) => p.status === "INACTIVE").length;
 
   const handleDelete = async () => {
     if (!deleteTarget || deleting) return;
@@ -130,12 +128,11 @@ export default function SellerProductListPage() {
 
         {/* 통계 요약 */}
         {!loading && products.length > 0 && (
-          <div className="mb-5 grid grid-cols-4 divide-x divide-gray-100 bg-white py-3 shadow-sm ring-1 ring-gray-100">
+          <div className="mb-5 grid grid-cols-3 divide-x divide-gray-100 bg-white py-3 shadow-sm ring-1 ring-gray-100">
             {[
               { label: "전체", value: products.length, color: "text-gray-900" },
               { label: "판매중", value: activeCount, color: "text-emerald-600" },
               { label: "품절", value: soldOutCount, color: "text-red-500" },
-              { label: "비공개", value: inactiveCount, color: "text-gray-400" },
             ].map(({ label, value, color }) => (
               <div key={label} className="flex flex-col items-center gap-0.5 px-2">
                 <span className={`text-lg font-extrabold ${color}`}>{value}</span>
