@@ -234,7 +234,15 @@ export default function OrderDetailPage() {
 
   if (!normalizedOrder) return null;
 
-  const orderStatusMeta = getOrderStatusMeta(normalizedOrder.status);
+  const baseOrderStatusMeta = getOrderStatusMeta(normalizedOrder.status);
+  // 반품 진행중 우선 노출 (단, 이미 종결된 CANCELED/COMPLETED 주문은 제외)
+  const upperStatus = normalizedOrder.status?.toUpperCase();
+  const orderStatusMeta =
+    normalizedOrder.hasOngoingReturn &&
+    upperStatus !== "CANCELED" &&
+    upperStatus !== "COMPLETED"
+      ? { label: "반품 진행중", className: "bg-amber-100 text-amber-700" }
+      : baseOrderStatusMeta;
   const productTotal = normalizedOrder.items.reduce(
     (sum, item) => sum + Number(item.totalPrice ?? 0),
     0

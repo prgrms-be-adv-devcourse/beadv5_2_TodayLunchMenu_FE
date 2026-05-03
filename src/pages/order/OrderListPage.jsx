@@ -235,7 +235,14 @@ export default function OrderListPage() {
       ) : (
         <section className="space-y-4">
           {filteredOrders.map((order) => {
-            const statusMeta = getStatusMeta(order.status);
+            const baseStatusMeta = getStatusMeta(order.status);
+            // 반품 진행중 우선 노출 (단, 이미 종결된 CANCELED/COMPLETED 주문은 제외)
+            const statusMeta =
+              order.hasOngoingReturn &&
+              order.status !== "CANCELED" &&
+              order.status !== "COMPLETED"
+                ? { label: "반품 진행중", className: "bg-amber-100 text-amber-700" }
+                : baseStatusMeta;
             const thumbnailSrc = getThumbnailSrc(order.representativeThumbnailKey);
             const isPendingAuction = order.orderType === "AUCTION" && order.status === "CREATED";
 

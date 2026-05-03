@@ -22,6 +22,9 @@ function toUiOrderSummary(order) {
       order?.representativeProductName ?? "상품명 없음",
     representativeThumbnailKey: order?.representativeThumbnailKey ?? "",
     itemCount: order?.itemCount ?? 0,
+    // 반품 신청 후 검수 종료 전인 OrderItem이 1개라도 있으면 true.
+    // 구버전 응답엔 없을 수 있어 기본값 false.
+    hasOngoingReturn: Boolean(order?.hasOngoingReturn),
   };
 }
 
@@ -63,6 +66,9 @@ function toUiOrderDetail(order) {
     receiverPhone: order?.receiverPhone ?? "",
     itemCount: order?.itemCount ?? items.length,
     status: order?.status ?? "UNKNOWN",
+    // 반품 신청 후 검수 종료 전인 OrderItem이 1개라도 있으면 true.
+    // 구버전 응답엔 없을 수 있어 기본값 false.
+    hasOngoingReturn: Boolean(order?.hasOngoingReturn),
     items,
     deliveryMemo: order?.deliveryMemo ?? null,
   };
