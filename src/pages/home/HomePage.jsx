@@ -87,9 +87,8 @@ export default function HomePage() {
       try {
         const response = await getProductsApi({
           page: 0,
-          size: 12,
+          size: 50,
           sort: "createdAt,desc",
-          ...(selectedCategoryId ? { categoryId: selectedCategoryId } : {}),
         });
         if (!cancelled)
           setLatestProducts(response.items.filter((p) => p.type !== "AUCTION"));
@@ -101,7 +100,7 @@ export default function HomePage() {
     }
     load();
     return () => { cancelled = true; };
-  }, [selectedCategoryId]);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -168,6 +167,13 @@ export default function HomePage() {
     () => rootCategories.filter((c) => activeRootIds.has(c.id)),
     [rootCategories, activeRootIds],
   );
+
+  const filteredLatestProducts = useMemo(() => {
+    if (!selectedCategoryId) return latestProducts;
+    return latestProducts.filter(
+      (p) => p.categoryId && categoryToRoot[p.categoryId] === selectedCategoryId,
+    );
+  }, [latestProducts, selectedCategoryId, categoryToRoot]);
 
   const mostUrgentAuction =
     ongoingAuctions
@@ -260,11 +266,11 @@ export default function HomePage() {
 
           {loadingLatestProducts ? (
             <EmptyState message="상품을 불러오는 중입니다..." />
-          ) : latestProducts.length === 0 ? (
+          ) : filteredLatestProducts.length === 0 ? (
             <EmptyState message="해당 카테고리의 상품이 없습니다." />
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {latestProducts.slice(0, 8).map((product) => (
+              {filteredLatestProducts.slice(0, 8).map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
