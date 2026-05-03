@@ -274,11 +274,9 @@ async function deleteProductImageApi(productId, imageId) {
 }
 
 async function setImageThumbnailApi(productId, imageId) {
-  const response = await apiClient(`/api/products/${productId}/images/${imageId}`, {
+  await apiClient(`/api/products/${productId}/images/${imageId}/thumbnail`, {
     method: "PATCH",
-    body: { isThumbnail: true },
   });
-  return toUiImage(response.data);
 }
 
 async function createCategoryAdminApi({ name, description, sortOrder, parentId }) {
