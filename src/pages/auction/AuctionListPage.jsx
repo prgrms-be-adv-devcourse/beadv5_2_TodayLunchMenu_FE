@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Menu } from "lucide-react";
 
 import AuctionCard from "../../components/auction/AuctionCard";
-import { useAuctions } from "../../features/auction/useAuctions";
+import { getAuctionsApi } from "../../features/auction/auctionApi";
 import { getProductsByIdsApi } from "../../features/product/productApi";
 
 const ENDED_STATUSES = ["COMPLETED", "PENDING_PAYMENT", "FAILED"];
@@ -28,6 +28,8 @@ const BACKEND_STATUS = {
   ONGOING: "ONGOING",
 };
 
+const PAGE_SIZE = 12;
+
 export default function AuctionListPage() {
   const [filterKey, setFilterKey] = useState("ALL");
   const [page, setPage] = useState(0);
@@ -36,11 +38,52 @@ export default function AuctionListPage() {
 
   const backendStatus = BACKEND_STATUS[filterKey] ?? null;
 
-  const { auctions, pageInfo, loading, fetching, error } = useAuctions({
-    status: backendStatus,
-    page,
-    size: 12,
-  });
+  const [auctions, setAuctions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAll() {
+      try {
+        setFetching(true);
+        setError(null);
+
+        const FETCH_SIZE = 100;
+        const items = [];
+        let pageNum = 0;
+        let totalPages = 1;
+
+        do {
+          const params = { page: pageNum, size: FETCH_SIZE };
+          if (backendStatus) params.status = backendStatus;
+          const data = await getAuctionsApi(params);
+          if (cancelled) return;
+          items.push(...data.items);
+          totalPages = Math.max(1, data.pageInfo.totalPages || 1);
+          pageNum += 1;
+        } while (pageNum < totalPages && !cancelled);
+
+        if (cancelled) return;
+        setAuctions(items);
+        setLoading(false);
+      } catch (nextError) {
+        if (cancelled) return;
+        setError(nextError);
+        setLoading(false);
+      } finally {
+        if (!cancelled) setFetching(false);
+      }
+    }
+
+    loadAll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [backendStatus]);
 
   const [productImageMap, setProductImageMap] = useState({});
 
@@ -88,6 +131,17 @@ export default function AuctionListPage() {
 
     return result;
   }, [auctions, filterKey, now, keyword]);
+
+  const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages - 1);
+  const pagedVisible = visible.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+  const hasNext = safePage < totalPages - 1;
+
+  useEffect(() => {
+    if (page > totalPages - 1) {
+      setPage(Math.max(0, totalPages - 1));
+    }
+  }, [page, totalPages]);
 
   const handleFilterChange = (key) => {
     setFilterKey(key);
@@ -163,7 +217,7 @@ export default function AuctionListPage() {
                 </h2>
                 <span className="text-xs text-gray-400">
                   {visible.length}개
-                  {pageInfo.totalPages > 1 && ` · ${page + 1}/${pageInfo.totalPages}페이지`}
+                  {totalPages > 1 && ` · ${safePage + 1}/${totalPages}페이지`}
                 </span>
               </div>
 
@@ -216,7 +270,7 @@ export default function AuctionListPage() {
               ) : (
                 <>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {visible.map((auction) => (
+                    {pagedVisible.map((auction) => (
                       <AuctionCard
                         key={auction.id}
                         auction={auction}
@@ -225,22 +279,22 @@ export default function AuctionListPage() {
                     ))}
                   </div>
 
-                  {pageInfo.totalPages > 1 && (
+                  {totalPages > 1 && (
                     <div className="mt-6 flex items-center justify-center gap-2">
                       <button
                         type="button"
-                        disabled={page === 0}
+                        disabled={safePage === 0}
                         onClick={() => setPage((p) => Math.max(0, p - 1))}
                         className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         이전
                       </button>
                       <span className="text-sm text-gray-500">
-                        {page + 1} / {pageInfo.totalPages}
+                        {safePage + 1} / {totalPages}
                       </span>
                       <button
                         type="button"
-                        disabled={!pageInfo.hasNext}
+                        disabled={!hasNext}
                         onClick={() => setPage((p) => p + 1)}
                         className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >

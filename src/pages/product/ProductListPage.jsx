@@ -4,7 +4,8 @@ import { Menu } from "lucide-react";
 import ProductCard from "../../components/product/ProductCard";
 import { useCart } from "../../features/cart/useCart";
 import { useCartToast } from "../../features/cart/useCartToast";
-import { useCategories, useProducts } from "../../features/product/useProducts";
+import { useCategories } from "../../features/product/useProducts";
+import { getProductsApi } from "../../features/product/productApi";
 
 const STATUS_OPTIONS = ["전체", "판매중"];
 const SORT_OPTIONS = [
@@ -114,13 +115,57 @@ export default function ProductListPage() {
 
   const { addToCart } = useCart({ autoLoad: false });
   const { toast, showToast } = useCartToast();
-  const { products, pageInfo, loading, fetching, error } = useProducts({
-    page: currentPage,
-    size: PAGE_SIZE,
-    sort: SORT_MAP[sort],
-    keyword: debouncedKeyword || undefined,
-    categoryId: selectedCategoryId || undefined,
-  });
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAll() {
+      try {
+        setFetching(true);
+        setError(null);
+
+        const FETCH_SIZE = 100;
+        const items = [];
+        let pageNum = 0;
+        let totalPages = 1;
+
+        do {
+          const data = await getProductsApi({
+            page: pageNum,
+            size: FETCH_SIZE,
+            sort: SORT_MAP[sort],
+            keyword: debouncedKeyword || undefined,
+            categoryId: selectedCategoryId || undefined,
+          });
+          if (cancelled) return;
+          items.push(...data.items);
+          totalPages = Math.max(1, data.pageInfo.totalPages || 1);
+          pageNum += 1;
+        } while (pageNum < totalPages && !cancelled);
+
+        if (cancelled) return;
+        setProducts(items);
+        setLoading(false);
+      } catch (nextError) {
+        if (cancelled) return;
+        setError(nextError);
+        setLoading(false);
+      } finally {
+        if (!cancelled) setFetching(false);
+      }
+    }
+
+    loadAll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sort, debouncedKeyword, selectedCategoryId]);
+
   const { categories } = useCategories();
 
   const categoryTree = useMemo(() => {
@@ -157,7 +202,15 @@ export default function ProductListPage() {
     return path;
   }, [categories, selectedCategoryId]);
 
-  const totalPages = pageInfo.totalPages;
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages - 1);
+  const pagedProducts = filteredProducts.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+
+  useEffect(() => {
+    if (currentPage > totalPages - 1) {
+      setCurrentPage(Math.max(0, totalPages - 1));
+    }
+  }, [currentPage, totalPages]);
 
   const handleReset = () => {
     setKeyword("");
@@ -255,8 +308,8 @@ export default function ProductListPage() {
                 </div>
 
                 <span className="text-xs text-gray-400">
-                  {pageInfo.totalElements}개
-                  {totalPages > 1 && ` · ${currentPage + 1}/${totalPages}페이지`}
+                  {filteredProducts.length}개
+                  {totalPages > 1 && ` · ${safePage + 1}/${totalPages}페이지`}
                 </span>
               </div>
 
@@ -328,7 +381,7 @@ export default function ProductListPage() {
               ) : (
                 <>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {filteredProducts.map((product) => (
+                    {pagedProducts.map((product) => (
                       <ProductCard
                         key={product.id}
                         product={product}
@@ -341,18 +394,18 @@ export default function ProductListPage() {
                     <div className="mt-6 flex items-center justify-center gap-2">
                       <button
                         type="button"
-                        disabled={currentPage === 0}
+                        disabled={safePage === 0}
                         onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                         className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         이전
                       </button>
                       <span className="text-sm text-gray-500">
-                        {currentPage + 1} / {totalPages}
+                        {safePage + 1} / {totalPages}
                       </span>
                       <button
                         type="button"
-                        disabled={currentPage >= totalPages - 1}
+                        disabled={safePage >= totalPages - 1}
                         onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                         className="border border-gray-300 px-4 py-1.5 text-sm text-gray-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
                       >
