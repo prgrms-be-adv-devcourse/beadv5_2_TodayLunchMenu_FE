@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
 
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -9,6 +8,7 @@ import PageHeader from "../../components/common/PageHeader";
 import SellerNav from "../../components/seller/SellerNav";
 import { pushToast } from "../../features/notification/notificationToastStore";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   getSellerReturnRequestsApi,
   inspectReturnRequestApi,
@@ -334,6 +334,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
 
 export default function SellerRefundManagementPage() {
   const { user, loading: authLoading } = useAuth();
+  const { hasAccess } = useRequireRole("SELLER");
   const [activeTab, setActiveTab] = useState("RECEIVED");
   const [refunds, setRefunds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -368,8 +369,8 @@ export default function SellerRefundManagementPage() {
     void fetchRefundList();
   }, [fetchRefundList]);
 
-  if (!authLoading && (!user || user.role !== "SELLER")) {
-    return <Navigate to="/" />;
+  if (!authLoading && !hasAccess) {
+    return null;
   }
 
   function handleInspect(refund) {

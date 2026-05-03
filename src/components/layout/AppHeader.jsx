@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { useAccessTokenRemaining } from "../../features/auth/useAccessTokenRemaining";
 import { useAuth } from "../../features/auth/useAuth";
@@ -91,7 +91,6 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
 }
 
 export default function AppHeader() {
-  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { formattedRemaining, isExpiringSoon } =
     useAccessTokenRemaining(isAuthenticated);
@@ -116,7 +115,9 @@ export default function AppHeader() {
       // useAuth.logout clears auth state even if the API call fails.
     } finally {
       clearCartState();
-      navigate("/login");
+      // 자동 navigate 안 함: 보던 화면 그대로 유지.
+      // 권한이 필요한 페이지면 각 페이지의 useRequireRole 가드가
+      // 토스트 + 홈 이동을 처리한다.
     }
   };
 
