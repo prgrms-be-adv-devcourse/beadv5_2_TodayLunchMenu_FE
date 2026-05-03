@@ -24,7 +24,7 @@ const toLocalDatetimeValue = (ms) => {
 };
 
 const START_PRESETS = [
-  { label: "지금", offset: 0 },
+  { label: "+2분", offset: 2 },
   { label: "+30분", offset: 30 },
   { label: "+1시간", offset: 60 },
   { label: "+3시간", offset: 180 },
