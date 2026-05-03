@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -76,10 +76,15 @@ export default function SellerProductEditPage() {
   const fileInputRef = useRef(null);
 
   const [productStatus, setProductStatus] = useState(null);
-  const [images, setImages] = useState([]);
-  const [uploadingCount, setUploadingCount] = useState(0);
-  const [deletingIds, setDeletingIds] = useState(new Set());
-  const [settingThumbnailId, setSettingThumbnailId] = useState(null);
+  // 서버에서 받은 기존 이미지
+  const [serverImages, setServerImages] = useState([]);
+  // 새로 추가된 이미지 (수정 완료 시 일괄 업로드)
+  // [{ tempId, file, previewUrl, sortOrder }]
+  const [pendingUploads, setPendingUploads] = useState([]);
+  // 삭제 마킹된 서버 이미지 id Set (수정 완료 시 일괄 삭제)
+  const [pendingDeletes, setPendingDeletes] = useState(() => new Set());
+  // 변경된 썸네일 id (서버 id 또는 stage tempId, null이면 변경 없음)
+  const [pendingThumbnailId, setPendingThumbnailId] = useState(null);
   const [previewIdx, setPreviewIdx] = useState(null);
   const [imageError, setImageError] = useState("");
   const [imageLimitModal, setImageLimitModal] = useState({ open: false, title: "", description: "" });
@@ -106,7 +111,7 @@ export default function SellerProductEditPage() {
         ]);
         if (cancelled) return;
         setProductStatus(product.status);
-        setImages(product.images ?? []);
+        setServerImages(product.images ?? []);
         const isDefaultDesc = product.description === "상품 설명이 아직 등록되지 않았습니다.";
         setForm({
           title: product.name,
@@ -149,17 +154,51 @@ export default function SellerProductEditPage() {
     return () => { cancelled = true; };
   }, [productId]);
 
-  const handleFileChange = async (e) => {
+  // 표시용 통합 이미지 리스트 (수정 완료 전엔 모두 미반영 상태)
+  // - 서버 이미지 중 pendingDeletes에 없는 것 + pendingUploads의 stage 이미지
+  // - 각 항목은 { id 또는 tempId, url, isThumbnail, isStage }
+  const displayImages = useMemo(() => {
+    const remainingServer = serverImages
+      .filter((img) => !pendingDeletes.has(img.id))
+      .map((img) => ({
+        key: `srv-${img.id}`,
+        id: img.id,
+        url: img.url,
+        isStage: false,
+        isThumbnail:
+          pendingThumbnailId != null
+            ? pendingThumbnailId === img.id
+            : !!img.isThumbnail,
+      }));
+    const stageList = pendingUploads.map((p) => ({
+      key: `tmp-${p.tempId}`,
+      tempId: p.tempId,
+      url: p.previewUrl,
+      isStage: true,
+      isThumbnail: pendingThumbnailId === p.tempId,
+    }));
+    return [...remainingServer, ...stageList];
+  }, [serverImages, pendingDeletes, pendingUploads, pendingThumbnailId]);
+
+  // pendingUploads의 previewUrl 페이지 이탈 시 정리
+  useEffect(() => {
+    return () => {
+      pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleFileChange = (e) => {
     const files = Array.from(e.target.files || []);
     e.target.value = "";
     if (files.length === 0) return;
     setImageError("");
-    if (images.length >= MAX_IMAGE_FILES) {
+    if (displayImages.length >= MAX_IMAGE_FILES) {
       setImageError(`상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`);
       setImageLimitModal({ open: true, title: "이미지 개수 제한", description: `상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.` });
       return;
     }
-    const remainingSlots = MAX_IMAGE_FILES - images.length;
+    const remainingSlots = MAX_IMAGE_FILES - displayImages.length;
     const nextFiles = files.slice(0, remainingSlots);
     const oversizedFile = nextFiles.find((file) => file.size > MAX_IMAGE_FILE_SIZE);
     if (oversizedFile) {
@@ -171,59 +210,39 @@ export default function SellerProductEditPage() {
       setImageError(`상품 이미지는 최대 ${MAX_IMAGE_FILES}장까지 등록할 수 있습니다.`);
       setImageLimitModal({ open: true, title: "이미지 개수 제한", description: `최대 ${MAX_IMAGE_FILES}장까지만 등록할 수 있어 선택한 이미지 중 일부만 업로드됩니다.` });
     }
-    const isFirstImage = images.length === 0;
-    setUploadingCount((n) => n + nextFiles.length);
-    const results = await Promise.allSettled(
-      nextFiles.map((file, idx) =>
-        uploadProductImageApi(productId, file, {
-          sortOrder: images.length + idx,
-          isThumbnail: isFirstImage && idx === 0,
-        })
-      )
-    );
-    setUploadingCount((n) => n - nextFiles.length);
-    const succeeded = results.filter((r) => r.status === "fulfilled").map((r) => r.value);
-    const failCount = results.filter((r) => r.status === "rejected").length;
-    if (succeeded.length > 0) setImages((prev) => [...prev, ...succeeded]);
-    if (failCount > 0) setImageError(`${failCount}개 이미지 업로드에 실패했습니다.`);
+    const baseSortOrder = displayImages.length;
+    const stageItems = nextFiles.map((file, idx) => ({
+      tempId: `tmp_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 8)}`,
+      file,
+      previewUrl: URL.createObjectURL(file),
+      sortOrder: baseSortOrder + idx,
+    }));
+    setPendingUploads((prev) => [...prev, ...stageItems]);
   };
 
-  const handleDeleteImage = async (imageId) => {
-    setDeletingIds((prev) => new Set(prev).add(imageId));
+  // imageId(서버 id) 또는 tempId(stage) 모두 받아서 처리
+  const handleDeleteImage = (idOrTempId) => {
     setImageError("");
-    try {
-      await deleteProductImageApi(productId, imageId);
-      setImages((prev) => {
-        const next = prev.filter((img) => img.id !== imageId);
-        // 삭제된 이미지가 라이트박스에 열려 있으면 닫기
-        setPreviewIdx((pi) => {
-          if (pi === null) return null;
-          const deletedIdx = prev.findIndex((img) => img.id === imageId);
-          if (deletedIdx === -1) return pi;
-          if (pi >= next.length) return next.length > 0 ? next.length - 1 : null;
-          return pi > deletedIdx ? pi - 1 : pi;
-        });
-        return next;
-      });
-    } catch (err) {
-      setImageError(err instanceof ApiError ? err.message : "이미지 삭제에 실패했습니다.");
-    } finally {
-      setDeletingIds((prev) => { const next = new Set(prev); next.delete(imageId); return next; });
+    // stage 이미지인지 확인
+    const stage = pendingUploads.find((p) => p.tempId === idOrTempId);
+    if (stage) {
+      URL.revokeObjectURL(stage.previewUrl);
+      setPendingUploads((prev) => prev.filter((p) => p.tempId !== idOrTempId));
+      if (pendingThumbnailId === idOrTempId) setPendingThumbnailId(null);
+      return;
     }
+    // 서버 이미지면 삭제 마킹
+    setPendingDeletes((prev) => {
+      const next = new Set(prev);
+      next.add(idOrTempId);
+      return next;
+    });
+    if (pendingThumbnailId === idOrTempId) setPendingThumbnailId(null);
   };
 
-  const handleSetThumbnail = async (imageId) => {
-    if (settingThumbnailId) return;
-    setSettingThumbnailId(imageId);
+  const handleSetThumbnail = (idOrTempId) => {
     setImageError("");
-    try {
-      await setImageThumbnailApi(productId, imageId);
-      setImages((prev) => prev.map((img) => ({ ...img, isThumbnail: img.id === imageId })));
-    } catch (err) {
-      setImageError(err instanceof ApiError ? err.message : "대표 이미지 변경에 실패했습니다.");
-    } finally {
-      setSettingThumbnailId(null);
-    }
+    setPendingThumbnailId(idOrTempId);
   };
 
   // 라이트박스 키보드 탐색
@@ -231,12 +250,12 @@ export default function SellerProductEditPage() {
     if (previewIdx === null) return;
     const onKey = (e) => {
       if (e.key === "Escape") setPreviewIdx(null);
-      else if (e.key === "ArrowRight") setPreviewIdx((i) => (i < images.length - 1 ? i + 1 : i));
+      else if (e.key === "ArrowRight") setPreviewIdx((i) => (i < displayImages.length - 1 ? i + 1 : i));
       else if (e.key === "ArrowLeft") setPreviewIdx((i) => (i > 0 ? i - 1 : i));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [previewIdx, images.length]);
+  }, [previewIdx, displayImages.length]);
 
   const handleChange = (key) => (e) => {
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
@@ -281,6 +300,34 @@ export default function SellerProductEditPage() {
     try {
       setIsSubmitting(true);
       setSubmitError("");
+      setImageError("");
+
+      // 1) 신규 이미지 업로드
+      const tempIdToServerId = new Map();
+      for (const pending of pendingUploads) {
+        const result = await uploadProductImageApi(productId, pending.file, {
+          sortOrder: pending.sortOrder,
+          isThumbnail: false, // 썸네일 처리는 마지막에 일괄
+        });
+        tempIdToServerId.set(pending.tempId, result?.id ?? result?.imageId ?? null);
+      }
+
+      // 2) 삭제 마킹된 서버 이미지 삭제
+      for (const id of pendingDeletes) {
+        await deleteProductImageApi(productId, id);
+      }
+
+      // 3) 썸네일 변경 처리 (stage tempId면 새로 받은 서버 id로 매핑)
+      if (pendingThumbnailId != null) {
+        const realId = tempIdToServerId.has(pendingThumbnailId)
+          ? tempIdToServerId.get(pendingThumbnailId)
+          : pendingThumbnailId;
+        if (realId != null) {
+          await setImageThumbnailApi(productId, realId);
+        }
+      }
+
+      // 4) 메타데이터 저장
       await updateProductApi(productId, {
         title: form.title.trim(),
         description: form.description.trim(),
@@ -288,6 +335,9 @@ export default function SellerProductEditPage() {
         stockQuantity: Number(form.stockQuantity),
         categoryId: form.categoryId,
       });
+
+      // stage previewUrl 정리
+      pendingUploads.forEach((p) => URL.revokeObjectURL(p.previewUrl));
       navigate("/seller/products");
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "상품 수정 중 오류가 발생했습니다.");
@@ -322,9 +372,9 @@ export default function SellerProductEditPage() {
     );
   }
 
-  const thumbnailImage = images.find((img) => img.isThumbnail) || images[0] || null;
+  const thumbnailImage = displayImages.find((img) => img.isThumbnail) || displayImages[0] || null;
   const statusMeta = STATUS_META[productStatus] ?? STATUS_META.INACTIVE;
-  const isBusy = isSubmitting || uploadingCount > 0 || deletingIds.size > 0;
+  const isBusy = isSubmitting;
 
   // 카테고리 경로 레이블 빌더
   const catPath = [
@@ -391,7 +441,7 @@ export default function SellerProductEditPage() {
                     JPG, PNG, WEBP, GIF · 파일당 최대 5MB · 최대 {MAX_IMAGE_FILES}장
                   </p>
                   <span className="text-xs font-medium text-gray-500">
-                    {images.length}/{MAX_IMAGE_FILES}장
+                    {displayImages.length}/{MAX_IMAGE_FILES}장
                   </span>
                 </div>
 
@@ -405,11 +455,11 @@ export default function SellerProductEditPage() {
                 )}
 
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-3">
-                  {images.map((img, idx) => {
-                    const isDeleting = deletingIds.has(img.id);
-                    const isSettingThumb = settingThumbnailId === img.id;
+                  {displayImages.map((img, idx) => {
+                    const itemKey = img.key;
+                    const itemId = img.id ?? img.tempId;
                     return (
-                      <div key={img.id} className="flex flex-col gap-1.5">
+                      <div key={itemKey} className="flex flex-col gap-1.5">
                         {/* 이미지 카드 */}
                         <div className="relative">
                           <button
@@ -436,11 +486,6 @@ export default function SellerProductEditPage() {
                                 </svg>
                               </div>
                             )}
-                            {isDeleting && (
-                              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40">
-                                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                              </div>
-                            )}
                           </button>
 
                           {/* 대표 뱃지 */}
@@ -450,38 +495,34 @@ export default function SellerProductEditPage() {
                             </span>
                           )}
 
-                          {/* 삭제 버튼 */}
-                          {!isDeleting && (
-                            <button
-                              type="button"
-                              aria-label="이미지 삭제"
-                              className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white shadow transition hover:bg-red-500"
-                              onClick={() => handleDeleteImage(img.id)}
-                            >
-                              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                              </svg>
-                            </button>
+                          {/* 신규 stage 뱃지 */}
+                          {img.isStage && (
+                            <span className="absolute bottom-1 right-1 rounded bg-emerald-500 px-1.5 py-px text-[9px] font-bold text-white shadow">
+                              신규
+                            </span>
                           )}
+
+                          {/* 삭제 버튼 */}
+                          <button
+                            type="button"
+                            aria-label="이미지 삭제"
+                            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-700 text-white shadow transition hover:bg-red-500"
+                            onClick={() => handleDeleteImage(itemId)}
+                          >
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M2 2l6 6M8 2L2 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                            </svg>
+                          </button>
                         </div>
 
                         {/* 대표로 설정 버튼 (비대표 이미지만) */}
-                        {!img.isThumbnail && !isDeleting ? (
+                        {!img.isThumbnail ? (
                           <button
                             type="button"
-                            onClick={() => handleSetThumbnail(img.id)}
-                            disabled={!!settingThumbnailId || uploadingCount > 0}
-                            className="w-full rounded border border-gray-200 bg-white py-1 text-[10px] font-medium text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+                            onClick={() => handleSetThumbnail(itemId)}
+                            className="w-full rounded border border-gray-200 bg-white py-1 text-[10px] font-medium text-gray-600 transition hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700"
                           >
-                            {isSettingThumb ? (
-                              <span className="flex items-center justify-center gap-1">
-                                <svg className="h-3 w-3 animate-spin" viewBox="0 0 12 12" fill="none">
-                                  <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.3" />
-                                  <path d="M6 1.5A4.5 4.5 0 0110.5 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                </svg>
-                                처리중
-                              </span>
-                            ) : "대표로 설정"}
+                            대표로 설정
                           </button>
                         ) : (
                           <div className="h-[26px]" />
@@ -490,20 +531,11 @@ export default function SellerProductEditPage() {
                     );
                   })}
 
-                  {Array.from({ length: uploadingCount }).map((_, i) => (
-                    <div key={`uploading-${i}`} className="flex flex-col gap-1.5">
-                      <div className="flex h-24 w-full items-center justify-center rounded-lg bg-gray-100">
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
-                      </div>
-                      <div className="h-[26px]" />
-                    </div>
-                  ))}
-
                   <div className="flex flex-col gap-1.5">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingCount > 0 || images.length >= MAX_IMAGE_FILES}
+                      disabled={displayImages.length >= MAX_IMAGE_FILES}
                       className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 transition hover:border-blue-400 hover:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -726,7 +758,7 @@ export default function SellerProductEditPage() {
       />
 
       {/* 이미지 라이트박스 */}
-      {previewIdx !== null && images[previewIdx]?.url && (
+      {previewIdx !== null && displayImages[previewIdx]?.url && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
           onClick={() => setPreviewIdx(null)}
@@ -747,14 +779,14 @@ export default function SellerProductEditPage() {
 
           {/* 이미지 */}
           <img
-            src={images[previewIdx].url}
+            src={displayImages[previewIdx].url}
             alt=""
             className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />
 
           {/* 다음 버튼 */}
-          {previewIdx < images.length - 1 && (
+          {previewIdx < displayImages.length - 1 && (
             <button
               type="button"
               aria-label="다음 이미지"
@@ -781,8 +813,8 @@ export default function SellerProductEditPage() {
 
           {/* 카운터 + 대표 여부 */}
           <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/50 px-4 py-2 text-xs font-medium text-white">
-            <span>{previewIdx + 1} / {images.length}</span>
-            {images[previewIdx].isThumbnail && (
+            <span>{previewIdx + 1} / {displayImages.length}</span>
+            {displayImages[previewIdx].isThumbnail && (
               <>
                 <span className="opacity-40">·</span>
                 <span className="text-blue-300">대표 이미지</span>
