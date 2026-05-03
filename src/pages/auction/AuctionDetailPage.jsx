@@ -17,8 +17,6 @@ import {
 import { useAuctionSocket } from "../../features/auction/useAuctionSocket";
 import { useCountdown } from "../../features/auction/useCountdown";
 
-const SHOW_BID_STATUSES = new Set(["PENDING", "ACTIVE", "OUTBID", "WINNING", "PAYMENT_COMPLETED"]);
-
 function useAnimatedNumber(value) {
   const [display, setDisplay] = useState(value);
   const prev = useRef(value);
@@ -142,10 +140,7 @@ export default function AuctionDetailPage() {
 
   const myId = user?.memberId;
 
-  const validBids = useMemo(
-    () => bids.filter((bid) => SHOW_BID_STATUSES.has(bid.status)),
-    [bids],
-  );
+  const validBids = bids;
 
   const [productImages, setProductImages] = useState([]);
   const [productDescription, setProductDescription] = useState(null);
