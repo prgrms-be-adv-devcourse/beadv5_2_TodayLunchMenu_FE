@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
 
 import { ApiError } from "../../api/client";
 import Button from "../../components/common/Button";
@@ -9,6 +8,7 @@ import PageHeader from "../../components/common/PageHeader";
 import SellerNav from "../../components/seller/SellerNav";
 import { pushToast } from "../../features/notification/notificationToastStore";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   getSellerReturnRequestsApi,
   inspectReturnRequestApi,
@@ -334,6 +334,7 @@ function InspectionModal({ refund, onClose, onSubmit, submitting }) {
 
 export default function SellerRefundManagementPage() {
   const { user, loading: authLoading } = useAuth();
+  const { hasAccess } = useRequireRole("SELLER");
   const [activeTab, setActiveTab] = useState("RECEIVED");
   const [refunds, setRefunds] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -343,7 +344,7 @@ export default function SellerRefundManagementPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const fetchRefundList = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.memberId) return;
 
     try {
       setLoading(true);
@@ -351,20 +352,25 @@ export default function SellerRefundManagementPage() {
       const data = await getSellerReturnRequestsApi({ status: activeTab });
       setRefunds(Array.isArray(data) ? data : []);
     } catch (err) {
+      // 404는 "내역 없음"의 정상 케이스로 간주
+      if (err instanceof ApiError && err.status === 404) {
+        setRefunds([]);
+        return;
+      }
       console.error("Failed to fetch refunds:", err);
       setError(getErrorMessage(err, "반품 목록을 불러올 수 없습니다."));
       setRefunds([]);
     } finally {
       setLoading(false);
     }
-  }, [user?.id, activeTab]);
+  }, [user?.memberId, activeTab]);
 
   useEffect(() => {
     void fetchRefundList();
   }, [fetchRefundList]);
 
-  if (!authLoading && (!user || user.role !== "SELLER")) {
-    return <Navigate to="/" />;
+  if (!authLoading && !hasAccess) {
+    return null;
   }
 
   function handleInspect(refund) {
@@ -467,13 +473,13 @@ export default function SellerRefundManagementPage() {
               ))}
             </div>
           ) : refunds.length === 0 ? (
-            <div className="rounded-[20px] bg-white px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
-              <p className="text-lg font-bold text-gray-900">
+            <div className="px-6 py-20 text-center">
+              <p className="text-base font-semibold text-gray-700">
                 {activeTab === "RECEIVED" && "처리할 반품이 없습니다"}
                 {activeTab === "COMPLETED" && "완료된 반품이 없습니다"}
                 {activeTab === "FAILED" && "거절한 반품이 없습니다"}
               </p>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm text-gray-400">
                 {activeTab === "RECEIVED" && "고객이 반품을 신청하면 이곳에 표시됩니다."}
                 {activeTab === "COMPLETED" && "검수 완료된 반품이 이곳에 기록됩니다."}
                 {activeTab === "FAILED" && "거절한 반품 내역이 이곳에 기록됩니다."}

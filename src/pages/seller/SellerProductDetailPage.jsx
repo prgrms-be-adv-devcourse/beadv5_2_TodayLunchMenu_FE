@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/common/Button";
 import PageContainer from "../../components/common/PageContainer";
 import { useProduct } from "../../features/product/useProducts";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 
 function formatPrice(price) {
   return new Intl.NumberFormat("ko-KR").format(price);
@@ -30,6 +31,7 @@ function getStatusMeta(status) {
 }
 
 export default function SellerProductDetailPage() {
+  useRequireRole("SELLER");
   const { productId } = useParams();
   const navigate = useNavigate();
   const { product, loading, error } = useProduct(productId);

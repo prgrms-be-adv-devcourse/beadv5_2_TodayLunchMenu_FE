@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Input from "../../components/common/Input";
 import { getOrdersApi } from "../../features/order/orderApi";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
@@ -76,6 +77,7 @@ const ORDER_TYPE_TABS = [
 
 export default function OrderListPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
@@ -101,7 +103,7 @@ export default function OrderListPage() {
         if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 
@@ -289,36 +291,46 @@ export default function OrderListPage() {
               </div>
             );
 
-            if (isPendingAuction) {
-              return (
-                <Link
-                  key={order.orderId}
-                  to="/orders/checkout"
-                  state={{
-                    isAuction: true,
-                    orderId: order.orderId,
-                    items: [{
-                      name: order.representativeProductName,
-                      quantity: 1,
-                      price: order.totalAmount,
-                      image: order.representativeThumbnailKey,
-                    }],
-                  }}
-                  className="block bg-white/80 p-5 shadow-sm ring-1 ring-amber-300 transition hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  {cardContent}
-                </Link>
-              );
-            }
+            const handleGoCheckout = () =>
+              navigate("/orders/checkout", {
+                state: {
+                  isAuction: true,
+                  orderId: order.orderId,
+                  items: [{
+                    name: order.representativeProductName,
+                    quantity: 1,
+                    price: order.totalAmount,
+                    image: order.representativeThumbnailKey,
+                  }],
+                },
+              });
+            const handleGoDetail = () => navigate(`/orders/${order.orderId}`);
 
             return (
-              <Link
+              <div
                 key={order.orderId}
-                to={`/orders/${order.orderId}`}
-                className="block bg-white/80 p-5 shadow-sm ring-1 ring-gray-200 transition hover:-translate-y-0.5 hover:shadow-md"
+                className={`bg-white/80 p-5 shadow-sm ring-1 ${isPendingAuction ? "ring-amber-300" : "ring-gray-200"}`}
               >
                 {cardContent}
-              </Link>
+                <div className="mt-4 flex justify-end gap-2 border-t border-gray-100 pt-3">
+                  {isPendingAuction && (
+                    <button
+                      type="button"
+                      onClick={handleGoCheckout}
+                      className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-bold text-white hover:bg-amber-600 transition"
+                    >
+                      주문하기
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleGoDetail}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    상세 조회
+                  </button>
+                </div>
+              </div>
             );
           })}
         </section>

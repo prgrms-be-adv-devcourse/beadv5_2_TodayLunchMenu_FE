@@ -37,12 +37,14 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [verificationPending, setVerificationPending] = useState(false);
+  const [withdrawnPending, setWithdrawnPending] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState("");
 
-  const handleChange = (key) => (e) => {
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const handleChange = (key) => (event) => {
+    setForm((prev) => ({ ...prev, [key]: event.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "", common: "" }));
     setVerificationPending(false);
+    setWithdrawnPending(false);
     setVerificationMessage("");
   };
 
@@ -65,6 +67,7 @@ export default function LoginPage() {
 
   const handleResendVerification = async () => {
     const email = form.email.trim();
+
     if (!email) {
       setErrors((prev) => ({ ...prev, email: "이메일을 입력해 주세요." }));
       return;
@@ -79,24 +82,29 @@ export default function LoginPage() {
       if (error instanceof ApiError) {
         setVerificationMessage(
           error.code === "EMAIL_VERIFICATION_NOT_ALLOWED"
-            ? "지금은 인증 이메일을 다시 보낼 수 없어요."
-            : error.message || "인증 이메일 재발송에 실패했어요."
+            ? "지금은 인증 메일을 다시 보낼 수 없습니다."
+            : error.message || "인증 메일 재발송에 실패했습니다.",
         );
       } else {
-        setVerificationMessage("인증 이메일 재발송에 실패했어요. 잠시 후 다시 시도해 주세요.");
+        setVerificationMessage(
+          "인증 메일 재발송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        );
       }
     } finally {
       setIsResending(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validate()) {
+      return;
+    }
 
     try {
       setIsSubmitting(true);
       setVerificationPending(false);
+      setWithdrawnPending(false);
       setVerificationMessage("");
       await login(form);
 
@@ -109,11 +117,22 @@ export default function LoginPage() {
     } catch (error) {
       const isVerificationRequired =
         error instanceof ApiError && error.code === "EMAIL_VERIFICATION_REQUIRED";
+      const isWithdrawnAccount =
+        error instanceof ApiError && error.code === "MEMBER_WITHDRAWN";
 
       if (isVerificationRequired) {
         setVerificationPending(true);
         setErrors({
-          common: "로그인하려면 이메일 인증이 필요해요.",
+          common: "로그인하려면 이메일 인증이 필요합니다.",
+        });
+        return;
+      }
+
+      if (isWithdrawnAccount) {
+        setWithdrawnPending(true);
+        setErrors({
+          common:
+            error.message || "탈퇴한 계정입니다. 같은 이메일로 다시 가입해 주세요.",
         });
         return;
       }
@@ -122,14 +141,15 @@ export default function LoginPage() {
         setErrors({
           common:
             error?.message ||
-            "로그인은 성공했지만 카카오 계정 연동에 실패했어요. 다시 시도해 주세요.",
+            "로그인은 되었지만 카카오 계정 연동에 실패했습니다. 다시 시도해 주세요.",
         });
         return;
       }
 
       setErrors({
         common:
-          error?.message || "로그인에 실패했어요. 이메일과 비밀번호를 확인해 주세요.",
+          error?.message ||
+          "로그인에 실패했습니다. 이메일과 비밀번호를 확인해 주세요.",
       });
     } finally {
       setIsSubmitting(false);
@@ -140,7 +160,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-blue-50 text-gray-900">
-      <header className="fixed top-0 z-50 w-full bg-white/70 backdrop-blur-xl shadow-sm">
+      <header className="fixed top-0 z-50 w-full bg-white/70 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center px-6">
           <button
             type="button"
@@ -160,23 +180,23 @@ export default function LoginPage() {
       </header>
 
       <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center px-6 pb-12 pt-24">
-          <div className="mb-12 text-center">
-            <div className="mb-4 inline-flex bg-gray-100 p-4">
-              <span className="text-4xl text-blue-700">G</span>
-            </div>
-            <h2 className="text-3xl font-extrabold tracking-tight">GoodsMall</h2>
-            <p className="mt-2 font-medium text-gray-500">
-              오늘의 점심 메뉴를 가장 빠르게 만나보세요.
-            </p>
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-flex bg-gray-100 p-4">
+            <span className="text-4xl text-blue-700">G</span>
           </div>
+          <h2 className="text-3xl font-extrabold tracking-tight">GoodsMall</h2>
+          <p className="mt-2 font-medium text-gray-500">
+            오늘의 점심 메뉴를 가장 빠르게 만나보세요.
+          </p>
+        </div>
 
         <div className="w-full">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {pendingKakaoLink?.linkToken ? (
               <div className="border border-yellow-200 bg-[#fff9d9] px-4 py-4 text-left text-sm text-[#5b4300]">
-                <p className="font-semibold">이 계정에 카카오 연동 대기 상태가 있어요.</p>
+                <p className="font-semibold">이 계정은 카카오 연동 대기 상태입니다.</p>
                 <p className="mt-1">
-                  기존 계정으로 로그인하면 카카오 연동을 자동으로 완료할게요.
+                  기존 계정으로 로그인하면 카카오 계정 연동이 자동으로 완료됩니다.
                 </p>
               </div>
             ) : null}
@@ -198,7 +218,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="비밀번호를 입력해 주세요"
+                    placeholder="비밀번호를 입력해 주세요."
                     value={form.password}
                     onChange={handleChange("password")}
                     error={!!errors.password}
@@ -233,12 +253,14 @@ export default function LoginPage() {
 
             {verificationPending ? (
               <div className="bg-blue-50 px-4 py-4 text-sm text-blue-900">
-                <p className="font-semibold">이메일 인증이 필요해요.</p>
+                <p className="font-semibold">이메일 인증이 필요합니다.</p>
                 <p className="mt-1 text-blue-700">
-                  인증 이메일이 필요하면 아래 버튼을 눌러 다시 받을 수 있어요.
+                  인증 메일이 필요하면 아래 버튼을 눌러 다시 받을 수 있어요.
                 </p>
                 {verificationMessage ? (
-                  <p className="mt-2 font-medium text-red-600">{verificationMessage}</p>
+                  <p className="mt-2 font-medium text-red-600">
+                    {verificationMessage}
+                  </p>
                 ) : null}
                 <div className="mt-3">
                   <Button
@@ -248,7 +270,28 @@ export default function LoginPage() {
                     disabled={isResending}
                     className="w-full"
                   >
-                    {isResending ? "재발송 중..." : "인증 이메일 다시 보내기"}
+                    {isResending ? "재발송 중..." : "인증 메일 다시 보내기"}
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            {withdrawnPending ? (
+              <div className="bg-amber-50 px-4 py-4 text-sm text-amber-900">
+                <p className="font-semibold">탈퇴한 계정입니다.</p>
+                <p className="mt-1 text-amber-700">
+                  기존 계정으로는 로그인할 수 없습니다. 같은 이메일로 다시 가입해 주세요.
+                </p>
+                <div className="mt-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() =>
+                      navigate(`/signup?email=${encodeURIComponent(form.email.trim())}`)
+                    }
+                    className="w-full"
+                  >
+                    회원가입으로 이동
                   </Button>
                 </div>
               </div>

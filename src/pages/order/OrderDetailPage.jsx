@@ -12,6 +12,7 @@ import PageContainer from "../../components/common/PageContainer";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Modal from "../../components/common/Modal";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 function formatPaymentMethod(method) {
   switch (method) {
@@ -63,15 +64,20 @@ function getOrderStatusMeta(status) {
   }
 }
 
-function getItemStatusMeta(status) {
+function getItemStatusMeta(status, orderStatus) {
+  // 결제 전(Order.status === "CREATED") 상태에서는 OrderItem 라벨도 "결제 대기"로 표기
+  if (orderStatus?.toUpperCase() === "CREATED") {
+    return { label: "결제 대기", className: "bg-amber-100 text-amber-700" };
+  }
   switch (status?.toUpperCase()) {
-    case "PENDING":   return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "PREPARING": return { label: "주문 완료", className: "bg-violet-100 text-violet-700" };
-    case "SHIPPING":  return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
-    case "DELIVERED": return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
-    case "COMPLETED": return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
-    case "CANCELED":  return { label: "취소됨",      className: "bg-red-100 text-red-600" };
-    default:          return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
+    case "PENDING":           return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "PREPARING":         return { label: "주문 완료",   className: "bg-violet-100 text-violet-700" };
+    case "SHIPPING":          return { label: "배송 중",     className: "bg-blue-100 text-blue-700" };
+    case "DELIVERED":         return { label: "배송 완료",   className: "bg-indigo-100 text-indigo-700" };
+    case "COMPLETED":         return { label: "구매 확정",   className: "bg-emerald-100 text-emerald-700" };
+    case "CANCELED":          return { label: "취소됨",      className: "bg-red-100 text-red-600" };
+    case "RETURN_REQUESTED":  return { label: "반품 진행 중", className: "bg-amber-100 text-amber-700" };
+    default:                  return { label: status ?? "알 수 없음", className: "bg-gray-100 text-gray-700" };
   }
 }
 
@@ -86,6 +92,7 @@ function Divider() {
 
 export default function OrderDetailPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [payment, setPayment] = useState(null);
@@ -120,24 +127,21 @@ export default function OrderDetailPage() {
       try {
         setLoading(true);
         setError("");
-        const [orderResult, paymentResult] = await Promise.allSettled([
-          getOrderDetailApi(orderId),
-          getOrderPaymentApi(orderId),
-        ]);
+        const orderResult = await getOrderDetailApi(orderId);
         if (!mounted) return;
-        if (orderResult.status === "fulfilled") {
-          setOrder(orderResult.value);
-        } else {
-          throw orderResult.reason;
-        }
-        if (paymentResult.status === "fulfilled") {
-          setPayment(paymentResult.value);
+        setOrder(orderResult);
+
+        try {
+          const paymentResult = await getOrderPaymentApi(orderId);
+          if (mounted) setPayment(paymentResult);
+        } catch {
+          // 결제 정보 조회 실패는 무시 (주문 상세는 이미 표시 가능)
         }
       } catch (loadError) {
         if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
         if (loadError instanceof ApiError && loadError.status === 404) {
@@ -236,9 +240,11 @@ export default function OrderDetailPage() {
     0
   );
 
-  const hasCancelable = normalizedOrder.items.some((item) =>
-    ["PENDING", "CONFIRMED", "PREPARING", "DELIVERED"].includes(item.status?.toUpperCase())
-  );
+  const hasCancelable =
+    normalizedOrder.status?.toUpperCase() !== "CREATED" &&
+    normalizedOrder.items.some((item) =>
+      ["PENDING", "CONFIRMED", "PREPARING", "DELIVERED"].includes(item.status?.toUpperCase())
+    );
 
   return (
     <>
@@ -289,7 +295,7 @@ export default function OrderDetailPage() {
             <div className="space-y-4">
               {normalizedOrder.items.map((item) => {
                 const thumbnailSrc = getThumbnailSrc(item.thumbnailKey);
-                const statusMeta = getItemStatusMeta(item.status);
+                const statusMeta = getItemStatusMeta(item.status, normalizedOrder.status);
                 const itemStatus = item.status?.toUpperCase();
                 const showTracking = item.deliveryId && ["SHIPPING", "DELIVERED", "COMPLETED"].includes(itemStatus);
                 const showConfirm = itemStatus === "DELIVERED";
@@ -300,7 +306,7 @@ export default function OrderDetailPage() {
                     className="border border-gray-200 bg-white p-5"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
+                      <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
                         {thumbnailSrc ? (
                           <img src={thumbnailSrc} alt={item.productName} className="h-full w-full object-cover" />
                         ) : (
@@ -312,8 +318,12 @@ export default function OrderDetailPage() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
-                          <span className={`flex-shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
+                          {normalizedOrder.orderType === "AUCTION" ? (
+                            <span className="font-bold text-gray-900">{item.productName}</span>
+                          ) : (
+                            <Link to={`/products/${item.productId}`} className="font-bold text-gray-900 hover:underline hover:text-blue-600 transition-colors">{item.productName}</Link>
+                          )}
+                          <span className={`shrink-0 inline-flex rounded-full px-2 py-0.5 text-xs font-bold ${statusMeta.className}`}>
                             {statusMeta.label}
                           </span>
                         </div>

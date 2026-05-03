@@ -1,6 +1,7 @@
-﻿import { useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, NavLink } from "react-router-dom";
 
+import { useAccessTokenRemaining } from "../../features/auth/useAccessTokenRemaining";
 import { useAuth } from "../../features/auth/useAuth";
 import { clearCartState, useCart } from "../../features/cart/useCart";
 import { useNotification } from "../../features/notification/useNotification";
@@ -70,14 +71,12 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
           출금
         </Link>
         {isSeller ? (
-          <>
-            <Link
-              to="/seller/me"
-              className="block rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
-            >
-              판매자 메뉴
-            </Link>
-          </>
+          <Link
+            to="/seller/me"
+            className="block rounded-xl bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+          >
+            판매자 메뉴
+          </Link>
         ) : null}
         <button
           type="button"
@@ -92,8 +91,9 @@ function UserMenu({ displayName, isAdmin, isSeller, onLogout }) {
 }
 
 export default function AppHeader() {
-  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { formattedRemaining, isExpiringSoon } =
+    useAccessTokenRemaining(isAuthenticated);
   const { unreadCount } = useNotification();
   const { cartCount } = useCart();
   const isLoggedIn = isAuthenticated && Boolean(user);
@@ -115,7 +115,9 @@ export default function AppHeader() {
       // useAuth.logout clears auth state even if the API call fails.
     } finally {
       clearCartState();
-      navigate("/login");
+      // 자동 navigate 안 함: 보던 화면 그대로 유지.
+      // 권한이 필요한 페이지면 각 페이지의 useRequireRole 가드가
+      // 토스트 + 홈 이동을 처리한다.
     }
   };
 
@@ -123,7 +125,10 @@ export default function AppHeader() {
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-xl font-bold tracking-tight text-gray-900">
+          <Link
+            to="/"
+            className="text-xl font-bold tracking-tight text-gray-900"
+          >
             GoodsMall
           </Link>
 
@@ -134,11 +139,28 @@ export default function AppHeader() {
             <NavLink to="/auctions" className={navLinkClass}>
               경매장
             </NavLink>
-            {isAdmin && <NavLink to="/admin/categories" className={navLinkClass}>카테고리 관리</NavLink>}
+            {isAdmin && (
+              <NavLink to="/admin/categories" className={navLinkClass}>
+                카테고리 관리
+              </NavLink>
+            )}
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
+          {isLoggedIn ? (
+            <div
+              className={[
+                "hidden rounded-full px-3 py-1 text-xs font-semibold sm:block",
+                isExpiringSoon
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-slate-100 text-slate-600",
+              ].join(" ")}
+            >
+              세션 {formattedRemaining}
+            </div>
+          ) : null}
+
           <Link
             to={isLoggedIn ? "/cart" : cartLoginPath}
             className="relative rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
@@ -164,9 +186,12 @@ export default function AppHeader() {
           ) : null}
 
           {isLoggedIn ? (
-            <>
-              <UserMenu displayName={displayName} isAdmin={isAdmin} isSeller={isSeller} onLogout={handleLogout} />
-            </>
+            <UserMenu
+              displayName={displayName}
+              isAdmin={isAdmin}
+              isSeller={isSeller}
+              onLogout={handleLogout}
+            />
           ) : (
             <>
               <Link
@@ -188,4 +213,3 @@ export default function AppHeader() {
     </header>
   );
 }
-

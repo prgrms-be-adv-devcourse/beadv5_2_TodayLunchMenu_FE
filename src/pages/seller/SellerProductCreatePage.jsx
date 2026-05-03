@@ -9,6 +9,7 @@ import PageContainer from "../../components/common/PageContainer";
 import AiProductDraftAssistant from "../../components/seller/AiProductDraftAssistant";
 import SellerProductForm from "../../components/seller/SellerProductForm";
 import { createProductDraftFromImageApi } from "../../features/ai/aiProductDraftApi";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import { createAuctionApi } from "../../features/auction/auctionApi";
 import {
   createProductApi,
@@ -101,6 +102,7 @@ function getCategoryPathText(categories, categorySelection) {
 
 export default function SellerProductCreatePage() {
   const navigate = useNavigate();
+  useRequireRole("SELLER");
 
   const [form, setForm] = useState({
     type: "GENERAL",

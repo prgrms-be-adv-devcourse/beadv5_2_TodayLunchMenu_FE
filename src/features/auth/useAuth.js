@@ -1,5 +1,6 @@
-﻿// useAuth.js : 인증 상태와 관련된 로직을 제공하는 커스텀 훅
 import { useEffect, useSyncExternalStore } from "react";
+import { ApiError } from "../../api/apiError";
+import { isTerminalAuthError, refreshAccessToken } from "../../api/authSession";
 import { getMyInfoApi, loginApi, logoutApi } from "./authApi";
 import {
   clearAuthState,
@@ -11,19 +12,30 @@ import {
 
 let initializePromise = null;
 
-// 인증 상태 초기화 함수 : 토큰이 존재하면 사용자 정보를 가져와 인증 상태를 초기화
-async function initializeAuth() {
-  const currentState = getAuthState(); // user, isAuthenticated, loading
-  const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
+const shouldClearAuthState = (error) => {
+  if (isTerminalAuthError(error)) {
+    return true;
+  }
 
-  if (!hasAccessToken) {
+  return (
+    error instanceof ApiError &&
+    (error.status === 401 || error.status === 403) &&
+    error.code !== "UNAUTHORIZED"
+  );
+};
+
+async function initializeAuth() {
+  const currentState = getAuthState();
+  const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
+  const hasRefreshToken = Boolean(localStorage.getItem("refreshToken"));
+
+  if (!hasAccessToken && !hasRefreshToken) {
     if (currentState.loading) {
       setAuthState({ loading: false });
     }
     return null;
   }
 
-  // 이미 초기화 중인 경우 기존 Promise 반환
   if (initializePromise) {
     return initializePromise;
   }
@@ -32,6 +44,10 @@ async function initializeAuth() {
     setAuthState((prev) => ({ ...prev, loading: true }));
 
     try {
+      if (!hasAccessToken && hasRefreshToken) {
+        await refreshAccessToken();
+      }
+
       const user = await getMyInfoApi();
 
       setAuthState({
@@ -42,7 +58,15 @@ async function initializeAuth() {
 
       return user;
     } catch (error) {
-      clearAuthState();
+      if (shouldClearAuthState(error)) {
+        clearAuthState();
+      } else {
+        setAuthState((prev) => ({
+          ...prev,
+          loading: false,
+        }));
+      }
+
       throw error;
     } finally {
       initializePromise = null;
@@ -52,7 +76,6 @@ async function initializeAuth() {
   return initializePromise;
 }
 
-// 로그인 함수
 async function login({ email, password }) {
   setAuthState((prev) => ({ ...prev, loading: true }));
 
@@ -62,6 +85,8 @@ async function login({ email, password }) {
     setAuthTokens({
       accessToken: authData?.accessToken,
       refreshToken: authData?.refreshToken,
+      accessTokenExpiresIn: authData?.accessTokenExpiresIn,
+      refreshTokenExpiresIn: authData?.refreshTokenExpiresIn,
     });
 
     const user = await getMyInfoApi();
@@ -79,7 +104,6 @@ async function login({ email, password }) {
   }
 }
 
-// 사용자 정보 새로고침 함수 : 토큰이 유효한지 확인하고 사용자 정보를 새로고침 (판매자 등록 후 사용자 정보 업데이트 등에 사용)
 async function refreshUser() {
   const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
 
@@ -106,7 +130,6 @@ async function refreshUser() {
   }
 }
 
-// 로그아웃 함수
 async function logout() {
   const { user } = getAuthState();
 
@@ -119,17 +142,14 @@ async function logout() {
   }
 }
 
-// useAuth 훅 : 인증 상태와 관련된 로직을 제공
 function useAuth() {
-  const authState = useSyncExternalStore(
-    subscribeAuthStore, // 구독 함수 (데이터가 변했을 때 실행할 콜백을 등록하는 함수)
-    getAuthState, // 현재 상태를 반환하는 함수 (현재 외부 저장소의 최신 값을 반환하는 함수)
-  );
+  const authState = useSyncExternalStore(subscribeAuthStore, getAuthState);
 
   useEffect(() => {
     const hasAccessToken = Boolean(localStorage.getItem("accessToken"));
+    const hasRefreshToken = Boolean(localStorage.getItem("refreshToken"));
 
-    if (hasAccessToken && !authState.user) {
+    if ((hasAccessToken || hasRefreshToken) && !authState.user) {
       initializeAuth().catch(() => {});
     }
   }, [authState.loading, authState.user]);

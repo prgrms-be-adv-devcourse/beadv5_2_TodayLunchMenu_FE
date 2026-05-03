@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ApiError } from "../../api/client";
 import SellerNav from "../../components/seller/SellerNav";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   getSellerDeliveriesApi,
   getSellerDeliveryCountsApi,
@@ -15,6 +16,7 @@ const STATUS_META = {
   PREPARING: { label: "배송 준비", className: "bg-red-100 text-red-600" },
   SHIPPED:   { label: "배송 중",   className: "bg-amber-100 text-amber-600" },
   DELIVERED: { label: "배송 완료", className: "bg-emerald-100 text-emerald-700" },
+  CANCELED:  { label: "취소됨",    className: "bg-gray-100 text-gray-500" },
 };
 
 const STATUS_OPTIONS = [
@@ -49,6 +51,7 @@ function DetailRow({ label, value }) {
 }
 
 export default function SellerDeliveryPage() {
+  useRequireRole("SELLER");
   const [deliveries, setDeliveries] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(0);

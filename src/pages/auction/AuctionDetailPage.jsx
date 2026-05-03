@@ -362,7 +362,7 @@ export default function AuctionDetailPage() {
   };
 
   const place = async () => {
-    if (!isAuthenticated) { navigate("/login"); return; }
+    if (!isAuthenticated) { navigate("/login", { replace: true }); return; }
     if (ended) return;
 
     const amount = Number(bidInput);
@@ -390,7 +390,7 @@ export default function AuctionDetailPage() {
       setToast({ type: "success", message: "입찰 요청이 접수됐습니다. 처리 중..." });
       reload();
     } catch (nextError) {
-      if (nextError?.status === 401) { navigate("/login"); return; }
+      if (nextError?.status === 401) { navigate("/login", { replace: true }); return; }
       setBidError(nextError?.message || "입찰에 실패했습니다.");
     } finally {
       setSubmitting(false);

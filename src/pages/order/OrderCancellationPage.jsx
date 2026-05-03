@@ -6,6 +6,7 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 import PageContainer from "../../components/common/PageContainer";
 import { cancelOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
 import { pushToast } from "../../features/notification/notificationToastStore";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 const REASON_OPTIONS = [
   { value: "CHANGE_OF_MIND", label: "단순 변심", liability: "BUYER" },
@@ -39,6 +40,9 @@ function getItemActionability(status) {
   if (upper === "CANCELED") {
     return { type: "NONE", label: "이미 취소됨", canSelect: false };
   }
+  if (upper === "RETURN_REQUESTED") {
+    return { type: "NONE", label: "반품 진행 중", canSelect: false };
+  }
   return { type: "NONE", label: status || "처리 불가", canSelect: false };
 }
 
@@ -49,6 +53,7 @@ function getThumbnailSrc(thumbnailKey) {
 
 export default function OrderCancellationPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +77,7 @@ export default function OrderCancellationPage() {
       } catch (err) {
         if (!mounted) return;
         if (err instanceof ApiError && err.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
         setLoadError(err instanceof ApiError ? err.message : "주문 정보를 불러오는 중 오류가 발생했습니다.");
@@ -330,9 +335,11 @@ export default function OrderCancellationPage() {
                             className="h-11 w-full bg-blue-50/70 pl-3 pr-10 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-violet-200 rounded-lg"
                           >
                             <option value="">선택해 주세요</option>
-                            {REASON_OPTIONS.map((option) => (
-                              <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
+                            {REASON_OPTIONS
+                              .filter((option) => action.type === "RETURN" || option.liability !== "SELLER")
+                              .map((option) => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                              ))}
                           </select>
                           {(() => {
                             const selected = REASON_OPTIONS.find((r) => r.value === reasonState.reason);

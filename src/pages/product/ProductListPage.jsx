@@ -110,6 +110,8 @@ export default function ProductListPage() {
   }, [keyword]);
 
   useEffect(() => {
+    // 필터/검색 변경 시 첫 페이지로 리셋 — 의도된 cascading 1회
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(0);
   }, [debouncedKeyword, selectedCategoryId, sort, statusFilter]);
 
@@ -225,7 +227,7 @@ export default function ProductListPage() {
       await addToCart({ productId: product.id, quantity: 1 });
       showToast("장바구니에 담았습니다.");
     } catch (nextError) {
-      if (nextError?.status === 401) { navigate("/login"); return; }
+      if (nextError?.status === 401) { navigate("/login", { replace: true }); return; }
       showToast(nextError?.message || "장바구니에 담지 못했습니다.", true);
     }
   };

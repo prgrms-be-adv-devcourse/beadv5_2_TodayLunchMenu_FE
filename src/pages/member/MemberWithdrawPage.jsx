@@ -9,9 +9,11 @@ import { ApiError } from "../../api/client";
 import { clearAuthState } from "../../features/auth/authStore";
 import { withdrawCurrentMemberApi } from "../../features/member/memberApi";
 import { pushToast } from "../../features/notification/notificationToastStore";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 export default function MemberWithdrawPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const [withdrawPassword, setWithdrawPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isWithdrawing, setIsWithdrawing] = useState(false);

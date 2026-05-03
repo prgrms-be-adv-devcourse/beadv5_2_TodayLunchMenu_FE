@@ -58,6 +58,16 @@ export default function DepositFailPage() {
     [location.search, location.state]
   );
 
+  // 뒤로 가기 시 Toss 중간 페이지로 돌아가지 않도록 인터셉트
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+    const onPopState = () => {
+      navigate("/deposits", { replace: true });
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [navigate]);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -106,7 +116,7 @@ export default function DepositFailPage() {
           <div className="flex items-center gap-4">
             <button
               type="button"
-              onClick={() => navigate(-1)}
+              onClick={() => navigate("/deposits", { replace: true })}
               className="flex h-10 w-10 items-center justify-center rounded-full p-2 text-blue-700 transition hover:bg-blue-100/50"
               aria-label="뒤로 가기"
             >

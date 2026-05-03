@@ -8,6 +8,7 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import { setAuthTokens } from "../../features/auth/authStore";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   cancelAccountVerificationApi,
   confirmAccountVerificationApi,
@@ -148,6 +149,7 @@ export default function SellerAccountVerificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshUser } = useAuth();
+  useRequireRole("SELLER");
 
   const initialVerification = useMemo(() => {
     const fromStorage = buildVerificationModel(getPendingSellerVerification());
@@ -234,7 +236,7 @@ export default function SellerAccountVerificationPage() {
         }
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 
@@ -317,14 +319,15 @@ export default function SellerAccountVerificationPage() {
 
       const promotedAuth = result?.auth;
       if (!promotedAuth?.accessToken || !promotedAuth?.refreshToken) {
-        throw new Error(
-          "판매자 권한 토큰이 응답에 포함되지 않았습니다. confirm 응답을 확인해 주세요."
-        );
+        setError("판매자 권한 토큰이 응답에 포함되지 않았습니다. confirm 응답을 확인해 주세요.");
+        return;
       }
 
       setAuthTokens({
         accessToken: promotedAuth.accessToken,
         refreshToken: promotedAuth.refreshToken,
+        accessTokenExpiresIn: promotedAuth.accessTokenExpiresIn,
+        refreshTokenExpiresIn: promotedAuth.refreshTokenExpiresIn,
       });
 
       setVerification((prev) =>
@@ -336,7 +339,8 @@ export default function SellerAccountVerificationPage() {
       );
       const refreshedUser = await refreshUser();
       if (refreshedUser?.role !== "SELLER") {
-        throw new Error("새 토큰으로 사용자 정보를 갱신했지만 판매자 권한이 반영되지 않았습니다.");
+        setError("새 토큰으로 사용자 정보를 갱신했지만 판매자 권한이 반영되지 않았습니다.");
+        return;
       }
 
       clearPendingSellerVerification();

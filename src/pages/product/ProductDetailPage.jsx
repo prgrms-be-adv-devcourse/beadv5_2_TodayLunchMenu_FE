@@ -98,7 +98,7 @@ export default function ProductDetailPage() {
       showToast("장바구니에 담았습니다.");
     } catch (err) {
       if (err?.status === 401) {
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
       showToast(err?.message || "장바구니에 담지 못했습니다.", true);

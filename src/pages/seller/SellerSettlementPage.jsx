@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate } from "react-router-dom";
 
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
@@ -10,6 +9,7 @@ import PendingEscrowTable from "../../components/seller/settlement/PendingEscrow
 import SellerSettlementSummary from "../../components/seller/settlement/SellerSettlementSummary";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   getPendingSellerIncomesApi,
   getSellerOrderEscrowTransactionsApi,
@@ -189,6 +189,7 @@ function TransactionHistory({ items, loading, error }) {
 export default function SellerSettlementPage() {
   const { user, loading: authLoading } = useAuth();
   const isSeller = user?.role === "SELLER";
+  const { hasAccess } = useRequireRole("SELLER");
   const [activeTab, setActiveTab] = useState("escrow");
   const [wallet, setWallet] = useState(null);
   const [pendingIncomes, setPendingIncomes] = useState([]);
@@ -362,8 +363,8 @@ export default function SellerSettlementPage() {
     );
   }
 
-  if (!isSeller) {
-    return <Navigate to="/seller/register" replace />;
+  if (!hasAccess) {
+    return null;
   }
 
   const handleToggleSettlement = (settlementItemId) => {

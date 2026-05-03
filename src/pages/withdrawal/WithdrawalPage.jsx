@@ -7,6 +7,7 @@ import Input from "../../components/common/Input";
 import Modal from "../../components/common/Modal";
 import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 import {
   createWithdrawalApi,
   getWalletSummaryApi,
@@ -77,6 +78,7 @@ function getWithdrawalStatusClass(status) {
 
 export default function WithdrawalPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const [wallet, setWallet] = useState(null);
   const [withdrawals, setWithdrawals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,7 +135,7 @@ export default function WithdrawalPage() {
       setWithdrawals(withdrawalPage.items);
     } catch (loadError) {
       if (loadError instanceof ApiError && loadError.status === 401) {
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -172,7 +174,7 @@ export default function WithdrawalPage() {
         }
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 

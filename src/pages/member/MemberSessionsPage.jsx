@@ -13,6 +13,7 @@ import {
   logoutSessionByIdApi,
 } from "../../features/auth/sessionManagementApi";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 function formatDateTime(value) {
   if (!value) {
@@ -107,6 +108,7 @@ function SessionInfo({ label, value, accent = false }) {
 
 export default function MemberSessionsPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -3,9 +3,12 @@ import CountdownPill from "./CountdownPill";
 import { formatKRW } from "../../features/auction/format";
 import { useCountdown } from "../../features/auction/useCountdown";
 
-export default function AuctionCard({ auction, productImage }) {
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL || "https://todaylunchmenu.s3.ap-northeast-2.amazonaws.com";
+
+export default function AuctionCard({ auction }) {
   const { ended } = useCountdown(auction.endsAt);
   const title = auction.productTitle || "경매 상품";
+  const imageSrc = auction.thumbnailKey ? `${S3_BASE_URL}/${auction.thumbnailKey}` : "/default-product.svg";
 
   const isWaiting = auction.status === "WAITING";
 
@@ -26,7 +29,7 @@ export default function AuctionCard({ auction, productImage }) {
       <Link to={`/auctions/${auction.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <img
-            src={productImage || "/default-product.svg"}
+            src={imageSrc}
             alt={title}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />

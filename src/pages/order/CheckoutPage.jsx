@@ -18,16 +18,19 @@ export default function CheckoutPage() {
   const location = useLocation();
   const isAuction = location.state?.isAuction === true;
   const auctionOrderId = location.state?.orderId ?? null;
-  const checkoutItems = Array.isArray(location.state?.items)
-    ? location.state.items
-    : [];
+  const checkoutItems = useMemo(
+    () => (Array.isArray(location.state?.items) ? location.state.items : []),
+    [location.state?.items]
+  );
   const hasCheckoutItems = checkoutItems.length > 0;
 
   const [form, setForm] = useState(() => {
     try {
       const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
       if (saved) return JSON.parse(saved).form ?? {};
-    } catch {}
+    } catch {
+      // sessionStorage 접근 실패 시 기본값 사용
+    }
     return { receiver: "", receiverPhone: "", address: "", addressDetail: "", zipCode: "", memo: "" };
   });
   const [errors, setErrors] = useState({});
@@ -38,14 +41,18 @@ export default function CheckoutPage() {
     try {
       const saved = sessionStorage.getItem(FORM_STORAGE_KEY);
       if (saved) return JSON.parse(saved).paymentMethod ?? "DEPOSIT";
-    } catch {}
+    } catch {
+      // sessionStorage 접근 실패 시 기본값 사용
+    }
     return "DEPOSIT";
   });
 
   useEffect(() => {
     try {
       sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ form, paymentMethod: selectedPaymentMethod }));
-    } catch {}
+    } catch {
+      // sessionStorage 저장 실패는 무시
+    }
   }, [form, selectedPaymentMethod]);
 
   const isDepositPayment = selectedPaymentMethod === "DEPOSIT";
@@ -56,13 +63,10 @@ export default function CheckoutPage() {
       (sum, item) => sum + item.price * item.quantity,
       0
     );
-    const shippingFee = subtotal >= 30000 || subtotal === 0 ? 0 : 3000;
-    const total = subtotal + shippingFee;
-
     return {
       subtotal,
-      shippingFee,
-      total,
+      shippingFee: 0,
+      total: subtotal,
     };
   }, [checkoutItems]);
 
@@ -154,7 +158,7 @@ export default function CheckoutPage() {
             totalPrice: summary.total,
             paymentMethod: paymentMethodLabel,
             paymentMethodCode: selectedPaymentMethod,
-            depositLabel: "Deposit / Vivid Pay",
+            depositLabel: "예치금",
             selectedPaymentMethod,
           },
         });
@@ -182,7 +186,7 @@ export default function CheckoutPage() {
         totalPrice: summary.total,
         paymentMethod: paymentMethodLabel,
         paymentMethodCode: selectedPaymentMethod,
-        depositLabel: "Deposit / Vivid Pay",
+        depositLabel: "예치금",
         selectedPaymentMethod,
         pendingOrder: true,
       };
@@ -249,7 +253,7 @@ export default function CheckoutPage() {
                   key={item.cartId || item.productId}
                   className="flex gap-4 border border-gray-100 bg-white p-4"
                 >
-                  <div className="h-20 w-20 flex-shrink-0 overflow-hidden bg-gray-100">
+                  <div className="h-20 w-20 shrink-0 overflow-hidden bg-gray-100">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -413,11 +417,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-500">배송비</span>
-                <span className="font-bold text-gray-900">
-                  {summary.shippingFee === 0
-                    ? "무료"
-                    : formatPrice(summary.shippingFee)}
-                </span>
+                <span className="font-bold text-gray-900">무료</span>
               </div>
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-end justify-between">

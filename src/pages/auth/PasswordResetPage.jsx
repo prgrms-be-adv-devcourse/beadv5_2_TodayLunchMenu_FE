@@ -66,7 +66,7 @@ export default function PasswordResetPage() {
         tone: "success",
         timeoutMs: 2500,
       });
-      navigate("/login");
+      navigate("/login", { replace: true });
     } catch (error) {
       setErrors({
         common:

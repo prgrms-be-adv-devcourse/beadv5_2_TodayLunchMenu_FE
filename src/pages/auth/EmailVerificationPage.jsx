@@ -103,6 +103,8 @@ export default function EmailVerificationPage() {
         setAuthTokens({
           accessToken: authResult?.accessToken,
           refreshToken: authResult?.refreshToken,
+          accessTokenExpiresIn: authResult?.accessTokenExpiresIn,
+          refreshTokenExpiresIn: authResult?.refreshTokenExpiresIn,
         });
 
         const user = await getMyInfoApi();

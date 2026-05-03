@@ -39,7 +39,7 @@ const toNumber = (value) => {
 const toUiImage = (image) => ({
   id: image.imageId,
   s3Key: image.s3Key,
-  url: image.s3Key ? `${S3_BASE_URL}/${image.s3Key}` : null,
+  url: image.presignedUrl ?? (image.s3Key ? `${S3_BASE_URL}/${image.s3Key}` : null),
   sortOrder: image.sortOrder ?? 0,
   isThumbnail: Boolean(image.isThumbnail),
   createdAt: image.createdAt,
@@ -116,9 +116,10 @@ async function getPopularProductsApi(params = {}) {
   });
 
   const page = response.data ?? {};
+  const items = Array.isArray(page.content) ? page.content.map(toUiProduct) : [];
 
   return {
-    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    items: await resolveProductImages(items),
     pageInfo: {
       page: page.number ?? 0,
       size: page.size ?? 0,
@@ -135,15 +136,22 @@ async function getProductDetailApi(productId) {
   return toUiProduct(response.data);
 }
 
+async function resolveProductImages(items) {
+  return Promise.all(
+    items.map((p) => p.image ? p : getProductDetailApi(p.id).catch(() => p))
+  );
+}
+
 async function getSellerProductsApi(params = {}) {
   const response = await apiClient("/api/products/seller", {
     params,
   });
 
   const page = response.data ?? {};
+  const items = Array.isArray(page.content) ? page.content.map(toUiProduct) : [];
 
   return {
-    items: Array.isArray(page.content) ? page.content.map(toUiProduct) : [],
+    items: await resolveProductImages(items),
     pageInfo: {
       page: page.number ?? 0,
       size: page.size ?? 0,

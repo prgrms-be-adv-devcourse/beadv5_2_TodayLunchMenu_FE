@@ -66,6 +66,8 @@ export default function KakaoOAuthCallbackPage() {
           setAuthTokens({
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
+            accessTokenExpiresIn: result.accessTokenExpiresIn,
+            refreshTokenExpiresIn: result.refreshTokenExpiresIn,
           });
           const user = await getMyInfoApi();
 

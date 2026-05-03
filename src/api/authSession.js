@@ -1,12 +1,28 @@
-﻿import { clearAuthState, setAuthTokens } from "../features/auth/authStore";
+import { clearAuthState, setAuthTokens } from "../features/auth/authStore";
 import { ApiError, buildApiError } from "./apiError";
 import { API_BASE } from "./apiConfig";
 import { parseResponseBody } from "./apiResponse";
 
 let refreshPromise = null;
 
+const TERMINAL_AUTH_ERROR_CODES = new Set([
+  "INVALID_TOKEN",
+  "MEMBER_WITHDRAWN",
+  "REFRESH_TOKEN_EXPIRED",
+  "SESSION_NOT_FOUND",
+  "SESSION_EXPIRED",
+]);
+
 const clearAuthenticatedSession = () => {
   clearAuthState();
+};
+
+const isTerminalAuthError = (error) => {
+  if (!(error instanceof ApiError)) {
+    return false;
+  }
+
+  return TERMINAL_AUTH_ERROR_CODES.has(error.code);
 };
 
 const refreshAccessToken = async () => {
@@ -39,7 +55,15 @@ const refreshAccessToken = async () => {
 
     if (!response.ok) {
       const error = buildApiError({ response, data });
-      clearAuthenticatedSession();
+
+      if (
+        response.status === 401 ||
+        response.status === 403 ||
+        isTerminalAuthError(error)
+      ) {
+        clearAuthenticatedSession();
+      }
+
       throw error;
     }
 
@@ -48,6 +72,8 @@ const refreshAccessToken = async () => {
     setAuthTokens({
       accessToken: authData?.accessToken,
       refreshToken: authData?.refreshToken,
+      accessTokenExpiresIn: authData?.accessTokenExpiresIn,
+      refreshTokenExpiresIn: authData?.refreshTokenExpiresIn,
     });
 
     return authData;
@@ -58,4 +84,4 @@ const refreshAccessToken = async () => {
   return refreshPromise;
 };
 
-export { clearAuthenticatedSession, refreshAccessToken };
+export { clearAuthenticatedSession, isTerminalAuthError, refreshAccessToken };

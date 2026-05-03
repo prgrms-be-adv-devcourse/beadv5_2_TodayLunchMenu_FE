@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import { getCurrentAccountVerificationApi } from "../../features/seller/accountVerificationApi";
 import { getPendingSellerIncomesApi, getSellerWalletSummaryApi } from "../../features/payment/sellerPaymentApi";
 import { getPartialSettlementAvailableItemsApi } from "../../features/settlement/settlementApi";
@@ -37,6 +38,7 @@ export default function SellerMyPage() {
 	const navigate = useNavigate();
 	const { user, loading: authLoading } = useAuth();
 	const isSeller = user?.role === "SELLER";
+	const { hasAccess } = useRequireRole("SELLER");
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
@@ -118,8 +120,10 @@ export default function SellerMyPage() {
 		);
 	}
 
-	if (!isSeller) {
-		return <Navigate to="/seller/register" replace />;
+	// 권한 검사: useRequireRole 훅이 토스트 + 홈 이동을 처리.
+	// 렌더 사이클 동안엔 빈 화면 유지.
+	if (!hasAccess) {
+		return null;
 	}
 
 	return (

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import { getPendingSellerIncomesApi } from "../../features/payment/sellerPaymentApi";
 
 const STATUS_FILTERS = [
@@ -47,6 +48,7 @@ export default function SellerOrderListPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const isSeller = user?.role === "SELLER";
+  const { hasAccess } = useRequireRole("SELLER");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -129,8 +131,8 @@ export default function SellerOrderListPage() {
     );
   }
 
-  if (!isSeller) {
-    return <Navigate to="/seller/register" replace />;
+  if (!hasAccess) {
+    return null;
   }
 
   return (
