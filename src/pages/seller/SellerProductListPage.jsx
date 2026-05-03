@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import SellerNav from "../../components/seller/SellerNav";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import { getSellerProductsApi } from "../../features/product/productApi";
 
 const FILTERS = [
@@ -37,6 +38,7 @@ export default function SellerProductListPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const isSeller = user?.role === "SELLER";
+  const { hasAccess } = useRequireRole("SELLER");
 
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState("ALL");
@@ -84,7 +86,7 @@ export default function SellerProductListPage() {
     );
   }
 
-  if (!isSeller) return <Navigate to="/seller/register" replace />;
+  if (!hasAccess) return null;
 
   const activeCount = products.filter((p) => p.status === "ACTIVE").length;
   const soldOutCount = products.filter((p) => p.status === "SOLD_OUT").length;

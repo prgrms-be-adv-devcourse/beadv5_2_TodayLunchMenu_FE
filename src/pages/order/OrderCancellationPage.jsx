@@ -6,6 +6,7 @@ import ConfirmModal from "../../components/common/ConfirmModal";
 import PageContainer from "../../components/common/PageContainer";
 import { cancelOrderApi, getOrderDetailApi } from "../../features/order/orderApi";
 import { pushToast } from "../../features/notification/notificationToastStore";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 const REASON_OPTIONS = [
   { value: "CHANGE_OF_MIND", label: "단순 변심", liability: "BUYER" },
@@ -52,6 +53,7 @@ function getThumbnailSrc(thumbnailKey) {
 
 export default function OrderCancellationPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -75,7 +77,7 @@ export default function OrderCancellationPage() {
       } catch (err) {
         if (!mounted) return;
         if (err instanceof ApiError && err.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
         setLoadError(err instanceof ApiError ? err.message : "주문 정보를 불러오는 중 오류가 발생했습니다.");

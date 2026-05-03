@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 
 import { ApiError } from '../../api/client';
 import PageContainer from '../../components/common/PageContainer';
 import { useAuth } from '../../features/auth/useAuth';
+import { useRequireRole } from '../../features/auth/useRequireRole';
 import {
   createCategorySellerApi,
   deleteCategoryApi,
@@ -73,6 +73,7 @@ const emptyForm = { name: '', description: '', sortOrder: '0', parentId: '' };
 export default function SellerCategoryPage() {
   const { user, loading: authLoading } = useAuth();
   const isSeller = user?.role === 'SELLER';
+  const { hasAccess } = useRequireRole('SELLER');
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -193,7 +194,7 @@ export default function SellerCategoryPage() {
     );
   }
 
-  if (!isSeller) return <Navigate to="/seller/register" replace />;
+  if (!hasAccess) return null;
 
   const myCategories = categories.filter((c) => c.sellerId === user?.id);
   const tree = buildTree(categories);

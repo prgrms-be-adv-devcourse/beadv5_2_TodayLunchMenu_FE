@@ -12,6 +12,7 @@ import PageContainer from "../../components/common/PageContainer";
 import Button from "../../components/common/Button";
 import ConfirmModal from "../../components/common/ConfirmModal";
 import Modal from "../../components/common/Modal";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 function formatPaymentMethod(method) {
   switch (method) {
@@ -91,6 +92,7 @@ function Divider() {
 
 export default function OrderDetailPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [payment, setPayment] = useState(null);
@@ -139,7 +141,7 @@ export default function OrderDetailPage() {
         if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
         if (loadError instanceof ApiError && loadError.status === 404) {

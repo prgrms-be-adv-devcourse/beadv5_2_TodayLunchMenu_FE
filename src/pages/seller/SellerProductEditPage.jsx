@@ -12,6 +12,7 @@ import {
   updateProductApi,
   uploadProductImageApi,
 } from "../../features/product/productApi";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 
 const MIN_PRICE = 1000;
 const MIN_STOCK = 0;
@@ -69,6 +70,7 @@ const SELECT_CLASS =
   "h-11 w-full rounded border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-gray-50 disabled:text-gray-400";
 
 export default function SellerProductEditPage() {
+  useRequireRole("SELLER");
   const { productId } = useParams();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);

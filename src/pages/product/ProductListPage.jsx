@@ -172,7 +172,7 @@ export default function ProductListPage() {
       await addToCart({ productId: product.id, quantity: 1 });
       showToast("장바구니에 담았습니다.");
     } catch (nextError) {
-      if (nextError?.status === 401) { navigate("/login"); return; }
+      if (nextError?.status === 401) { navigate("/login", { replace: true }); return; }
       showToast(nextError?.message || "장바구니에 담지 못했습니다.", true);
     }
   };

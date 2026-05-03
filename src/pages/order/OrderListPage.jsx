@@ -5,6 +5,7 @@ import PageContainer from "../../components/common/PageContainer";
 import PageHeader from "../../components/common/PageHeader";
 import Input from "../../components/common/Input";
 import { getOrdersApi } from "../../features/order/orderApi";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 const STATUS_OPTIONS = [
   { value: "ALL", label: "전체" },
@@ -76,6 +77,7 @@ const ORDER_TYPE_TABS = [
 
 export default function OrderListPage() {
   const navigate = useNavigate();
+  const { hasAccess } = useRequireAuth();
   const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");
@@ -101,7 +103,7 @@ export default function OrderListPage() {
         if (!mounted) return;
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 

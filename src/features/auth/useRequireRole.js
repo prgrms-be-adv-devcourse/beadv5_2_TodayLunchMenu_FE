@@ -18,10 +18,17 @@ export function useRequireRole(allowedRoles, options = {}) {
   const navigate = useNavigate();
   const handledRef = useRef(false);
 
-  const allowed = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+  // allowedRoles가 null/undefined면 role 무관 (로그인만 체크)
+  const allowed =
+    allowedRoles == null
+      ? null
+      : Array.isArray(allowedRoles)
+        ? allowedRoles
+        : [allowedRoles];
   const { redirectTo = "/", message } = options;
 
-  const hasAccess = !loading && !!user && allowed.includes(user.role);
+  const hasAccess =
+    !loading && !!user && (allowed == null || allowed.includes(user.role));
 
   useEffect(() => {
     if (loading) return;
@@ -39,4 +46,11 @@ export function useRequireRole(allowedRoles, options = {}) {
   }, [loading, hasAccess, user, message, navigate, redirectTo]);
 
   return { user, hasAccess, loading };
+}
+
+/**
+ * 로그인만 요구하는 가드. role 검사는 안 함.
+ */
+export function useRequireAuth(options) {
+  return useRequireRole(null, options);
 }

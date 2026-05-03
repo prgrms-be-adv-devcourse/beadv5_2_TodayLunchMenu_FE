@@ -126,7 +126,7 @@ export default function HomePage() {
       showToast("장바구니에 담았습니다.");
     } catch (error) {
       if (error?.status === 401) {
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
       showToast(error?.message || "장바구니에 담지 못했습니다.", true);

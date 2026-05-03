@@ -8,6 +8,7 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import { setAuthTokens } from "../../features/auth/authStore";
 import { useAuth } from "../../features/auth/useAuth";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   cancelAccountVerificationApi,
   confirmAccountVerificationApi,
@@ -148,6 +149,7 @@ export default function SellerAccountVerificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshUser } = useAuth();
+  useRequireRole("SELLER");
 
   const initialVerification = useMemo(() => {
     const fromStorage = buildVerificationModel(getPendingSellerVerification());
@@ -234,7 +236,7 @@ export default function SellerAccountVerificationPage() {
         }
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 

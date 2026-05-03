@@ -6,6 +6,7 @@ import PageHeader from "../../components/common/PageHeader";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
 import ConfirmModal from "../../components/common/ConfirmModal";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 import {
   createChargeApi,
   getTransactionsApi,
@@ -134,6 +135,7 @@ function getTransactionDescription(transaction) {
 
 export default function DepositPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const [wallet, setWallet] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,7 +172,7 @@ export default function DepositPage() {
         }
 
         if (loadError instanceof ApiError && loadError.status === 401) {
-          navigate("/login");
+          navigate("/login", { replace: true });
           return;
         }
 

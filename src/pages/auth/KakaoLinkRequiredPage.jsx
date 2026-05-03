@@ -146,7 +146,7 @@ export default function KakaoLinkRequiredPage() {
             type="button"
             onClick={() => {
               clearPendingKakaoLink();
-              navigate("/login");
+              navigate("/login", { replace: true });
             }}
             className="w-full py-3 text-sm font-semibold text-gray-500 transition hover:text-blue-700"
           >

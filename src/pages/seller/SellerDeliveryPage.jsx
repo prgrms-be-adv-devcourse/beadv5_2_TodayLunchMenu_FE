@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ApiError } from "../../api/client";
 import SellerNav from "../../components/seller/SellerNav";
+import { useRequireRole } from "../../features/auth/useRequireRole";
 import {
   getSellerDeliveriesApi,
   getSellerDeliveryCountsApi,
@@ -50,6 +51,7 @@ function DetailRow({ label, value }) {
 }
 
 export default function SellerDeliveryPage() {
+  useRequireRole("SELLER");
   const [deliveries, setDeliveries] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(0);
