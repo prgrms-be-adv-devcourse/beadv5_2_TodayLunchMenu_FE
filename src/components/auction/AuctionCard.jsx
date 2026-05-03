@@ -1,14 +1,39 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import CountdownPill from "./CountdownPill";
 import { formatKRW } from "../../features/auction/format";
 import { useCountdown } from "../../features/auction/useCountdown";
+import { getProductDetailApi } from "../../features/product/productApi";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL || "https://todaylunchmenu.s3.ap-northeast-2.amazonaws.com";
+const DEFAULT_IMAGE = "/default-product.svg";
 
 export default function AuctionCard({ auction }) {
   const { ended } = useCountdown(auction.endsAt);
   const title = auction.productTitle || "경매 상품";
-  const imageSrc = auction.thumbnailKey ? `${S3_BASE_URL}/${auction.thumbnailKey}` : "/default-product.svg";
+
+  const initialImageSrc = auction.thumbnailKey
+    ? `${S3_BASE_URL}/${auction.thumbnailKey}`
+    : null;
+  const [imageSrc, setImageSrc] = useState(initialImageSrc ?? DEFAULT_IMAGE);
+  const productFallbackTriedRef = useRef(false);
+
+  const fallbackToProductImage = () => {
+    if (productFallbackTriedRef.current || !auction.productId) {
+      setImageSrc(DEFAULT_IMAGE);
+      return;
+    }
+    productFallbackTriedRef.current = true;
+    getProductDetailApi(auction.productId)
+      .then((product) => setImageSrc(product?.image || DEFAULT_IMAGE))
+      .catch(() => setImageSrc(DEFAULT_IMAGE));
+  };
+
+  useEffect(() => {
+    if (!initialImageSrc) {
+      fallbackToProductImage();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isWaiting = auction.status === "WAITING";
 
@@ -32,8 +57,12 @@ export default function AuctionCard({ auction }) {
             src={imageSrc}
             alt={title}
             onError={(e) => {
-              if (e.currentTarget.src.endsWith("/default-product.svg")) return;
-              e.currentTarget.src = "/default-product.svg";
+              if (e.currentTarget.src.endsWith(DEFAULT_IMAGE)) return;
+              if (!productFallbackTriedRef.current) {
+                fallbackToProductImage();
+                return;
+              }
+              e.currentTarget.src = DEFAULT_IMAGE;
             }}
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />
