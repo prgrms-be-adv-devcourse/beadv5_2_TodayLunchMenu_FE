@@ -77,7 +77,7 @@ const ORDER_TYPE_TABS = [
 
 export default function OrderListPage() {
   const navigate = useNavigate();
-  const { hasAccess } = useRequireAuth();
+  useRequireAuth();
   const [orderType, setOrderType] = useState("NORMAL");
   const [keyword, setKeyword] = useState("");
   const [status, setStatus] = useState("ALL");

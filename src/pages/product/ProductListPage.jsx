@@ -109,6 +109,8 @@ export default function ProductListPage() {
   }, [keyword]);
 
   useEffect(() => {
+    // 필터/검색 변경 시 첫 페이지로 리셋 — 의도된 cascading 1회
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(0);
   }, [debouncedKeyword, selectedCategoryId, sort, statusFilter]);
 
