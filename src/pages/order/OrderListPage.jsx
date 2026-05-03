@@ -125,11 +125,19 @@ export default function OrderListPage() {
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       const matchesType = order.orderType === orderType;
+      // 반품 진행중(hasOngoingReturn)은 Order.status가 DELIVERED 그대로지만
+      // UX상 "취소/반품" 카테고리로 묶고, 다른 필터(SHIPPING/DELIVERED/CONFIRMED 등)에서는 제외
+      const isOngoingReturn =
+        order.hasOngoingReturn &&
+        order.status !== "CANCELED" &&
+        order.status !== "COMPLETED";
       const matchesStatus =
         status === "ALL" ? true :
-        status === "SHIPPING" ? ["SHIPPING", "PARTIAL_SHIPPING"].includes(order.status) :
-        status === "CANCELED" ? ["CANCELED", "PARTIAL_CANCELED"].includes(order.status) :
-        order.status === status;
+        status === "CANCELED"
+          ? ["CANCELED", "PARTIAL_CANCELED"].includes(order.status) || isOngoingReturn
+          : isOngoingReturn ? false :
+            status === "SHIPPING" ? ["SHIPPING", "PARTIAL_SHIPPING"].includes(order.status) :
+            order.status === status;
       const normalizedKeyword = keyword.trim().toLowerCase();
       const matchesKeyword = normalizedKeyword
         ? String(order.orderNumber || "").toLowerCase().includes(normalizedKeyword) ||
