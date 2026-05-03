@@ -94,7 +94,7 @@ export default function ProductDetailPage() {
 
     try {
       setIsAddingToCart(true);
-      await addToCart({ productId: product.id, quantity });
+      await addToCart({ productId: product.id, quantity: safeQuantity });
       showToast("장바구니에 담았습니다.");
     } catch (err) {
       if (err?.status === 401) {
@@ -132,7 +132,9 @@ export default function ProductDetailPage() {
 
   const selectedUrl = images[selectedIdx]?.url ?? null;
   const soldOut = product.status === "SOLD_OUT" || product.stockCount <= 0;
-  const totalPrice = product.price * quantity;
+  // 입력 도중 quantity가 빈 값일 수 있으니 합계 계산 시 안전하게 처리
+  const safeQuantity = Number(quantity) > 0 ? Number(quantity) : 1;
+  const totalPrice = product.price * safeQuantity;
   const isSellerMe = Boolean(
     user?.memberId && seller?.memberId && user.memberId === seller.memberId,
   );
@@ -314,7 +316,9 @@ export default function ProductDetailPage() {
 
             {!soldOut && (
               <div>
-                <p className="mb-2 text-xs font-semibold text-gray-600">수량</p>
+                <p className="mb-2 text-xs font-semibold text-gray-600">
+                  수량 <span className="text-gray-400">(최대 {product.stockCount}개)</span>
+                </p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
@@ -324,9 +328,29 @@ export default function ProductDetailPage() {
                   >
                     -
                   </button>
-                  <span className="w-10 text-center font-bold text-gray-900">
-                    {quantity}
-                  </span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={product.stockCount}
+                    value={quantity}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === "") {
+                        setQuantity("");
+                        return;
+                      }
+                      const num = Number(raw);
+                      if (!Number.isFinite(num)) return;
+                      const clamped = Math.max(1, Math.min(product.stockCount, Math.floor(num)));
+                      setQuantity(clamped);
+                    }}
+                    onBlur={() => {
+                      // 빈 값이면 1로 보정
+                      if (quantity === "" || quantity < 1) setQuantity(1);
+                    }}
+                    className="h-9 w-16 border border-gray-300 text-center font-bold text-gray-900 outline-none focus:border-blue-500 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
                   <button
                     type="button"
                     onClick={() =>
@@ -409,7 +433,7 @@ export default function ProductDetailPage() {
         open={openModal}
         onClose={() => setOpenModal(false)}
         title="구매하시겠어요?"
-        description={`${product.name} ${quantity}개를 구매합니다.`}
+        description={`${product.name} ${safeQuantity}개를 구매합니다.`}
         confirmText="구매하기"
         onConfirm={() => {
           setOpenModal(false);
@@ -420,7 +444,7 @@ export default function ProductDetailPage() {
                   productId: product.id,
                   name: product.name,
                   category: product.category,
-                  quantity,
+                  quantity: safeQuantity,
                   price: product.price,
                   image: product.image,
                   status: product.status,
