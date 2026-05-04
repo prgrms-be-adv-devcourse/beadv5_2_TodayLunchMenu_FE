@@ -8,7 +8,7 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import { setAuthTokens } from "../../features/auth/authStore";
 import { useAuth } from "../../features/auth/useAuth";
-import { useRequireRole } from "../../features/auth/useRequireRole";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 import {
   cancelAccountVerificationApi,
   confirmAccountVerificationApi,
@@ -149,7 +149,9 @@ export default function SellerAccountVerificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshUser } = useAuth();
-  useRequireRole("SELLER");
+  // 이 페이지는 SELLER 승격 *전* 단계 — SELLER 권한을 요구하면 안 됨.
+  // 로그인 여부만 체크.
+  useRequireAuth();
 
   const initialVerification = useMemo(() => {
     const fromStorage = buildVerificationModel(getPendingSellerVerification());

@@ -9,9 +9,11 @@ import Input from "../../components/common/Input";
 import PageContainer from "../../components/common/PageContainer";
 import { savePendingSellerVerification } from "../../features/seller/accountVerificationStorage";
 import { useSeller } from "../../features/seller/useSeller";
+import { useRequireAuth } from "../../features/auth/useRequireRole";
 
 export default function SellerRegisterPage() {
   const navigate = useNavigate();
+  useRequireAuth();
   const { registerSeller } = useSeller(false);
 
   const [form, setForm] = useState({
